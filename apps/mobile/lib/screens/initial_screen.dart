@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/screens/login_screen.dart';
 import 'package:mobile/utils/colors.dart';
 
 class InitialScreen extends StatefulWidget {
@@ -68,7 +69,14 @@ class _InitialScreenState extends State<InitialScreen> {
                     backgroundColor: Color(colorAmbar),
                     fixedSize: Size(300, 60),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const Placeholder(),
+                      ),
+                    );
+                  },
                   child: Text(
                     'COMEÇAR AGORA',
                     style: GoogleFonts.inter(
@@ -84,7 +92,14 @@ class _InitialScreenState extends State<InitialScreen> {
                   fixedSize: Size(300, 60),
                   side: BorderSide(color: Color(colorAmbar), width: 1),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
+                },
                 child: Text(
                   'JÁ TENHO UMA CONTA',
                   style: GoogleFonts.inter(
