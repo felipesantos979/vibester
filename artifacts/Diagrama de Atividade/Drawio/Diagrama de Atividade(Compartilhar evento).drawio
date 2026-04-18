@@ -1,0 +1,126 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="fNL5Cyl6qzs-f3vNpVKm">
+    <mxGraphModel dx="1641" dy="819" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-1" parent="1" style="ellipse;aspect=fixed;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="370" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Visualizar evento  " vertex="1">
+          <mxGeometry height="50" width="140" x="320" y="66" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="   Exibir evento " vertex="1">
+          <mxGeometry height="50" width="140" x="320" y="133" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Selecionar opção &quot;Compartilhar&quot;  " vertex="1">
+          <mxGeometry height="50" width="160" x="310" y="197" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-5" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-1" style="endArrow=block;html=1;" target="WEhptDh8h7tiJ_k5-Azu-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-6" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-2" style="endArrow=block;html=1;" target="WEhptDh8h7tiJ_k5-Azu-3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-7" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-3" style="endArrow=block;html=1;" target="WEhptDh8h7tiJ_k5-Azu-4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-8" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-4" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="WEhptDh8h7tiJ_k5-Azu-9" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Exibir opções de compartilhamento  " vertex="1">
+          <mxGeometry height="50" width="160" x="310" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Escolher forma de compartilhamento  " vertex="1">
+          <mxGeometry height="50" width="160" x="310" y="327" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-11" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-10" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="WEhptDh8h7tiJ_k5-Azu-13" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-13" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="   Enviar solicitação de compartilhamento  " vertex="1">
+          <mxGeometry height="50" width="160" x="310" y="395" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-14" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-15" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="WEhptDh8h7tiJ_k5-Azu-16" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="450" as="sourcePoint" />
+            <mxPoint x="390" y="593" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-15" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Processar compartilhamento  " vertex="1">
+          <mxGeometry height="50" width="160" x="310" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-16" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Registrar compartilhamento no sistema  " vertex="1">
+          <mxGeometry height="50" width="160" x="310" y="530" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-17" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-16" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="WEhptDh8h7tiJ_k5-Azu-18" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="793" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-18" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="    Salvar compartilhamento no banco  " vertex="1">
+          <mxGeometry height="50" width="160" x="310" y="598" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-19" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-18" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="369" y="652" as="sourcePoint" />
+            <mxPoint x="390" y="663" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-20" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-13" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="WEhptDh8h7tiJ_k5-Azu-15" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="671" y="380" as="sourcePoint" />
+            <mxPoint x="550" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-21" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-9" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="WEhptDh8h7tiJ_k5-Azu-10" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="570" y="290" as="sourcePoint" />
+            <mxPoint x="570" y="303" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-22" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&amp;nbsp;Confirmar compartilhamento&amp;nbsp;" vertex="1">
+          <mxGeometry height="50" width="160" x="310" y="664" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-23" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-22" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="WEhptDh8h7tiJ_k5-Azu-24" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="710" as="sourcePoint" />
+            <mxPoint x="390" y="793" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-24" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Gerar link do evento  " vertex="1">
+          <mxGeometry height="50" width="160" x="310" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-25" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-24" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="WEhptDh8h7tiJ_k5-Azu-26" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="390" y="993" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-26" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="    Abrir aplicativo externo  " vertex="1">
+          <mxGeometry height="50" width="160" x="310" y="798" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-27" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-26" style="endArrow=block;html=1;entryX=0.456;entryY=0.06;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryPerimeter=0;" target="WEhptDh8h7tiJ_k5-Azu-28" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="369" y="852" as="sourcePoint" />
+            <mxPoint x="390" y="863" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-28" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="     Exibir evento compartilhado   " vertex="1">
+          <mxGeometry height="50" width="160" x="317" y="865" as="geometry" />
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-29" edge="1" parent="1" source="WEhptDh8h7tiJ_k5-Azu-28" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="WEhptDh8h7tiJ_k5-Azu-30" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="376" y="919" as="sourcePoint" />
+            <mxPoint x="397" y="930" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="WEhptDh8h7tiJ_k5-Azu-30" parent="1" style="ellipse;aspect=fixed;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="377" y="930" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

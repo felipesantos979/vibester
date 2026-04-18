@@ -1,0 +1,64 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Atividade UML - Busca" id="0">
+    <mxGraphModel dx="1229" dy="676" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="start" parent="1" style="ellipse;aspect=fixed;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="340" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="digitar" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Digitar busca" vertex="1">
+          <mxGeometry height="50" width="140" x="290" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="enviar" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Enviar busca" vertex="1">
+          <mxGeometry height="50" width="140" x="290" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="consultar" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Consultar no banco" vertex="1">
+          <mxGeometry height="50" width="160" x="290" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="decide" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="Resultados encontrados?" vertex="1">
+          <mxGeometry height="80" width="160" x="290" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="mostrar" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Exibir resultados" vertex="1">
+          <mxGeometry height="50" width="160" x="460" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="vazio" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Exibir &#39;nenhum resultado&#39;" vertex="1">
+          <mxGeometry height="50" width="180" x="160" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="merge" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="80" width="160" x="290" y="560" as="geometry" />
+        </mxCell>
+        <mxCell id="end" parent="1" style="ellipse;aspect=fixed;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="340" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="start" style="endArrow=block;html=1;" target="digitar" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="digitar" style="endArrow=block;html=1;" target="enviar" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="enviar" style="endArrow=block;html=1;" target="consultar" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="consultar" style="endArrow=block;html=1;" target="decide" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="decide" style="endArrow=block;html=1;" target="mostrar" value="Sim">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="decide" style="endArrow=block;html=1;" target="vazio" value="Não">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="mostrar" style="endArrow=block;html=1;" target="merge" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="vazio" style="endArrow=block;html=1;" target="merge" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="merge" style="endArrow=block;html=1;" target="end" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

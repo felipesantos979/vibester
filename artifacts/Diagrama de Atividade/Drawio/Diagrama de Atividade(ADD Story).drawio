@@ -1,0 +1,118 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="0">
+    <mxGraphModel dx="759" dy="788" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" parent="1" style="ellipse;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="345" y="7" as="geometry" />
+        </mxCell>
+        <mxCell id="3" parent="1" style="rounded=1;" value="Clicar em &quot;add story&quot;" vertex="1">
+          <mxGeometry height="50" width="140" x="290" y="67" as="geometry" />
+        </mxCell>
+        <mxCell id="4" parent="1" style="rounded=1;" value="Abrir câmera/galeria" vertex="1">
+          <mxGeometry height="50" width="180" x="270" y="147" as="geometry" />
+        </mxCell>
+        <mxCell id="5" parent="1" style="rounded=1;" value=" Capturar imagem/vídeo" vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="227" as="geometry" />
+        </mxCell>
+        <mxCell id="9" parent="1" style="rounded=1;" value=" Publicar story" vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="387" as="geometry" />
+        </mxCell>
+        <mxCell id="10" parent="1" style="rounded=1;" value=" Enviar mídia + dados" vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="467" as="geometry" />
+        </mxCell>
+        <mxCell id="11" parent="1" style="rounded=1;" value="Processar story" vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="547" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="2" target="3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="3" target="4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="4" target="5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="5">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="307" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" target="9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="357" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="9" target="10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="10" target="11">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-12" parent="1" style="rounded=1;" value=" Editar story " vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="307" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-13" parent="1" style="rounded=1;" value=" Salvar story no banco" vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="627" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-14" parent="1" style="rounded=1;" value="Retornar confirmação" vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="707" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-15" edge="1" parent="1" source="_PT1bDYaNdtXH4K1oU5a-13" target="_PT1bDYaNdtXH4K1oU5a-14">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-16" edge="1" parent="1" source="11" style="exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_PT1bDYaNdtXH4K1oU5a-13">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="587" as="sourcePoint" />
+            <mxPoint x="560" y="617" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-18" parent="1" style="rounded=1;" value=" Retornar status de sucesso" vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="787" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-19" parent="1" style="rounded=1;" value="Receber confirmação no Front" vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="867" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-20" edge="1" parent="1" target="_PT1bDYaNdtXH4K1oU5a-18">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="757" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-21" edge="1" parent="1" source="_PT1bDYaNdtXH4K1oU5a-18" target="_PT1bDYaNdtXH4K1oU5a-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-22" edge="1" parent="1" source="_PT1bDYaNdtXH4K1oU5a-17" style="exitX=0.5;exitY=1;exitDx=0;exitDy=0;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="1037" as="sourcePoint" />
+            <mxPoint x="360" y="1117" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-23" parent="1" style="rounded=1;" value=" Atualizar lista de stories" vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="947" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-24" parent="1" style="rounded=1;" value=" Exibir story publicado" vertex="1">
+          <mxGeometry height="50" width="200" x="260" y="1027" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-25" edge="1" parent="1" source="_PT1bDYaNdtXH4K1oU5a-23" target="_PT1bDYaNdtXH4K1oU5a-24">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-26" edge="1" parent="1" source="_PT1bDYaNdtXH4K1oU5a-19" style="exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="_PT1bDYaNdtXH4K1oU5a-23">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="560" y="907" as="sourcePoint" />
+            <mxPoint x="560" y="937" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-27" edge="1" parent="1" source="_PT1bDYaNdtXH4K1oU5a-24" style="exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="_PT1bDYaNdtXH4K1oU5a-17" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="1077" as="sourcePoint" />
+            <mxPoint x="360" y="1117" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="_PT1bDYaNdtXH4K1oU5a-17" parent="1" style="ellipse;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="30" width="30" x="345" y="1110" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,138 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="N7rP6E2-5B5ElyCxUr6F">
+    <mxGraphModel dx="1641" dy="819" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-1" parent="1" style="ellipse;aspect=fixed;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="394" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Visualizar evento" vertex="1">
+          <mxGeometry height="50" width="140" x="344" y="76" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="   Exibir evento " vertex="1">
+          <mxGeometry height="50" width="140" x="344" y="143" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-4" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-1" style="endArrow=block;html=1;" target="nlDey0SeUXqKIo6MeAF5-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-5" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-2" style="endArrow=block;html=1;" target="nlDey0SeUXqKIo6MeAF5-3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-6" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-3" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-7" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="414" y="207" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-7" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="Usuário deseja curtir evento? " vertex="1">
+          <mxGeometry height="80" width="160" x="335" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-8" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-7" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-14" value="Sim">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="502" y="325" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-9" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-7" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-12" value="Não">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="309" y="327" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-11" parent="1" style="ellipse;aspect=fixed;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="279" y="407" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-12" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="(continua navegação sem ação)" vertex="1">
+          <mxGeometry height="50" width="160" x="219" y="327" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-13" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-12" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-11" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="289" y="407" as="sourcePoint" />
+            <mxPoint x="289" y="422" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-14" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Acionar ação de curtir evento " vertex="1">
+          <mxGeometry height="50" width="160" x="449" y="327" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-15" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-14" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-16" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="529" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-16" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="   Enviar curtida para o backend  " vertex="1">
+          <mxGeometry height="50" width="160" x="449" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-17" edge="1" parent="1" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-18" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="529" y="441" as="sourcePoint" />
+            <mxPoint x="529" y="584" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-18" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Registrar curtida na API " vertex="1">
+          <mxGeometry height="50" width="160" x="449" y="454" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-19" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Salvar curtida no banco de dados " vertex="1">
+          <mxGeometry height="50" width="160" x="449" y="521" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-20" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-19" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-22" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="529" y="784" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-21" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="nlDey0SeUXqKIo6MeAF5-19" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-22" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="   Receber confirmação de sucesso " vertex="1">
+          <mxGeometry height="50" width="160" x="449" y="589" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-23" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-24" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-25" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="529" y="644" as="sourcePoint" />
+            <mxPoint x="529" y="787" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-24" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Retornar confirmação ao front " vertex="1">
+          <mxGeometry height="50" width="160" x="449" y="654" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-25" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Atualizar contador de curtidas " vertex="1">
+          <mxGeometry height="50" width="160" x="449" y="724" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-26" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-25" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-27" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="529" y="987" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-27" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="    Aplicar curtida na interface " vertex="1">
+          <mxGeometry height="50" width="160" x="449" y="792" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-28" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-27" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="508" y="846" as="sourcePoint" />
+            <mxPoint x="529" y="857" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-29" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-22" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-24" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="810" y="574" as="sourcePoint" />
+            <mxPoint x="689" y="584" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-30" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-18" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-19" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="709" y="484" as="sourcePoint" />
+            <mxPoint x="709" y="497" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-31" parent="1" style="ellipse;aspect=fixed;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="509" y="925" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-32" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Exibir curtida atualizada " vertex="1">
+          <mxGeometry height="50" width="160" x="449" y="858" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-33" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-32" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-31" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="529" y="956" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

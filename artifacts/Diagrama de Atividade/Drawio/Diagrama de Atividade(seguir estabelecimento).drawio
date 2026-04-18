@@ -1,0 +1,64 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Atividade UML Correta" id="0">
+    <mxGraphModel dx="1229" dy="676" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="start" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#000000;fontColor=#ffffff;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="200" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="perfil" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Acessar perfil" vertex="1">
+          <mxGeometry height="50" width="120" x="160" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="buscar" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Buscar relação" vertex="1">
+          <mxGeometry height="50" width="120" x="160" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="decide" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="Já segue?" vertex="1">
+          <mxGeometry height="80" width="120" x="160" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="criar" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Criar relação" vertex="1">
+          <mxGeometry height="50" width="140" x="300" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="remover" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Remover relação" vertex="1">
+          <mxGeometry height="50" width="140" x="40" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="merge" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="80" width="120" x="160" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="atualizar" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Atualizar status" vertex="1">
+          <mxGeometry height="50" width="140" x="160" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="end" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="210" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="start" style="endArrow=block;html=1;" target="perfil" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="perfil" style="endArrow=block;html=1;" target="buscar" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="buscar" style="endArrow=block;html=1;" target="decide" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="decide" style="endArrow=block;html=1;" target="criar" value="Não">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="decide" style="endArrow=block;html=1;" target="remover" value="Sim">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="criar" style="endArrow=block;html=1;" target="merge" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="remover" style="endArrow=block;html=1;" target="merge" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="merge" style="endArrow=block;html=1;" target="atualizar" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="atualizar" style="endArrow=block;html=1;" target="end" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
