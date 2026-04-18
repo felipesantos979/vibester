@@ -1,0 +1,164 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="RIWnkBz9v2nJCAHE3GqT">
+    <mxGraphModel dx="1641" dy="819" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-1" parent="1" style="ellipse;aspect=fixed;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="380" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Acessar tela de cadastro " vertex="1">
+          <mxGeometry height="50" width="140" x="330" y="66" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Preencher dados " vertex="1">
+          <mxGeometry height="50" width="140" x="330" y="133" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Solicitar cadastro " vertex="1">
+          <mxGeometry height="50" width="160" x="320" y="197" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-5" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-1" style="endArrow=block;html=1;" target="ZSt-Z-26OS0B_--U5eNH-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-6" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-2" style="endArrow=block;html=1;" target="ZSt-Z-26OS0B_--U5eNH-3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-7" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-3" style="endArrow=block;html=1;" target="ZSt-Z-26OS0B_--U5eNH-4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Validar campos " vertex="1">
+          <mxGeometry height="50" width="160" x="320" y="263" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-9" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="Campos válidos? " vertex="1">
+          <mxGeometry height="80" width="160" x="320" y="333" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Identificar campo inválido " vertex="1">
+          <mxGeometry height="50" width="180" x="170" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-11" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-9" style="endArrow=block;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="ZSt-Z-26OS0B_--U5eNH-15" value="Sim">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="480" y="403" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-12" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-9" style="endArrow=block;html=1;" target="ZSt-Z-26OS0B_--U5eNH-10" value="Não">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-15" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Buscar usuário no sistema   " vertex="1">
+          <mxGeometry height="50" width="160" x="447" y="448" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-17" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-8" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ZSt-Z-26OS0B_--U5eNH-9" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="350" as="sourcePoint" />
+            <mxPoint x="600" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-18" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-4" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ZSt-Z-26OS0B_--U5eNH-8" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="330" as="sourcePoint" />
+            <mxPoint x="600" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-19" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Retornar erro  " vertex="1">
+          <mxGeometry height="50" width="160" x="180" y="516" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-20" edge="1" parent="1" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ZSt-Z-26OS0B_--U5eNH-19" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="260" y="500" as="sourcePoint" />
+            <mxPoint x="460" y="603" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-21" parent="1" style="ellipse;aspect=fixed;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="240" y="585" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-22" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-19" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ZSt-Z-26OS0B_--U5eNH-21" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="310" y="610" as="sourcePoint" />
+            <mxPoint x="310" y="626" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-23" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Consultar usuário no banco  " vertex="1">
+          <mxGeometry height="50" width="160" x="447" y="514" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-24" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-23" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="727" y="601" as="sourcePoint" />
+            <mxPoint x="527" y="584" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-25" edge="1" parent="1" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ZSt-Z-26OS0B_--U5eNH-23" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="527" y="498" as="sourcePoint" />
+            <mxPoint x="727" y="601" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-26" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="Usuário já cadastrado?  " vertex="1">
+          <mxGeometry height="80" width="160" x="447" y="584" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-27" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Criptografar dados  " vertex="1">
+          <mxGeometry height="50" width="180" x="297" y="701" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-28" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-26" style="endArrow=block;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="ZSt-Z-26OS0B_--U5eNH-30" value="Sim">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="607" y="654" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-29" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-26" style="endArrow=block;html=1;" target="ZSt-Z-26OS0B_--U5eNH-27" value="Não">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-30" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Retornar erro (usuário já existe)    " vertex="1">
+          <mxGeometry height="50" width="160" x="574" y="699" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-31" edge="1" parent="1" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="387" y="751" as="sourcePoint" />
+            <mxPoint x="387" y="767" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-32" edge="1" parent="1" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="654" y="749" as="sourcePoint" />
+            <mxPoint x="654" y="765" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-34" parent="1" style="ellipse;aspect=fixed;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="634" y="765" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-36" parent="1" style="ellipse;aspect=fixed;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="367" y="1039" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-37" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Cadastrar usuário no banco " vertex="1">
+          <mxGeometry height="50" width="160" x="307" y="768" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-38" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-37" style="endArrow=block;html=1;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="387" y="835" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-39" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Confirmar cadastro " vertex="1">
+          <mxGeometry height="50" width="160" x="307" y="835" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-40" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-39" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="ZSt-Z-26OS0B_--U5eNH-41" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="387" y="925" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-41" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Retornar sucesso " vertex="1">
+          <mxGeometry height="50" width="160" x="307" y="905" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-42" edge="1" parent="1" source="ZSt-Z-26OS0B_--U5eNH-41" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="ZSt-Z-26OS0B_--U5eNH-43" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="387" y="1025" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-43" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Exibir mensagem de sucesso " vertex="1">
+          <mxGeometry height="50" width="160" x="307" y="971" as="geometry" />
+        </mxCell>
+        <mxCell id="ZSt-Z-26OS0B_--U5eNH-46" edge="1" parent="1" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="ZSt-Z-26OS0B_--U5eNH-36" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="387" y="1022" as="sourcePoint" />
+            <mxPoint x="387" y="1070" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

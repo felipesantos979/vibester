@@ -1,0 +1,199 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Página-1" id="N7rP6E2-5B5ElyCxUr6F">
+    <mxGraphModel dx="1641" dy="819" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Buscar favorito no banco de dados" vertex="1">
+          <mxGeometry height="50" width="140" x="344" y="388" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-4" edge="1" parent="1" style="endArrow=block;html=1;" target="nlDey0SeUXqKIo6MeAF5-2" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="414" y="372" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-5" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-2" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-7" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="414" y="455" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-7" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="Local já está favoritado? " vertex="1">
+          <mxGeometry height="80" width="160" x="334" y="453" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-8" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-7" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-14" value="Sim">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="501" y="568" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-9" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-7" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-12" value="Não">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="308" y="570" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-12" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Adicionar favorito" vertex="1">
+          <mxGeometry height="50" width="160" x="218" y="558" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-13" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-12" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-56" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="288" y="638" as="sourcePoint" />
+            <mxPoint x="298" y="671" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-14" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Remover favorito " vertex="1">
+          <mxGeometry height="50" width="160" x="448" y="558" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-15" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-14" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-16" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="528" y="751" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-16" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="    Deletar favorito do banco de dados  " vertex="1">
+          <mxGeometry height="50" width="160" x="448" y="621" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-17" edge="1" parent="1" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-18" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="528" y="672" as="sourcePoint" />
+            <mxPoint x="528" y="815" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-18" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Receber confirmação de remoção " vertex="1">
+          <mxGeometry height="50" width="160" x="448" y="685" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-19" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="   Retornar status &quot;favorito removido&quot; " vertex="1">
+          <mxGeometry height="50" width="160" x="448" y="752" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-20" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-19" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-22" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="528" y="1015" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-22" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&amp;nbsp;Exibir mensagem &quot;Favorito removido&quot;" vertex="1">
+          <mxGeometry height="50" width="160" x="448" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-29" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-22" style="endArrow=block;html=1;entryX=1;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-64" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="809" y="817" as="sourcePoint" />
+            <mxPoint x="528" y="897" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-30" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-18" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-19" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="708" y="715" as="sourcePoint" />
+            <mxPoint x="708" y="728" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-35" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="   Visualizar local " vertex="1">
+          <mxGeometry height="50" width="160" x="335" y="62" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-36" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-37" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-38" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="415" y="117" as="sourcePoint" />
+            <mxPoint x="415" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-37" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Exibir local " vertex="1">
+          <mxGeometry height="50" width="160" x="335" y="127" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-38" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="   Clicar em &quot;Favoritar&quot; " vertex="1">
+          <mxGeometry height="50" width="160" x="335" y="192" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-39" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-38" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-40" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="415" y="455" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-40" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="    Enviar ação de favorito para o backend " vertex="1">
+          <mxGeometry height="50" width="160" x="335" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-41" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-40" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="394" y="309" as="sourcePoint" />
+            <mxPoint x="415" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-42" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-35" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-37" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="696" y="47" as="sourcePoint" />
+            <mxPoint x="575" y="57" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-43" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Verificar status de favorito no sistema " vertex="1">
+          <mxGeometry height="50" width="160" x="335" y="321" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-44" parent="1" style="ellipse;aspect=fixed;fillColor=#000000;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="395" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-45" edge="1" parent="1" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-35" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="415" y="45" as="sourcePoint" />
+            <mxPoint x="529" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-50" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-64" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-51" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="907" y="908" as="sourcePoint" />
+            <mxPoint x="907" y="1121" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-51" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="    Atualizar ícone de favorito " vertex="1">
+          <mxGeometry height="50" width="160" x="332" y="992" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-52" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-51" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="391" y="1046" as="sourcePoint" />
+            <mxPoint x="412" y="1057" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-53" parent="1" style="ellipse;aspect=fixed;strokeWidth=3;" value="" vertex="1">
+          <mxGeometry height="40" width="40" x="392" y="1123" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-54" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Atualizar status visual na interface " vertex="1">
+          <mxGeometry height="50" width="160" x="332" y="1058" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-55" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-54" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-53" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="412" y="1156" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-56" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="    Inserir favorito no banco de dados  " vertex="1">
+          <mxGeometry height="50" width="160" x="218" y="621" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-57" edge="1" parent="1" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-58" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="298" y="672" as="sourcePoint" />
+            <mxPoint x="298" y="815" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-58" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value=" Receber confirmação de inserção " vertex="1">
+          <mxGeometry height="50" width="160" x="218" y="685" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-59" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="  Retornar status &quot;favorito adicionado&quot; " vertex="1">
+          <mxGeometry height="50" width="160" x="218" y="752" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-60" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-59" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="nlDey0SeUXqKIo6MeAF5-61" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="298" y="1015" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-61" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="Exibir mensagem &quot;Favorito adicionado&quot;" vertex="1">
+          <mxGeometry height="50" width="160" x="218" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-62" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-61" style="endArrow=block;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-64" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="579" y="817" as="sourcePoint" />
+            <mxPoint x="298" y="897" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-63" edge="1" parent="1" source="nlDey0SeUXqKIo6MeAF5-58" style="endArrow=block;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="nlDey0SeUXqKIo6MeAF5-59" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="478" y="715" as="sourcePoint" />
+            <mxPoint x="478" y="728" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="nlDey0SeUXqKIo6MeAF5-64" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="80" width="160" x="332" y="896" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
