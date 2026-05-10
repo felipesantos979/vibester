@@ -16,10 +16,12 @@ model Access {
   id           String   @id @default(uuid())
   accountId    String   @unique
   username     String   @unique
-  email        String   @unique
-  passwordHash String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  email                String    @unique
+  passwordHash         String
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   @@map("accesses")
 }

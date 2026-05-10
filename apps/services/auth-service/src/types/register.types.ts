@@ -28,3 +28,12 @@ export interface LoginOutputInterface {
     token: string;
     accountId: string;
 }
+
+export interface RecoverPasswordInput {
+    email: string;
+}
+
+export interface ResetPasswordInput {
+    token: string;
+    password: string;
+}
