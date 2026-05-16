@@ -1,0 +1,23 @@
+# Ambiente virtual
+.venv/
+
+# Variáveis de ambiente
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Debug e testes
+debug_*.png
+debug_*.txt
+debug_*.html
+resposta_*.json
+google_cookies.json
+
+# VS Code
+.vscode/
+
+# Logs
+*.log

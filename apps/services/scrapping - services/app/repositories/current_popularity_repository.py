@@ -2,18 +2,10 @@ class CurrentPopularityRepository:
     def __init__(self, db):
         self.db = db
 
-    def save(self, place_id, popularity):
+    def save(self, place_id, busyness_score, status_text, time_spent, is_estimated=False):
         self.db.cursor.execute("""
-            INSERT INTO current_popularity (place_id, popularity)
-            VALUES (?, ?)
-        """, (place_id, popularity))
-        self.db.conn.commit()
-
-    def get_latest(self, place_id):
-        self.db.cursor.execute("""
-            SELECT TOP 1 popularity, captured_at
-            FROM current_popularity
-            WHERE place_id = ?
-            ORDER BY captured_at DESC
-        """, (place_id,))
-        return self.db.cursor.fetchone()
+            INSERT INTO current_popularity
+                (place_id, busyness_score, status_text, time_spent, is_estimated)
+            VALUES (?, ?, ?, ?, ?)
+        """, (place_id, busyness_score, status_text, time_spent, is_estimated))
+        self.db.commit()
