@@ -33,6 +33,12 @@ def buscar_popularity(place_id):
         popular = place.get("popular_times", {})
 
         if not popular:
+            error = result.get("error")
+            if error:
+                print(f"  [DEBUG] SerpAPI error: {error}")
+            else:
+                print(f"  [DEBUG] place_results keys: {list(place.keys())}")
+                print(f"  [DEBUG] popular_times ausente na resposta")
             return None
 
         current_day_str = popular.get("current_day")

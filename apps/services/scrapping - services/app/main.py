@@ -44,6 +44,7 @@ def buscar_lugares_google(api_key, tipo, lat=-23.4205, lng=-51.9333, radius=5000
         data = response.json()
 
         if data.get("status") != "OK":
+            print(f"  [DEBUG] Google Places status: {data.get('status')} - {data.get('error_message', '')}")
             break
 
         for item in data.get("results", []):
