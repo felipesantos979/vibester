@@ -1,8 +1,10 @@
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place_model.dart';
 import 'package:mobile/screens/place_detail_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/place_card.dart';
+import 'package:mobile/widgets/search_bar.dart';
 
 class HotPlacesScreen extends StatefulWidget {
   const HotPlacesScreen({super.key});
@@ -165,13 +167,33 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
     ),
   ];
 
+  final TextEditingController pesquisaController = TextEditingController();
+  List<PlaceModel> listaFiltrada = [];
+
+  @override
+  void initState() {
+    super.initState();
+    listaFiltrada = List.from(places);
+  }
+
+  void pesquisaPlaces() {
+    final query = removeDiacritics(pesquisaController.text.toUpperCase());
+    listaFiltrada = places
+        .where(
+          (place) =>
+              removeDiacritics(place.nome.toUpperCase()).contains(query) ||
+              removeDiacritics(place.categoria.toUpperCase()).contains(query),
+        )
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        itemCount: places.length + 1,
+        itemCount: listaFiltrada.isEmpty ? 2 : listaFiltrada.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Padding(
@@ -203,18 +225,57 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  CustomSearchBar(
+                    controller: pesquisaController,
+                    onChanged: () {
+                      pesquisaPlaces();
+                      setState(() {});
+                    },
+                  ),
                 ],
               ),
             );
           }
+
+          if (listaFiltrada.isEmpty) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 120),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.search_off,
+                    color: Color(colorAmbar).withAlpha(200),
+                    size: 64,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Nenhum lugar encontrado',
+                    style: TextStyle(
+                      color: Colors.white38,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Tente buscar por outro nome ou categoria',
+                    style: TextStyle(color: Colors.white24, fontSize: 13),
+                  ),
+                ],
+              ),
+            );
+          }
+
           return PlaceCard(
-            place: places[index - 1],
+            place: listaFiltrada[index - 1],
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      PlaceDetailScreen(place: places[index - 1]),
+                      PlaceDetailScreen(place: listaFiltrada[index - 1]),
                 ),
               );
             },
