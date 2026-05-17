@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/screens/user_interests_screen.dart';
+import 'package:mobile/screens/user/user_interests_screen.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/date_picker_field.dart';
-import 'package:mobile/widgets/editing_avatar.dart';
-import 'package:mobile/widgets/primary_button.dart';
-import 'package:mobile/widgets/primary_text_field.dart';
+import 'package:mobile/utils/date_picker_field.dart';
+import 'package:mobile/widgets/cards/editing_avatar.dart';
+import 'package:mobile/widgets/buttons/primary_button.dart';
+import 'package:mobile/widgets/text-field/primary_text_field.dart';
 
 class ProfileEditingScreen extends StatefulWidget {
   const ProfileEditingScreen({super.key});

@@ -1,10 +1,10 @@
 import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
-import 'package:mobile/models/place_model.dart';
-import 'package:mobile/screens/place_detail_screen.dart';
+import 'package:mobile/models/place/place_model.dart';
+import 'package:mobile/screens/places/place_detail_screen.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/place_card.dart';
-import 'package:mobile/widgets/search_bar.dart';
+import 'package:mobile/widgets/cards/place_card.dart';
+import 'package:mobile/utils/search_bar.dart';
 
 class HotPlacesScreen extends StatefulWidget {
   const HotPlacesScreen({super.key});

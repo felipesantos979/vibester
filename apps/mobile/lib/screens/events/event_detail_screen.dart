@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/widgets/map.dart' as map_widget;
+import 'package:mobile/widgets/cards/map.dart' as map_widget;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/models/event_model.dart';
-import 'package:mobile/widgets/lineup_indicator.dart';
-import 'package:mobile/widgets/secundary_button.dart';
-import 'package:mobile/widgets/tertiary_button.dart';
-import '../utils/colors.dart';
+import 'package:mobile/models/event/event_model.dart';
+import 'package:mobile/widgets/indicators/lineup_indicator.dart';
+import 'package:mobile/widgets/buttons/secundary_button.dart';
+import 'package:mobile/widgets/buttons/tertiary_button.dart';
+import '../../utils/colors.dart';
 import 'package:intl/intl.dart';
 
 class EventDetailScreen extends StatefulWidget {

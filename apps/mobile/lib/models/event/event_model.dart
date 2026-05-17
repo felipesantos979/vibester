@@ -1,4 +1,4 @@
-import 'package:mobile/models/lineup_model.dart';
+import 'package:mobile/models/event/lineup_model.dart';
 
 class EventModel {
   final DateTime dataDoEvento;
@@ -16,6 +16,6 @@ class EventModel {
     required this.categoria,
     required this.localizacao,
     required this.informacoes,
-    required this.artistas
+    required this.artistas,
   });
 }

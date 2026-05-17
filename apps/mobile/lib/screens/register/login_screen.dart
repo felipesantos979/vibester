@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/screens/email_confirm_screen.dart';
+import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/primary_button.dart';
+import 'package:mobile/widgets/buttons/primary_button.dart';
+import 'package:mobile/screens/register/recover_password_screen.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,13 +22,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Center(
             child: SizedBox(
               width: 130,
-              height: 265,
+              height: 300,
               child: Image.asset('assets/img/mascote.png'),
             ),
           ),
 
           Text(
-            'Criar conta',
+            'Entrar com e-mail',
             style: GoogleFonts.inter(
               color: Colors.white,
               fontSize: 32,
@@ -35,63 +36,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
           ),
           Text(
-            'Preencha seus dados para começar',
+            'Digite suas credenciais de acesso',
             style: GoogleFonts.inter(color: Color(colorGrey)),
           ),
 
-          SizedBox(height: 15),
+          SizedBox(height: 30),
 
           Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(right: 280, bottom: 10),
+                padding: const EdgeInsets.only(right: 220, bottom: 10),
                 child: Text(
-                  'USUÁRIO',
-                  style: GoogleFonts.inter(
-                    color: Color(colorGrey),
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 350,
-                height: 60,
-                child: TextFormField(
-                  style: TextStyle(color: Colors.white),
-                  cursorColor: Color(colorAmbar),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color(0xFF141414),
-                    prefixIcon: Icon(Icons.person),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      borderSide: BorderSide(color: Color(colorAmbar)),
-                    ),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Campo obrigatório!';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: 10),
-
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 280, bottom: 10),
-                child: Text(
-                  'E-MAIL',
+                  'E-MAIL OU USUÁRIO',
                   style: GoogleFonts.inter(
                     color: Color(colorGrey),
                     fontWeight: FontWeight.bold,
@@ -187,10 +143,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => EmailConfirmScreen(),
+                          builder: (context) => const HomeScreen(),
                         ),
                       );
                     },
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(top: 90),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RecoverPasswordScreen(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Esqueci minha senha',
+                    style: GoogleFonts.inter(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),

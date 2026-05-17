@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/widgets/divider.dart';
+import 'package:mobile/utils/divider.dart';
 
 class PlaceStatsBar extends StatelessWidget {
   final String seguidores;
