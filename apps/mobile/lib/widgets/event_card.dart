@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile/models/event_model.dart';
 import 'package:mobile/utils/colors.dart';
 
@@ -45,18 +46,21 @@ class EventCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${event.dataDoEvento.day}/${event.dataDoEvento.month}/${event.dataDoEvento.year}',
+                      DateFormat(
+                        "EEE dd MMM  HH:mm",
+                        "pt_BR",
+                      ).format(event.dataDoEvento).toUpperCase(),
                       style: TextStyle(
                         color: Color(colorBrasa),
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      event.titulo,
+                      event.titulo.toUpperCase(),
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 25,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -78,13 +82,13 @@ class EventCard extends StatelessWidget {
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: Color(colorAmbar),
+                        color: Color(colorBrasa),
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.circle, color: Colors.white, size: 24),
+                          Icon(Icons.info, color: Colors.white, size: 24),
                           SizedBox(width: 8),
                           Text(
                             "MAIS INFORMAÇÕES",

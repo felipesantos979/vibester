@@ -238,7 +238,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 const SizedBox(height: 16),
 
                 //Botão de "GARANTIR INGRESSO" (add função posteriormente)
-                SecundaryButton(label: "Garantir Ingresso", onPressed: () {}),
+                SecundaryButton(
+                  label: "GARANTIR INGRESSO",
+                  icon: Icons.local_activity,
+                  onPressed: () {},
+                ),
               ],
             ),
           ),

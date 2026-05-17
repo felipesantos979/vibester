@@ -5,8 +5,14 @@ import 'package:mobile/utils/colors.dart';
 class SecundaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
+  final IconData? icon;
 
-  const SecundaryButton({super.key, required this.label, required this.onPressed});
+  const SecundaryButton({
+    super.key,
+    this.icon,
+    required this.label,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +33,19 @@ class SecundaryButton extends StatelessWidget {
           onPressed();
         },
 
-        child: Text(
-          label,
-          style: GoogleFonts.inter(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: Colors.white),
+            SizedBox(width: 8),
+            Text(
+              label,
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
         ),
       ),
     );
