@@ -242,8 +242,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               ],
             ),
           ),
-          //===============================================================================
 
+          //===============================================================================
           const SizedBox(height: 20),
 
           //Line-up com artistas (Criar uma linha com os icones de perfil dos artistas envolvidos)
@@ -303,21 +303,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           //===============================================================================
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    widget.eventModel.informacoes,
-                    textAlign: TextAlign.left,
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              ],
+            child: Text(
+              widget.eventModel.informacoes,
+              textAlign: TextAlign.left,
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
             ),
           ),
 
@@ -344,7 +337,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                 const SizedBox(height: 10),
 
-                //exemplo de mapa (ta ruim pra pora! arumar depois)
                 map_widget.Map(
                   latitude: -23.4205,
                   longitude: -51.9333,
