@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/models/place_model.dart';
-import 'package:mobile/screens/event_list_screen.dart';
+import 'package:mobile/models/place/place_model.dart';
+import 'package:mobile/screens/events/event_list_screen.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/category_indicator.dart';
-import 'package:mobile/widgets/divider.dart';
-import 'package:mobile/widgets/place_stats_bar.dart';
-import 'package:mobile/widgets/primary_button.dart';
+import 'package:mobile/widgets/indicators/category_indicator.dart';
+import 'package:mobile/utils/divider.dart';
+import 'package:mobile/widgets/indicators/place_stats_bar.dart';
+import 'package:mobile/widgets/buttons/primary_button.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
   final PlaceModel place;

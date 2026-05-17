@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/models/place_model.dart';
+import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/category_indicator.dart';
-import 'package:mobile/widgets/movement_indicator.dart';
-import 'package:mobile/widgets/price_indicator.dart';
+import 'package:mobile/widgets/indicators/category_indicator.dart';
+import 'package:mobile/widgets/indicators/movement_indicator.dart';
+import 'package:mobile/widgets/indicators/price_indicator.dart';
 
 class PlaceCard extends StatelessWidget {
   final PlaceModel place;

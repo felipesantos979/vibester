@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile/models/event_model.dart';
+import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/utils/colors.dart';
 
 class EventCard extends StatelessWidget {

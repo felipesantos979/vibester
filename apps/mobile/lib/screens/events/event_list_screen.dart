@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/models/event_model.dart';
-import 'package:mobile/models/lineup_model.dart';
-import 'package:mobile/screens/event_detail_screen.dart';
+import 'package:mobile/models/event/event_model.dart';
+import 'package:mobile/models/event/lineup_model.dart';
+import 'package:mobile/screens/events/event_detail_screen.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/event_card.dart';
+import 'package:mobile/widgets/cards/event_card.dart';
 
 class EventListScreen extends StatefulWidget {
   const EventListScreen({super.key});

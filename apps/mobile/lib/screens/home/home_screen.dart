@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/screens/hot_places_screen.dart';
+import 'package:mobile/screens/places/hot_places_screen.dart';
 import 'package:mobile/utils/colors.dart';
 
 class HomeScreen extends StatefulWidget {

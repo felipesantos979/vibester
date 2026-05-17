@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/screens/login_screen.dart';
-import 'package:mobile/screens/register_screen.dart';
+import 'package:mobile/screens/register/login_screen.dart';
+import 'package:mobile/screens/register/register_screen.dart';
 import 'package:mobile/utils/colors.dart';
 
 class InitialScreen extends StatefulWidget {

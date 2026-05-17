@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/models/lineup_model.dart';
+import 'package:mobile/models/event/lineup_model.dart';
 import 'package:mobile/utils/colors.dart';
 
 class LineupIndicator extends StatelessWidget {
