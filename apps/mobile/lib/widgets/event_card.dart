@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/event_model.dart';
+import 'package:mobile/utils/colors.dart';
 
 class EventCard extends StatelessWidget {
   final EventModel event;
@@ -12,7 +13,6 @@ class EventCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
 
-
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -22,7 +22,6 @@ class EventCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              
               //trocar pra imagem que vai vir do banco dps
               Placeholder(),
 
@@ -32,10 +31,7 @@ class EventCard extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withAlpha(220),
-                    ],
+                    colors: [Colors.transparent, Colors.black.withAlpha(220)],
                   ),
                 ),
               ),
@@ -49,27 +45,62 @@ class EventCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
+                      '${event.dataDoEvento.day}/${event.dataDoEvento.month}/${event.dataDoEvento.year}',
+                      style: TextStyle(
+                        color: Color(colorBrasa),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
                       event.titulo,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
+                        fontSize: 25,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     SizedBox(height: 4),
                     Text(
                       event.artistas,
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     SizedBox(height: 4),
-                    Text(
-                      '${event.dataDoEvento.day}/${event.dataDoEvento.month}/${event.dataDoEvento.year}',
-                      style: TextStyle(color: Colors.white54, fontSize: 12),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Color(colorAmbar),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.circle, color: Colors.white, size: 24),
+                          SizedBox(width: 8),
+                          Text(
+                            "MAIS INFORMAÇÕES",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-
             ],
           ),
         ),

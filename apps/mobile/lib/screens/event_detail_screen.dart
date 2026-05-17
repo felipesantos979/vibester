@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:mobile/widgets/map.dart' as map_widget;
 import 'package:google_fonts/google_fonts.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:mobile/models/event_model.dart';
 import 'package:mobile/widgets/lineup_indicator.dart';
 import 'package:mobile/widgets/secundary_button.dart';
@@ -49,7 +48,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       },
                       icon: const Icon(
                         Icons.arrow_back_ios_new,
-                        color: Color(colorBrasa),
+                        color: Color(colorAmbar),
                       ),
                     ),
                   ),
@@ -85,16 +84,15 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       color: const Color(colorDarkGrey).withOpacity(0.4),
                       borderRadius: BorderRadius.circular(30),
                       border: Border.all(
-                        color: const Color(colorBrasa),
+                        color: const Color(colorAmbar),
                         width: 1.5,
                       ),
                     ),
 
                     child: Text(
-                      //////
                       widget.eventModel.categoria,
                       style: GoogleFonts.inter(
-                        color: const Color(colorBrasa),
+                        color: const Color(colorAmbar),
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                         letterSpacing: 4,
@@ -137,117 +135,116 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
 
-            child: SizedBox(
-              height: size.height * 0.30,
-              child: Column(
-                children: [
-                  const SizedBox(height: 5),
+            child: Column(
+              children: [
+                const SizedBox(height: 5),
 
-                  //Caixa com infos basicas sobre o evento (trocar infos fixas por variaveis posteriormente)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-
-                    decoration: BoxDecoration(
-                      color: Color(colorNavy),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-
-                    child: Row(
-                      children: [
-                        // DATA
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'DATA & HORA',
-                                style: GoogleFonts.inter(
-                                  color: Color(colorGrey),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-
-                              const SizedBox(height: 6),
-
-                              Text(
-                                DateFormat(
-                                  "EEE dd MMM  HH:mm",
-                                  "pt_BR",
-                                ).format(widget.eventModel.dataDoEvento),
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Linha central de divisoria
-                        Container(width: 1, height: 40, color: Colors.white12),
-
-                        const SizedBox(width: 20),
-
-                        //Coluna de localização
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              //Texto imutavel
-                              Text(
-                                'LOCALIZAÇÃO',
-                                style: GoogleFonts.inter(
-                                  color: Color(colorGrey),
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-
-                              const SizedBox(height: 6),
-
-                              //Futura variavel
-                              Text(
-                                widget.eventModel.localizacao,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                //Caixa com infos basicas sobre o evento (trocar infos fixas por variaveis posteriormente)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
                   ),
 
-                  //Espaçamento entre itens
-                  const SizedBox(height: 16),
-
-                  Column(
-                    //Criar efeitp de confirmados e add o coração de curtida
+                  decoration: BoxDecoration(
+                    color: Color(colorNavy),
+                    borderRadius: BorderRadius.circular(20),
                   ),
 
-                  //Espaçamento entre itens
-                  const SizedBox(height: 16),
+                  child: Row(
+                    children: [
+                      // DATA
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'DATA & HORA',
+                              style: GoogleFonts.inter(
+                                color: Color(colorGrey),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
 
-                  //Botão de "VOU IR" (add função posteriormente)
-                  TertiaryButton(label: "VOU IR", onPressed: (){}),
+                            const SizedBox(height: 6),
 
-                  //Espaçamento entre itens
-                  const SizedBox(height: 16),
+                            Text(
+                              DateFormat(
+                                "EEE dd MMM  HH:mm",
+                                "pt_BR",
+                              ).format(widget.eventModel.dataDoEvento),
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
-                  //Botão de "GARANTIR INGRESSO" (add função posteriormente)
-                  SecundaryButton(label: "Garantir Ingresso", onPressed: (){})
-                ],
-              ),
+                      // Linha central de divisoria
+                      Container(width: 1, height: 40, color: Colors.white12),
+
+                      const SizedBox(width: 20),
+
+                      //Coluna de localização
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            //Texto imutavel
+                            Text(
+                              'LOCALIZAÇÃO',
+                              style: GoogleFonts.inter(
+                                color: Color(colorGrey),
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                            const SizedBox(height: 6),
+
+                            //Futura variavel
+                            Text(
+                              widget.eventModel.localizacao,
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                //Espaçamento entre itens
+                const SizedBox(height: 16),
+
+                Column(
+                  //Criar efeitp de confirmados e add o coração de curtida
+                ),
+
+                //Espaçamento entre itens
+                const SizedBox(height: 16),
+
+                //Botão de "VOU IR" (add função posteriormente)
+                TertiaryButton(label: "VOU IR", onPressed: () {}),
+
+                //Espaçamento entre itens
+                const SizedBox(height: 16),
+
+                //Botão de "GARANTIR INGRESSO" (add função posteriormente)
+                SecundaryButton(label: "Garantir Ingresso", onPressed: () {}),
+              ],
             ),
           ),
           //===============================================================================
+
+          const SizedBox(height: 20),
 
           //Line-up com artistas (Criar uma linha com os icones de perfil dos artistas envolvidos)
           //===============================================================================
@@ -255,8 +252,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 10, right: 294, bottom: 15),
+                Align(
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     "Line-up",
                     style: GoogleFonts.inter(
@@ -268,10 +265,12 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 ),
 
                 //Lista de line-ups
-                LineupIndicator(),
+                const SizedBox(height: 10),
+                LineupIndicator(lineup: widget.eventModel.lineUp),
+                const SizedBox(height: 10),
 
-                Padding(
-                  padding: EdgeInsets.only(top: 15, right: 220, bottom: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     "Sobre o Evento",
                     style: GoogleFonts.inter(
@@ -281,8 +280,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     ),
                   ),
                 ),
-                Padding(
-                  padding: EdgeInsets.only(top: 1, right: 217, bottom: 30),
+                const SizedBox(height: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     "Informações importantes",
                     style: GoogleFonts.inter(
@@ -297,6 +297,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           ),
 
           //===============================================================================
+          const SizedBox(height: 20),
 
           //Sobre o evento (Caixa de descrições ajustavel ao tamanho da descrição)
           //===============================================================================
@@ -319,9 +320,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               ],
             ),
           ),
-          //===============================================================================
 
-          //const SizedBox(height: 30),
+          //===============================================================================
+          const SizedBox(height: 30),
 
           //Localização e link pro maps
           //===============================================================================
@@ -329,10 +330,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 30, right: 220, bottom: 10),
+                Align(
+                  alignment: Alignment.centerLeft,
                   child: Text(
-                    "Sobre o Evento",
+                    "Localização",
                     style: GoogleFonts.inter(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -340,44 +341,20 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     ),
                   ),
                 ),
-                ////////////////////////////////////////////////////////////
-  
+
+                const SizedBox(height: 10),
+
                 //exemplo de mapa (ta ruim pra pora! arumar depois)
-                SizedBox(
-                  height: 150,
-                  child: FlutterMap(
-                    options: MapOptions(
-                      initialCenter: LatLng(
-                        -23.4205,
-                        -51.9333,
-                      ), // coordenadas do evento
-                      initialZoom: 15,
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate:
-                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      ),
-                      MarkerLayer(
-                        markers: [
-                          Marker(
-                            point: LatLng(-23.4205, -51.9333),
-                            child: Icon(
-                              Icons.location_pin,
-                              color: Colors.red,
-                              size: 40,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                map_widget.Map(
+                  latitude: -23.4205,
+                  longitude: -51.9333,
+                  localizacao: widget.eventModel.localizacao,
                 ),
 
+                const SizedBox(height: 8),
 
-                /////////////////////////////////////////////////////////////
-                Padding(
-                  padding: EdgeInsets.only(top: 1, right: 217, bottom: 30),
+                Align(
+                  alignment: Alignment.centerLeft,
                   child: Text(
                     widget.eventModel.localizacao,
                     style: GoogleFonts.inter(

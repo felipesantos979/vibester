@@ -16,7 +16,7 @@ class TertiaryButton extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: Color(colorNavy),
-          side: BorderSide(color: Color(colorBrasa), width: 1),
+          side: BorderSide(color: Color(colorAmbar), width: 1),
 
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
