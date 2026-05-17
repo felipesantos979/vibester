@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:mobile/models/event_model.dart';
+import 'package:mobile/widgets/lineup_indicator.dart';
+import 'package:mobile/widgets/secundary_button.dart';
+import 'package:mobile/widgets/tertiary_button.dart';
 import '../utils/colors.dart';
-//import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class EventDetailScreen extends StatefulWidget {
-  const EventDetailScreen({super.key, required EventModel event});
+  final EventModel eventModel;
+
+  const EventDetailScreen({super.key, required this.eventModel});
 
   @override
   State<EventDetailScreen> createState() => _EventDetailScreenState();
@@ -24,18 +31,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           //Header, imagem e título
           //===============================================================================
           SizedBox(
-            height: size.height * 0.42,
+            height: size.height * 0.41,
             child: Stack(
               children: [
                 //Imagen ocupando todo o espaço desse SizedBox
-                Positioned.fill(
-                  child: Image.network(
-
-                    //Trocar URL por variavel com imagem pega da API
-                    'https://img.tribunahoje.com/E78VBhgfhxsCQoOHZfbjl-M5nLY=/840x520/smart/s3.tribunahoje.com/uploads/imagens/livinho-800x450jpg.avif',
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                Positioned.fill(child: Placeholder()),
 
                 //Botão de voltar
                 Positioned(
@@ -70,10 +70,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   ),
                 ),
 
-                //Tipo de evemto
+                //Tipo de evento
                 Positioned(
                   left: 16,
-                  bottom: 70,
+                  bottom: 65,
 
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -91,11 +91,12 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     ),
 
                     child: Text(
-                      'SHOW',
+                      //////
+                      widget.eventModel.categoria,
                       style: GoogleFonts.inter(
                         color: const Color(colorBrasa),
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: 16,
                         letterSpacing: 4,
 
                         //possivel sombra (teste)
@@ -111,13 +112,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 Positioned(
                   left: 16,
                   right: 16,
-                  bottom: 5,
+                  bottom: 2,
                   child: Text(
-                    'Fazer Faltar',
+                    widget.eventModel.titulo,
                     style: GoogleFonts.inter(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 45,
+                      fontSize: 41,
 
                       //possivel sombra (teste)
                       shadows: [Shadow(color: Colors.white, blurRadius: 4)],
@@ -127,7 +128,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               ],
             ),
           ),
+
           //===============================================================================
+          const SizedBox(height: 3),
 
           //Infos basicas e botões de "Vou ir" e "Garantir ingresso"
           //===============================================================================
@@ -138,7 +141,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               height: size.height * 0.30,
               child: Column(
                 children: [
-                  
                   const SizedBox(height: 5),
 
                   //Caixa com infos basicas sobre o evento (trocar infos fixas por variaveis posteriormente)
@@ -173,7 +175,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                               const SizedBox(height: 6),
 
                               Text(
-                                'Sáb, 28 Mar • 17:00',
+                                DateFormat(
+                                  "EEE dd MMM  HH:mm",
+                                  "pt_BR",
+                                ).format(widget.eventModel.dataDoEvento),
                                 style: GoogleFonts.inter(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -193,7 +198,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-
                               //Texto imutavel
                               Text(
                                 'LOCALIZAÇÃO',
@@ -208,7 +212,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                               //Futura variavel
                               Text(
-                                'Paraná Expo - Maringá, PR',
+                                widget.eventModel.localizacao,
                                 style: GoogleFonts.inter(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -225,73 +229,20 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   const SizedBox(height: 16),
 
                   Column(
-
                     //Criar efeitp de confirmados e add o coração de curtida
-
                   ),
 
                   //Espaçamento entre itens
                   const SizedBox(height: 16),
 
                   //Botão de "VOU IR" (add função posteriormente)
-                  SizedBox(
-                    width: double.infinity,
-                    height: 60,
-
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(colorNavy),
-                        side: BorderSide(color: Color(colorBrasa), width: 1),
-
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-
-                      onPressed: () {
-                        //Ação
-                      },
-
-                      child: Text(
-                        'VOU IR',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                  TertiaryButton(label: "VOU IR", onPressed: (){}),
 
                   //Espaçamento entre itens
                   const SizedBox(height: 16),
 
                   //Botão de "GARANTIR INGRESSO" (add função posteriormente)
-                  SizedBox(
-                    width: double.infinity,
-                    height: 60,
-
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(colorBrasa),
-
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-
-                      onPressed: () {
-                        //Ação
-                      },
-
-                      child: Text(
-                        'GARANTIR INGRESSO',
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                  SecundaryButton(label: "Garantir Ingresso", onPressed: (){})
                 ],
               ),
             ),
@@ -304,27 +255,73 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                Placeholder(
-                  //add...
-                )
-              ]
+                Padding(
+                  padding: EdgeInsets.only(top: 10, right: 294, bottom: 15),
+                  child: Text(
+                    "Line-up",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+
+                //Lista de line-ups
+                LineupIndicator(),
+
+                Padding(
+                  padding: EdgeInsets.only(top: 15, right: 220, bottom: 10),
+                  child: Text(
+                    "Sobre o Evento",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 1, right: 217, bottom: 30),
+                  child: Text(
+                    "Informações importantes",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
+
           //===============================================================================
 
           //Sobre o evento (Caixa de descrições ajustavel ao tamanho da descrição)
           //===============================================================================
-         Padding(
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                Placeholder(
-                  //add...
-                )
-              ]
+                SizedBox(
+                  width: double.infinity,
+                  child: Text(
+                    widget.eventModel.informacoes,
+                    textAlign: TextAlign.left,
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           //===============================================================================
+
+          //const SizedBox(height: 30),
 
           //Localização e link pro maps
           //===============================================================================
@@ -332,10 +329,65 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                Placeholder(
-                  //add...
-                )
-              ]
+                Padding(
+                  padding: EdgeInsets.only(top: 30, right: 220, bottom: 10),
+                  child: Text(
+                    "Sobre o Evento",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                ////////////////////////////////////////////////////////////
+  
+                //exemplo de mapa (ta ruim pra pora! arumar depois)
+                SizedBox(
+                  height: 150,
+                  child: FlutterMap(
+                    options: MapOptions(
+                      initialCenter: LatLng(
+                        -23.4205,
+                        -51.9333,
+                      ), // coordenadas do evento
+                      initialZoom: 15,
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      ),
+                      MarkerLayer(
+                        markers: [
+                          Marker(
+                            point: LatLng(-23.4205, -51.9333),
+                            child: Icon(
+                              Icons.location_pin,
+                              color: Colors.red,
+                              size: 40,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+
+                /////////////////////////////////////////////////////////////
+                Padding(
+                  padding: EdgeInsets.only(top: 1, right: 217, bottom: 30),
+                  child: Text(
+                    widget.eventModel.localizacao,
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           //===============================================================================
