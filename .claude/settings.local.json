@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose *)",
+      "Bash(C:/Users/felip/AppData/Local/Programs/Python/Python312/python.exe -c \"from database.connection import Database; db = Database\\(\\); print\\('OK'\\)\")",
+      "Bash(curl -s http://localhost:8001/places)"
+    ]
+  }
+}

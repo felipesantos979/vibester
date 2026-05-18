@@ -5,7 +5,7 @@ class PlaceHoursRepository:
         self.db = db
 
     def save(self, place_id, periods):
-        self.db.cursor.execute("DELETE FROM place_hours WHERE place_id = ?", (place_id,))
+        self.db.cursor.execute("DELETE FROM place_hours WHERE place_id = %s", (place_id,))
 
         for period in periods:
             open_day = period.get("open", {}).get("day")
@@ -15,7 +15,7 @@ class PlaceHoursRepository:
             if open_day is not None and open_time:
                 self.db.cursor.execute("""
                     INSERT INTO place_hours (place_id, day_of_week, open_time, close_time)
-                    VALUES (?, ?, ?, ?)
+                    VALUES (%s, %s, %s, %s)
                 """, (place_id, open_day, open_time, close_time))
 
         self.db.commit()
@@ -29,7 +29,7 @@ class PlaceHoursRepository:
             SELECT p.place_id, p.name
             FROM places p
             INNER JOIN place_hours ph ON p.place_id = ph.place_id
-            WHERE ph.day_of_week = ?
+            WHERE ph.day_of_week = %s
         """, (google_day,))
 
         rows = self.db.cursor.fetchall()
@@ -39,7 +39,7 @@ class PlaceHoursRepository:
             self.db.cursor.execute("""
                 SELECT open_time, close_time
                 FROM place_hours
-                WHERE place_id = ? AND day_of_week = ?
+                WHERE place_id = %s AND day_of_week = %s
             """, (place_id, google_day))
 
             horario = self.db.cursor.fetchone()

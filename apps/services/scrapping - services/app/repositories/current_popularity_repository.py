@@ -6,6 +6,6 @@ class CurrentPopularityRepository:
         self.db.cursor.execute("""
             INSERT INTO current_popularity
                 (place_id, busyness_score, status_text, time_spent, is_estimated)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s, %s)
         """, (place_id, busyness_score, status_text, time_spent, is_estimated))
         self.db.commit()

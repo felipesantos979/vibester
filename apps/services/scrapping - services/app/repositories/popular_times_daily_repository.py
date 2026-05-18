@@ -7,14 +7,14 @@ class PopularTimesDailyRepository:
     def save(self, place_id, captured_date, day_of_week, hours_data):
         self.db.cursor.execute("""
             DELETE FROM popular_times_daily
-            WHERE place_id = ? AND captured_date = ?
+            WHERE place_id = %s AND captured_date = %s
         """, (place_id, captured_date))
 
         for hora in hours_data:
             self.db.cursor.execute("""
                 INSERT INTO popular_times_daily
                     (place_id, captured_date, day_of_week, hour, busyness_score, is_current, status_text)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
                 place_id,
                 captured_date,
@@ -30,7 +30,7 @@ class PopularTimesDailyRepository:
     def limpar_antigos(self):
         limite = date.today() - timedelta(days=14)
         self.db.cursor.execute("""
-            DELETE FROM popular_times_daily WHERE captured_date < ?
+            DELETE FROM popular_times_daily WHERE captured_date < %s
         """, (limite,))
         self.db.commit()
 
@@ -38,7 +38,7 @@ class PopularTimesDailyRepository:
         self.db.cursor.execute("""
             SELECT hour, AVG(busyness_score) as media
             FROM popular_times_daily
-            WHERE place_id = ? AND day_of_week = ?
+            WHERE place_id = %s AND day_of_week = %s
             GROUP BY hour
             ORDER BY hour
         """, (place_id, day_of_week))

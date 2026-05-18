@@ -1,4 +1,3 @@
-# repositories/place_repository.py
 from models.place import Place
 
 class PlaceRepository:
@@ -7,24 +6,20 @@ class PlaceRepository:
 
     def save(self, place):
         self.db.cursor.execute("""
-            IF NOT EXISTS (SELECT 1 FROM places WHERE place_id = ?)
-                INSERT INTO places (name, place_id, lat, lng, rating, address, city, state)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ELSE
-                UPDATE places SET
-                    name = ?,
-                    lat = ?,
-                    lng = ?,
-                    rating = ?,
-                    address = ?,
-                    city = ?,
-                    state = ?,
-                    updated_at = GETDATE()
-                WHERE place_id = ?
+            INSERT INTO places (name, place_id, lat, lng, rating, address, city, state)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (place_id) DO UPDATE SET
+                name = EXCLUDED.name,
+                lat = EXCLUDED.lat,
+                lng = EXCLUDED.lng,
+                rating = EXCLUDED.rating,
+                address = EXCLUDED.address,
+                city = EXCLUDED.city,
+                state = EXCLUDED.state,
+                updated_at = NOW()
         """, (
-            place.place_id,
-            place.name, place.place_id, place.lat, place.lng, place.rating, place.address, place.city, place.state,
-            place.name, place.lat, place.lng, place.rating, place.address, place.city, place.state, place.place_id
+            place.name, place.place_id, place.lat, place.lng,
+            place.rating, place.address, place.city, place.state
         ))
         self.db.commit()
 
