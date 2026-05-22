@@ -29,8 +29,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(colorDarkGrey),
+      backgroundColor: Colors.transparent,
       body: _screens[_currentIndex],
+      extendBody: true,
       bottomNavigationBar: CustomNavbar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),

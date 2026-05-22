@@ -29,9 +29,9 @@ class CustomNavbar extends StatelessWidget {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 16),
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 10),
         child: Container(
-          height: 70,
+          height: 50,
           decoration: BoxDecoration(
             color: const Color(colorNoturno),
             borderRadius: BorderRadius.circular(50),
@@ -58,8 +58,8 @@ class CustomNavbar extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 250),
                   curve: Curves.easeInOut,
-                  width: isActive ? 56 : 48,
-                  height: isActive ? 56 : 48,
+                  width: isActive ? 52 : 48,
+                  height: isActive ? 52 : 48,
                   decoration: isActive
                       ? BoxDecoration(
                           color: Color(colorAmbar), // laranja/âmbar do seu tema
@@ -76,7 +76,7 @@ class CustomNavbar extends StatelessWidget {
                   child: Icon(
                     isActive ? activeItems[index] : items[index],
                     color: isActive ? Colors.white : Colors.white54,
-                    size: isActive ? 26 : 24,
+                    size: isActive ? 24 : 18,
                   ),
                 ),
               );
