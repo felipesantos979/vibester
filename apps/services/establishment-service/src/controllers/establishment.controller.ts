@@ -1,6 +1,11 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { EstablishmentService } from "../services/establishment.service";
-import { ListEstablishmentsQuerystring } from "../types/establishment.types";
+import { ListEstablishmentsQuerystring, GetEstablishmentParams } from "../types/establishment.types";
+import { z } from "zod";
+
+const getEstablishmentParamsSchema = z.object({
+  id: z.string().cuid()
+});
 
 export async function listEstablishmentsController(
   request: FastifyRequest<{ Querystring: ListEstablishmentsQuerystring }>,
@@ -9,7 +14,6 @@ export async function listEstablishmentsController(
   try {
     const { latitude, longitude } = request.query;
     
-    // Parse to numbers if they are provided as strings from query
     let lat: number | undefined;
     let lon: number | undefined;
 
@@ -47,6 +51,27 @@ export async function updateEstablishmentRatingController(
     return reply.status(200).send(updatedEstablishment);
   } catch (error) {
     console.error("Update rating error:", error);
+    return reply.status(500).send({ message: "Internal server error" });
+  }
+}
+
+export async function getEstablishmentProfileController(
+  request: FastifyRequest<{ Params: GetEstablishmentParams }>,
+  reply: FastifyReply
+) {
+  try {
+    const parseResult = getEstablishmentParamsSchema.safeParse(request.params);
+    
+    if (!parseResult.success) {
+      return reply.status(400).send({ message: "Invalid establishment ID" });
+    }
+
+    const profile = await EstablishmentService.getEstablishmentProfile(parseResult.data.id);
+    return reply.status(200).send(profile);
+  } catch (error: any) {
+    if (error.message === "Establishment not found") {
+      return reply.status(404).send({ message: "Establishment not found" });
+    }
     return reply.status(500).send({ message: "Internal server error" });
   }
 }
