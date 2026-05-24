@@ -27,62 +27,51 @@ class CustomNavbar extends StatelessWidget {
       Icons.person_rounded,
     ];
 
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 10),
-        child: Container(
-          height: 50,
-          decoration: BoxDecoration(
-            color: const Color(colorNoturno),
-            borderRadius: BorderRadius.circular(50),
-            // Borda ao redor da navbar
-            border: Border.all(
-              color: Colors.white.withOpacity(0.08),
-              width: 1.5,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.4),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+    return Container(
+      height: 70,
+      decoration: BoxDecoration(
+        color: const Color(colorNavy),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withOpacity(0.8),
+            blurRadius: 10,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: List.generate(items.length, (index) {
+          final isActive = index == currentIndex;
+          return GestureDetector(
+            onTap: () => onTap!(index),
+            behavior: HitTestBehavior.opaque,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              width: isActive ? 52 : 48,
+              height: isActive ? 52 : 48,
+              decoration: isActive
+                  ? BoxDecoration(
+                      color: Color(colorAmbar),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(colorAmbar).withOpacity(0.4),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    )
+                  : null,
+              child: Icon(
+                isActive ? activeItems[index] : items[index],
+                color: isActive ? Colors.white : Colors.white54,
+                size: isActive ? 24 : 18,
               ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(items.length, (index) {
-              final isActive = index == currentIndex;
-              return GestureDetector(
-                onTap: () => onTap!(index),
-                behavior: HitTestBehavior.opaque,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut,
-                  width: isActive ? 52 : 48,
-                  height: isActive ? 52 : 48,
-                  decoration: isActive
-                      ? BoxDecoration(
-                          color: Color(colorAmbar), // laranja/âmbar do seu tema
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(colorAmbar).withOpacity(0.4),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        )
-                      : null,
-                  child: Icon(
-                    isActive ? activeItems[index] : items[index],
-                    color: isActive ? Colors.white : Colors.white54,
-                    size: isActive ? 24 : 18,
-                  ),
-                ),
-              );
-            }),
-          ),
-        ),
+            ),
+          );
+        }),
       ),
     );
   }

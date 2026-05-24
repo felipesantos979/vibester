@@ -14,10 +14,28 @@ class HomeTab extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Color(colorDarkGrey),
         appBar: AppBar(
-          toolbarHeight: 20,
+          toolbarHeight: 45,
           automaticallyImplyLeading: false,
-          backgroundColor: Color(colorDarkGrey),
+          backgroundColor: Color(colorNavy),
           foregroundColor: Color(colorAmbar),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              color: Color(colorNavy),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+          ),
+          title: Image.asset(
+            'assets/img/tipografia.png',
+            height: 20,
+            fit: BoxFit.contain,
+          ),
+          centerTitle: true,
           bottom: TabBar(
             unselectedLabelColor: Colors.white54,
             labelColor: Color(colorAmbar),
