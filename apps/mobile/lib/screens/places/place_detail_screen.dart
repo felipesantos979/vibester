@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/screens/events/event_list_screen.dart';
+import 'package:mobile/screens/highlights/property_highlights_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/indicators/category_indicator.dart';
 import 'package:mobile/utils/divider.dart';
@@ -147,7 +148,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
               child: TabBarView(
                 controller: _tabController,
                 children: [
-                  Center(child: Text('Destaques')),
+                  PropertyHighlightsScreen(),
                   EventListScreen(),
                   Center(child: Text('Avaliacoes')),
                 ],
