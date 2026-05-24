@@ -8,10 +8,27 @@ export interface EstablishmentInterface {
   averageRating: number;
   latitude: number;
   longitude: number;
-  distanceTo?: number; // Optional locally calculated distance field
+  distanceTo?: number;
 }
 
 export interface ListEstablishmentsQuerystring {
   latitude?: number;
   longitude?: number;
+}
+
+export interface GetEstablishmentParams {
+  id: string;
+}
+
+export interface EstablishmentProfileResponse {
+  icon: string;
+  name: string;
+  banner: string;
+  location: {
+    latitude: number;
+    longitude: number;
+  };
+  category: string;
+  priceIndicator: string;
+  rating: number;
 }
