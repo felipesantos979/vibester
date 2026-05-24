@@ -1,0 +1,136 @@
+import 'package:flutter/material.dart';
+import 'package:mobile/utils/colors.dart';
+
+class ReviewIndicator extends StatelessWidget {
+  final double avaliacao;
+  final int totalReviews;
+  final List<double> distribuicao;
+
+  const ReviewIndicator({
+    super.key,
+    required this.avaliacao,
+    this.totalReviews = 0,
+    this.distribuicao = const [0.75, 0.15, 0.05, 0.03, 0.02],
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      clipBehavior: Clip.antiAlias,
+      color: Color(colorNavy),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Lado esquerdo
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  avaliacao.toStringAsFixed(1),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 52,
+                    fontWeight: FontWeight.bold,
+                    height: 1,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                _buildStars(avaliacao),
+                const SizedBox(height: 6),
+                Text(
+                  '$totalReviews reviews',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.5),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(width: 24),
+
+            // Lado direito
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: List.generate(5, (i) {
+                  final estrela = 5 - i;
+                  final percent = distribuicao[i];
+                  return _buildBarRow(estrela, percent);
+                }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStars(double rating) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: List.generate(5, (i) {
+        final starValue = i + 1;
+        IconData icon;
+        if (rating >= starValue) {
+          icon = Icons.star;
+        } else if (rating >= starValue - 0.5) {
+          icon = Icons.star_half;
+        } else {
+          icon = Icons.star_border;
+        }
+        return Icon(icon, color: Color(colorBrasa), size: 16);
+      }),
+    );
+  }
+
+  Widget _buildBarRow(int estrela, double percent) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 12,
+            child: Text(
+              '$estrela',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.6),
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: percent,
+                minHeight: 6,
+                backgroundColor: Colors.white.withOpacity(0.1),
+                valueColor: AlwaysStoppedAnimation<Color>(Color(colorBrasa)),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          SizedBox(
+            width: 32,
+            child: Text(
+              '${(percent * 100).toInt()}%',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.6),
+                fontSize: 12,
+              ),
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

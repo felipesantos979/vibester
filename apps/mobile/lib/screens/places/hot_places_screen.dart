@@ -24,6 +24,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'O point favorito dos trabalhadores do centro. Café coado na hora, wi-fi rápido e aquela energia de segunda de manhã o dia todo.',
       endereco: 'Av. Presidente Vargas, 142',
+      qtdAvaliacoes: 832,
+      distribuicao: [0.55, 0.25, 0.12, 0.05, 0.03],
     ),
     PlaceModel(
       nome: 'Filin',
@@ -34,6 +36,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'A balada que não precisa de apresentação. Line-ups de peso, pista sempre lotada e som que você sente no peito.',
       endereco: 'R. das Palmeiras, 87',
+      qtdAvaliacoes: 3210,
+      distribuicao: [0.92, 0.05, 0.02, 0.01, 0.00],
     ),
     PlaceModel(
       nome: 'Churrasquero House',
@@ -44,6 +48,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Churrasco de verdade, sem frescura e sem preço salgado. Aqui a brasa nunca apaga e a fila anda rápido.',
       endereco: 'R. Tiradentes, 560',
+      qtdAvaliacoes: 1540,
+      distribuicao: [0.80, 0.12, 0.05, 0.02, 0.01],
     ),
     PlaceModel(
       nome: 'Porão Bar',
@@ -54,6 +60,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Escondido no subsolo, o Porão tem drinques autorais, luz baixa e aquela vibe de quem sabe o que está fazendo.',
       endereco: 'R. Sete de Setembro, 34',
+      qtdAvaliacoes: 670,
+      distribuicao: [0.62, 0.20, 0.10, 0.05, 0.03],
     ),
     PlaceModel(
       nome: 'Sushi Zen',
@@ -64,6 +72,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Experiência japonesa autêntica. Cada peça é montada com precisão e o ambiente convida ao silêncio e à boa comida.',
       endereco: 'Av. das Nações, 210',
+      qtdAvaliacoes: 2100,
+      distribuicao: [0.85, 0.10, 0.03, 0.01, 0.01],
     ),
     PlaceModel(
       nome: 'Pizza Roma',
@@ -74,6 +84,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Massa fina, forno a lenha e receitas que viajaram do interior da Itália até aqui. Simples assim, gostoso assim.',
       endereco: 'R. Floriano Peixoto, 415',
+      qtdAvaliacoes: 980,
+      distribuicao: [0.65, 0.18, 0.10, 0.04, 0.03],
     ),
     PlaceModel(
       nome: 'Boteco do Léo',
@@ -84,6 +96,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'O Léo conhece todo mundo pelo nome. Cerveja gelada, petisco farto e aquela conversa que se estende até depois da meia-noite.',
       endereco: 'R. das Acácias, 19',
+      qtdAvaliacoes: 1240,
+      distribuicao: [0.75, 0.15, 0.05, 0.03, 0.02],
     ),
     PlaceModel(
       nome: 'La Trattoria',
@@ -94,6 +108,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Massas frescas feitas no dia, carta de vinhos cuidadosa e um salão que faz qualquer jantar parecer especial.',
       endereco: 'Av. Brasil, 788',
+      qtdAvaliacoes: 1875,
+      distribuicao: [0.78, 0.14, 0.05, 0.02, 0.01],
     ),
     PlaceModel(
       nome: 'Hamburgueria 404',
@@ -104,6 +120,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Referência não encontrada? Aqui não. Os hambúrgueres são artesanais, os combos são absurdos e o lugar é pequeno de propósito.',
       endereco: 'R. Marechal Deodoro, 301',
+      qtdAvaliacoes: 1105,
+      distribuicao: [0.68, 0.18, 0.08, 0.04, 0.02],
     ),
     PlaceModel(
       nome: 'Bistrô do Porto',
@@ -114,6 +132,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Cardápio enxuto que muda com a estação. Ambiente aconchegante para quem quer comer bem sem pressa.',
       endereco: 'Av. Beira Rio, 55',
+      qtdAvaliacoes: 430,
+      distribuicao: [0.72, 0.16, 0.07, 0.03, 0.02],
     ),
     PlaceModel(
       nome: 'Tapiocaria Sol',
@@ -124,6 +144,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Tapiocas recheadas na hora, suco natural e aquele café da manhã que faz a diferença antes de encarar o dia.',
       endereco: 'R. Independência, 123',
+      qtdAvaliacoes: 560,
+      distribuicao: [0.54, 0.22, 0.14, 0.06, 0.04],
     ),
     PlaceModel(
       nome: 'Churrascaria Gaúcha',
@@ -134,6 +156,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Rodízio completo com cortes nobres e gaúchos de verdade na churrasqueira. Venha com fome e saia feliz.',
       endereco: 'Av. Paraná, 940',
+      qtdAvaliacoes: 2780,
+      distribuicao: [0.87, 0.08, 0.03, 0.01, 0.01],
     ),
     PlaceModel(
       nome: 'Empório Vegano',
@@ -144,6 +168,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Culinária plant-based que convence até quem não é vegano. Ingredientes orgânicos, sabor sem concessão.',
       endereco: 'R. das Flores, 77',
+      qtdAvaliacoes: 390,
+      distribuicao: [0.63, 0.20, 0.10, 0.04, 0.03],
     ),
     PlaceModel(
       nome: 'Bar da Esquina',
@@ -154,6 +180,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Aquele bar de bairro que todo mundo tem saudade. Jogo na TV, mesa de plástico e doses generosas.',
       endereco: 'R. Almirante Barroso, 228',
+      qtdAvaliacoes: 715,
+      distribuicao: [0.50, 0.22, 0.15, 0.08, 0.05],
     ),
     PlaceModel(
       nome: 'Doceria Mel',
@@ -164,6 +192,8 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
       bio:
           'Doces artesanais feitos com amor e receitas de família. Um pedaço de bolo aqui vale mais que qualquer sobremesa chique.',
       endereco: 'R. Dom Pedro II, 11',
+      qtdAvaliacoes: 290,
+      distribuicao: [0.82, 0.11, 0.04, 0.02, 0.01],
     ),
   ];
 
