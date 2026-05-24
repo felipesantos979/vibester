@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 class PlaceModel {
   final String nome;
   final int nivelMovimento;
@@ -6,6 +8,8 @@ class PlaceModel {
   final String nivelPrecoMedio;
   final String bio;
   final String endereco;
+  final int qtdAvaliacoes;
+  final List<double> distribuicao;
 
   PlaceModel({
     required this.nome,
@@ -15,5 +19,7 @@ class PlaceModel {
     required this.nivelPrecoMedio,
     required this.bio,
     required this.endereco,
+    required this.distribuicao,
+    required this.qtdAvaliacoes,
   });
 }

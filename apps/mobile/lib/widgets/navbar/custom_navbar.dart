@@ -47,8 +47,8 @@ class CustomNavbar extends StatelessWidget {
             onTap: () => onTap!(index),
             behavior: HitTestBehavior.opaque,
             child: AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
+              duration: const Duration(milliseconds: 1000),
+              curve: Curves.easeOutBack,
               width: isActive ? 52 : 48,
               height: isActive ? 52 : 48,
               decoration: isActive
@@ -67,7 +67,7 @@ class CustomNavbar extends StatelessWidget {
               child: Icon(
                 isActive ? activeItems[index] : items[index],
                 color: isActive ? Colors.white : Colors.white54,
-                size: isActive ? 24 : 18,
+                size: isActive ? 24 : 24,
               ),
             ),
           );
