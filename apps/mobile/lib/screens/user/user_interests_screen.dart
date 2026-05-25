@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/user/interest_model.dart';
+import 'package:mobile/screens/home/home_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
 
@@ -93,7 +94,15 @@ class _UserInterestsScreenState extends State<UserInterestsScreen> {
             SizedBox(height: Platform.isIOS ? 300 : 400),
             SizedBox(
               width: double.infinity,
-              child: PrimaryButton(label: 'Continuar', onPressed: () {}),
+              child: PrimaryButton(
+                label: 'Continuar',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                  );
+                },
+              ),
             ),
           ],
         ),

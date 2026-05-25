@@ -63,72 +63,74 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
 
     return Scaffold(
       backgroundColor: Color(colorDarkGrey),
-      body: Column(
-        children: [
-          Center(
-            child: SizedBox(
-              width: 130,
-              height: 300,
-              child: Image.asset('assets/img/mascote.png'),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Center(
+              child: SizedBox(
+                width: 130,
+                height: 300,
+                child: Image.asset('assets/img/mascote.png'),
+              ),
             ),
-          ),
 
-          Text(
-            'Verifique seu email',
-            style: GoogleFonts.inter(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
+            Text(
+              'Verifique seu email',
+              style: GoogleFonts.inter(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              style: GoogleFonts.inter(color: Color(colorGrey), fontSize: 14),
-              children: [
-                TextSpan(
-                  text: 'Enviamos um código de verificação para\n',
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Color(colorGrey),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                style: GoogleFonts.inter(color: Color(colorGrey), fontSize: 14),
+                children: [
+                  TextSpan(
+                    text: 'Enviamos um código de verificação para\n',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Color(colorGrey),
+                    ),
                   ),
-                ),
-                TextSpan(
-                  text: 'email@example.com',
-                  style: GoogleFonts.inter(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.orange,
+                  TextSpan(
+                    text: 'email@example.com',
+                    style: GoogleFonts.inter(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.orange,
+                    ),
                   ),
-                ),
-                TextSpan(
-                  text:
-                      '\n\nVerifique sua caixa de entrada e insira o\ncódigo abaixo para ativar sua conta ',
-                ),
-              ],
+                  TextSpan(
+                    text:
+                        '\n\nVerifique sua caixa de entrada e insira o\ncódigo abaixo para ativar sua conta ',
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          SizedBox(height: 30),
+            SizedBox(height: 30),
 
-          Pinput(
-            length: 5,
-            defaultPinTheme: defaultTheme,
-            focusedPinTheme: focusedTheme,
-          ),
+            Pinput(
+              length: 5,
+              defaultPinTheme: defaultTheme,
+              focusedPinTheme: focusedTheme,
+            ),
 
-          SizedBox(height: 50),
+            SizedBox(height: 50),
 
-          PrimaryButton(
-            label: 'Verificar e-mail',
-            onPressed: () {
-              _aoVerificar();
-            },
-          ),
+            PrimaryButton(
+              label: 'Verificar e-mail',
+              onPressed: () {
+                _aoVerificar();
+              },
+            ),
 
-          SizedBox(height: 12),
-        ],
+            SizedBox(height: 12),
+          ],
+        ),
       ),
     );
   }
