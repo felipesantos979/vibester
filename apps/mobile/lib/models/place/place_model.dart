@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 class PlaceModel {
   final String nome;
   final int nivelMovimento;

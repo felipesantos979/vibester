@@ -25,27 +25,31 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
         foregroundColor: Colors.white,
         titleTextStyle: GoogleFonts.inter(fontSize: 20),
       ),
-      body: Column(
-        children: [
-          Center(heightFactor: 2, child: EditableAvatar()),
-          PrimaryTextField(labelText: 'Nome', height: 60),
-          SizedBox(height: 25),
-          DatePickerField(labelText: 'Data de Nascimento', height: 60),
-          SizedBox(height: 25),
-          PrimaryTextField(labelText: 'Nome de usuário', height: 60),
-          SizedBox(height: 25),
-          PrimaryTextField(labelText: 'Bio', height: 90),
-          SizedBox(height: 25),
-          PrimaryButton(
-            label: 'Cadastrar',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => UserInterestsScreen()),
-              );
-            },
-          ),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Center(heightFactor: 2, child: EditableAvatar()),
+            PrimaryTextField(labelText: 'Nome', height: 60),
+            SizedBox(height: 25),
+            DatePickerField(labelText: 'Data de Nascimento', height: 60),
+            SizedBox(height: 25),
+            PrimaryTextField(labelText: 'Nome de usuário', height: 60),
+            SizedBox(height: 25),
+            PrimaryTextField(labelText: 'Bio', height: 90),
+            SizedBox(height: 25),
+            PrimaryButton(
+              label: 'Cadastrar',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UserInterestsScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

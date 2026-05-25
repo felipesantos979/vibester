@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/screens/register/login_screen.dart';
@@ -107,7 +109,7 @@ class _InitialScreenState extends State<InitialScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 150),
+              SizedBox(height: Platform.isIOS ? 150 : 100),
               Text.rich(
                 textAlign: TextAlign.center,
                 TextSpan(
