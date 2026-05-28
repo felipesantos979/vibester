@@ -32,28 +32,11 @@ class _MapEventState extends State<MapEvent> {
                       widget.endereco,
                     );
 
-                    final Uri googleMaps = Uri.parse(
-                      "comgooglemaps://?q=$enderecoCodificado",
-                    );
-
-                    final Uri appleMaps = Uri.parse(
-                      "maps://?q=$enderecoCodificado",
-                    );
-
-                    final Uri browser = Uri.parse(
+                    final Uri url = Uri.parse(
                       "https://www.google.com/maps/search/?api=1&query=$enderecoCodificado",
                     );
 
-                    if (await canLaunchUrl(googleMaps)) {
-                      await launchUrl(googleMaps);
-                    } else if (await canLaunchUrl(appleMaps)) {
-                      await launchUrl(appleMaps);
-                    } else {
-                      await launchUrl(
-                        browser,
-                        mode: LaunchMode.externalApplication,
-                      );
-                    }
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
                   },
 
                   child: Container(
