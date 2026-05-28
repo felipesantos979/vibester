@@ -55,13 +55,18 @@ class _PropertyHighlightsScreenState extends State<PropertyHighlightsScreen> {
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           //pega a largura da tela dividido por 2 (pra dar duas imagens por linha)
           crossAxisCount: 2,
-          //define a altura com base na largura 
+          //define a altura com base na largura
           childAspectRatio: 0.85,
-          
+
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
         ),
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.only(
+          top: 30,
+          left: 12,
+          right: 12,
+          bottom: 12,
+        ),
         itemBuilder: (context, index) {
           return HighlightsCard(highlight: highlights[index]);
         },

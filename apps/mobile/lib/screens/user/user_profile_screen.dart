@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/user/user_model.dart';
+import 'package:mobile/screens/highlights/property_highlights_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/utils/editable_text_field.dart';
@@ -297,7 +298,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    Center(child: Text('FOTOS')),
+                    Center(child: PropertyHighlightsScreen(),),
                     Center(child: Text('FAVORITOS')),
                     Center(child: Text('CHECK-IN')),
                   ],

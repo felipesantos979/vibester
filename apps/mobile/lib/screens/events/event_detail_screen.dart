@@ -49,7 +49,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     ),
 
                     //lugar da imagem
-                    child: Placeholder(), 
+                    child: Placeholder(),
                   ),
                 ),
 
@@ -182,7 +182,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                   child: Row(
                     children: [
-                      // DATA
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,9 +194,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-
                             const SizedBox(height: 6),
-
                             Text(
                               DateFormat(
                                 "EEE dd MMM  HH:mm",
@@ -212,13 +209,39 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         ),
                       ),
 
-                      // Linha central de divisoria
+                      // Linha divisória
                       Container(width: 1, height: 40, color: Colors.white12),
 
-                      const SizedBox(width: 20),
-
-                      //Coluna de localização
-                      
+                     
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'LOCAL',
+                                style: GoogleFonts.inter(
+                                  color: Color(colorGrey),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                widget.eventModel.localizacao,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow
+                                    .ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -343,7 +366,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                 const SizedBox(height: 10),
 
-                MapEvent( endereco: widget.eventModel.localizacao,),
+                MapEvent(endereco: widget.eventModel.localizacao),
 
                 const SizedBox(height: 8),
 
