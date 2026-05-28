@@ -39,7 +39,6 @@ class _MapEventState extends State<MapEvent> {
                       url,
                       mode: LaunchMode.externalApplication,
                     )) {
-                      // caso não consiga abrir
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text("Não foi possível abrir o Maps"),
@@ -64,7 +63,7 @@ class _MapEventState extends State<MapEvent> {
                         Icon(Icons.map, color: Colors.black, size: 24),
                         SizedBox(width: 8),
                         Text(
-                          "ABRR NO MAPS",
+                          "ABRIR NO MAPS",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
