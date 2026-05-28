@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/home/home_tab.dart';
+import 'package:mobile/screens/user/user_profile_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/navbar/custom_navbar.dart';
 
@@ -21,9 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Center(
       child: Text('Favoritos', style: TextStyle(color: Colors.white)),
     ),
-    Center(
-      child: Text('Perfil', style: TextStyle(color: Colors.white)),
-    ),
+    UserProfileScreen(),
   ];
 
   @override
