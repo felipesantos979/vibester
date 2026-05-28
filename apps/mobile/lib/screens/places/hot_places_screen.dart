@@ -270,14 +270,14 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
 
           if (listaFiltrada.isEmpty) {
             return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 120),
+              padding: const EdgeInsets.symmetric(vertical: 90),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.search_off,
-                    color: Color(colorAmbar).withAlpha(200),
-                    size: 64,
+                  SizedBox(
+                    height: 200,
+                    width: 200,
+                    child: Image.asset('assets/img/lupa.png'),
                   ),
                   const SizedBox(height: 12),
                   Text(
