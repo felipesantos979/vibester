@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/widgets/cards/map.dart' as map_widget;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
+import 'package:mobile/widgets/cards/map_event.dart';
 import 'package:mobile/widgets/indicators/lineup_indicator.dart';
 import 'package:mobile/widgets/buttons/secundary_button.dart';
 import 'package:mobile/widgets/buttons/tertiary_button.dart';
@@ -31,10 +31,27 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           //===============================================================================
           SizedBox(
             height: size.height * 0.41,
+
             child: Stack(
               children: [
                 //Imagen ocupando todo o espaço desse SizedBox
-                Positioned.fill(child: Placeholder()),
+                Positioned.fill(
+                  child: Container(
+                    foregroundDecoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.transparent,
+                          Color(colorNoturno).withAlpha(255),
+                        ],
+                      ),
+                    ),
+
+                    //lugar da imagem
+                    child: Placeholder(), 
+                  ),
+                ),
 
                 //Botão de voltar
                 Positioned(
@@ -69,58 +86,69 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   ),
                 ),
 
-                //Tipo de evento
-                Positioned(
-                  left: 16,
-                  bottom: 65,
-
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-
-                    decoration: BoxDecoration(
-                      color: const Color(colorDarkGrey).withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(
-                        color: const Color(colorAmbar),
-                        width: 1.5,
-                      ),
-                    ),
-
-                    child: Text(
-                      widget.eventModel.categoria,
-                      style: GoogleFonts.inter(
-                        color: const Color(colorAmbar),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        letterSpacing: 4,
-
-                        //possivel sombra (teste)
-                        shadows: [
-                          Shadow(color: Color(colorBrasa), blurRadius: 5),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                //Titulo do evento
+                //Titulo do evento e Tipo de evento
                 Positioned(
                   left: 16,
                   right: 16,
                   bottom: 2,
-                  child: Text(
-                    widget.eventModel.titulo,
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 41,
 
-                      //possivel sombra (teste)
-                      shadows: [Shadow(color: Colors.white, blurRadius: 4)],
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+
+                          decoration: BoxDecoration(
+                            color: const Color(colorDarkGrey).withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(
+                              color: const Color(colorAmbar),
+                              width: 1.5,
+                            ),
+                          ),
+
+                          child: Text(
+                            widget.eventModel.categoria,
+                            style: GoogleFonts.inter(
+                              color: const Color(colorAmbar),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              letterSpacing: 4,
+
+                              //possivel sombra (teste)
+                              shadows: [
+                                Shadow(color: Color(colorBrasa), blurRadius: 5),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      Container(
+                        width: double.infinity,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            widget.eventModel.titulo,
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 41,
+
+                              //possivel sombra (teste)
+                              shadows: [
+                                Shadow(color: Colors.white, blurRadius: 4),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -190,33 +218,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       const SizedBox(width: 20),
 
                       //Coluna de localização
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            //Texto imutavel
-                            Text(
-                              'LOCALIZAÇÃO',
-                              style: GoogleFonts.inter(
-                                color: Color(colorGrey),
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-
-                            const SizedBox(height: 6),
-
-                            //Futura variavel
-                            Text(
-                              widget.eventModel.localizacao,
-                              style: GoogleFonts.inter(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      
                     ],
                   ),
                 ),
@@ -341,11 +343,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                 const SizedBox(height: 10),
 
-                map_widget.Map(
-                  latitude: -23.4205,
-                  longitude: -51.9333,
-                  localizacao: widget.eventModel.localizacao,
-                ),
+                MapEvent( endereco: widget.eventModel.localizacao,),
 
                 const SizedBox(height: 8),
 
