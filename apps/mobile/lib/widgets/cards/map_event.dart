@@ -22,7 +22,7 @@ class _MapEventState extends State<MapEvent> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              Image.asset('assets/img/map_fundo.png', fit: BoxFit.cover,),
+              Image.asset('assets/img/map_fundo.png', fit: BoxFit.cover),
 
               Align(
                 alignment: Alignment.center,
@@ -31,18 +31,27 @@ class _MapEventState extends State<MapEvent> {
                     String enderecoCodificado = Uri.encodeComponent(
                       widget.endereco,
                     );
-                    final Uri url = Uri.parse(
+
+                    final Uri googleMaps = Uri.parse(
+                      "comgooglemaps://?q=$enderecoCodificado",
+                    );
+
+                    final Uri appleMaps = Uri.parse(
+                      "maps://?q=$enderecoCodificado",
+                    );
+
+                    final Uri browser = Uri.parse(
                       "https://www.google.com/maps/search/?api=1&query=$enderecoCodificado",
                     );
 
-                    if (!await launchUrl(
-                      url,
-                      mode: LaunchMode.externalApplication,
-                    )) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("Não foi possível abrir o Maps"),
-                        ),
+                    if (await canLaunchUrl(googleMaps)) {
+                      await launchUrl(googleMaps);
+                    } else if (await canLaunchUrl(appleMaps)) {
+                      await launchUrl(appleMaps);
+                    } else {
+                      await launchUrl(
+                        browser,
+                        mode: LaunchMode.externalApplication,
                       );
                     }
                   },
