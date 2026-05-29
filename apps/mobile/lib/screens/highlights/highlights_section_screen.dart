@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/models/event/lineup_model.dart';
+import 'package:mobile/screens/highlights/category_highlights_section.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/featured_events.dart';
 import 'package:mobile/widgets/indicators/lineup_place_indicator.dart';
@@ -159,11 +160,12 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                         style: GoogleFonts.inter(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 25,
+                          fontSize: 22,
                         ),
                       ),
                     ),
-
+                    SizedBox(height: 10),
+                    CategoryHighlightsSection(),
                     SizedBox(height: 20),
 
                     Align(
@@ -173,7 +175,7 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                         style: GoogleFonts.inter(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 25,
+                          fontSize: 22,
                         ),
                       ),
                     ),
@@ -190,7 +192,7 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                         style: GoogleFonts.inter(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 25,
+                          fontSize: 22,
                         ),
                       ),
                     ),
@@ -204,7 +206,7 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                         style: GoogleFonts.inter(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 25,
+                          fontSize: 22,
                         ),
                       ),
                     ),
@@ -218,7 +220,7 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                         style: GoogleFonts.inter(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 25,
+                          fontSize: 22,
                         ),
                       ),
                     ),
