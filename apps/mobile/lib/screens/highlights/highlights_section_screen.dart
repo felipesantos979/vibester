@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/models/event/lineup_model.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/featured_events.dart';
-import 'package:mobile/widgets/cards/other_highlights.dart';
+import 'package:mobile/widgets/indicators/lineup_place_indicator.dart';
 
 class HighlightsSectionScreen extends StatefulWidget {
   const HighlightsSectionScreen({super.key});
@@ -145,8 +146,88 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
 
           const SizedBox(height: 20),
 
+          Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Categorias",
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: 20),
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Descubra",
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                      ),
+                    ),
+
+                    //Lista de line-ups
+                    const SizedBox(height: 30),
+                    LineupPlaceIndicator(),
+                    const SizedBox(height: 10),
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Eventos da Semana",
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Ofertas Exclusivas",
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Perto de Você",
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
           // Resto da tela
-          OtherHighlights(), 
         ],
       ),
     );
