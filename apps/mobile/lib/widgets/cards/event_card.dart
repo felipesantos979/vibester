@@ -26,7 +26,6 @@ class EventCard extends StatelessWidget {
               //trocar pra imagem que vai vir do banco dps
               Placeholder(),
 
-              // Gradient por cima da imagem (tentar replicar isso no evento detalhado)
               DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
