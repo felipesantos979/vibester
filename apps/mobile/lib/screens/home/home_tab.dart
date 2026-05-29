@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/screens/highlights/highlights_section_screen.dart';
 import 'package:mobile/screens/places/hot_places_screen.dart';
 import 'package:mobile/utils/colors.dart';
 
@@ -58,9 +59,7 @@ class HomeTab extends StatelessWidget {
             Center(
               child: Text("Feed", style: TextStyle(color: Colors.white)),
             ),
-            Center(
-              child: Text("Destaques", style: TextStyle(color: Colors.white)),
-            ),
+            HighlightsSectionScreen(),
             HotPlacesScreen(),
           ],
         ),
