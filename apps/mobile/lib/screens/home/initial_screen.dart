@@ -109,7 +109,7 @@ class _InitialScreenState extends State<InitialScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: Platform.isIOS ? 150 : 100),
+              SizedBox(height: Platform.isIOS ? 80 : 100),
               Text.rich(
                 textAlign: TextAlign.center,
                 TextSpan(

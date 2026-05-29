@@ -53,6 +53,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         backgroundColor: Color(colorNavy),
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            color: Color(colorNavy),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.white.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+        ),
         title: SizedBox(
           width: double.infinity,
           child: Stack(
@@ -251,6 +263,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       ),
