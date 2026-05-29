@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/screens/highlights/highlights_section_screen.dart';
@@ -44,7 +46,7 @@ class HomeTab extends StatelessWidget {
             indicatorColor: Color(colorAmbar),
             labelPadding: const EdgeInsets.all(10),
             labelStyle: GoogleFonts.inter(
-              fontSize: 16,
+              fontSize: Platform.isIOS ? 14 : 16,
               fontWeight: FontWeight.bold,
             ),
             tabs: const <Widget>[

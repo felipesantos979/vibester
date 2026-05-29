@@ -91,7 +91,7 @@ class _UserInterestsScreenState extends State<UserInterestsScreen> {
                 );
               }).toList(),
             ),
-            SizedBox(height: Platform.isIOS ? 300 : 400),
+            SizedBox(height: Platform.isIOS ? 300 : 300),
             SizedBox(
               width: double.infinity,
               child: PrimaryButton(
