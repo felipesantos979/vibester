@@ -202,7 +202,7 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 40),
 
                     Align(
                       alignment: Alignment.centerLeft,

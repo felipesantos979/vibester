@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/feed/publication_model.dart';
+import 'package:mobile/screens/feed/new_publication_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/publication_card.dart';
 
@@ -121,7 +122,14 @@ class _FeedScreenState extends State<FeedScreen> {
             bottom: 100,
             right: 16,
             child: FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NewPublicationScreen(),
+                  ),
+                );
+              },
               backgroundColor: Color(colorAmbar),
               foregroundColor: Colors.white,
               child: Icon(Icons.add, size: 48),
