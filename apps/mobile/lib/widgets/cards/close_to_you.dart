@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place/place_model.dart';
+import 'package:mobile/screens/places/place_detail_screen.dart';
 import 'package:mobile/utils/colors.dart';
 
 class CloseToYou extends StatefulWidget {
@@ -168,7 +169,14 @@ class _CloseToYouState extends State<CloseToYou> {
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(70),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlaceDetailScreen(place: place),
+                  ),
+                );
+              },
               borderRadius: BorderRadius.circular(70),
               splashColor: Color(colorAmbar),
               child: Stack(
