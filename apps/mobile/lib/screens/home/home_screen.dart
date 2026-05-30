@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/screens/home/home_tab.dart';
+import 'package:mobile/screens/search/search_screen.dart';
 import 'package:mobile/screens/user/user_profile_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/navbar/custom_navbar.dart';
@@ -16,9 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _screens = [
     HomeTab(),
-    Center(
-      child: Text('Busca', style: TextStyle(color: Colors.white)),
-    ),
+    SearchScreen(),
     Center(
       child: Text('Favoritos', style: TextStyle(color: Colors.white)),
     ),

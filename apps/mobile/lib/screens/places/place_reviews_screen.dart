@@ -41,7 +41,7 @@ class _PlaceReviewsScreenState extends State<PlaceReviewsScreen> {
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: 10,
               color: selecionado ? Colors.white : Colors.white54,
               fontWeight: FontWeight.bold,
             ),

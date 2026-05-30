@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/utils/colors.dart';
 
@@ -28,7 +30,7 @@ class CustomNavbar extends StatelessWidget {
     ];
 
     return Container(
-      height: 70,
+      height: (Platform.isIOS ? 75 : 70),
       decoration: BoxDecoration(
         color: const Color(colorNavy),
         boxShadow: [
@@ -67,7 +69,9 @@ class CustomNavbar extends StatelessWidget {
               child: Icon(
                 isActive ? activeItems[index] : items[index],
                 color: isActive ? Colors.white : Colors.white54,
-                size: isActive ? 24 : 24,
+                size: isActive
+                    ? (Platform.isIOS ? 26 : 24)
+                    : (Platform.isIOS ? 26 : 24),
               ),
             ),
           );

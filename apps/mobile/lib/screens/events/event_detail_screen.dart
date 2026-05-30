@@ -212,7 +212,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       // Linha divisória
                       Container(width: 1, height: 40, color: Colors.white12),
 
-                     
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 20),
@@ -235,8 +234,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                                 maxLines: 2,
-                                overflow: TextOverflow
-                                    .ellipsis,
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
