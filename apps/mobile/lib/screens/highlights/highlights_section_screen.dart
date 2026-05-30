@@ -4,6 +4,7 @@ import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/models/event/lineup_model.dart';
 import 'package:mobile/screens/highlights/category_highlights_section.dart';
 import 'package:mobile/utils/colors.dart';
+import 'package:mobile/widgets/cards/close_to_you.dart';
 import 'package:mobile/widgets/cards/featured_events.dart';
 import 'package:mobile/widgets/indicators/lineup_place_indicator.dart';
 
@@ -224,6 +225,10 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                         ),
                       ),
                     ),
+
+                    const SizedBox(height: 20),
+                    CloseToYou(),
+                    const SizedBox(height: 10),
                   ],
                 ),
               ),

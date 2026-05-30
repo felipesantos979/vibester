@@ -22,10 +22,11 @@ class _HighlightsCardState extends State<HighlightsCard> {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: Image.network(
+        child: Placeholder(),
+        /*child: Image.network(
           widget.highlight.imagemEmDestaque,
           fit: BoxFit.cover,
-        ),
+        ),*/
       ),
     );
   }
