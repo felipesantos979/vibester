@@ -73,6 +73,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                     fontWeight: FontWeight.bold,
                     fontSize: 28,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
 
