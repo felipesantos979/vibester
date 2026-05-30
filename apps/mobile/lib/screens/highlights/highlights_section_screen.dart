@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/models/event/lineup_model.dart';
+import 'package:mobile/models/place/exclusive_offers_model.dart';
 import 'package:mobile/screens/highlights/category_highlights_section.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/close_to_you.dart';
+import 'package:mobile/widgets/cards/exclusive_offers.dart';
 import 'package:mobile/widgets/cards/featured_events.dart';
 import 'package:mobile/widgets/indicators/lineup_place_indicator.dart';
 
@@ -32,94 +34,52 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
           "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
     ),
     EventModel(
-      dataDoEvento: DateTime(2026, 7, 4, 21, 0),
-      titulo: "Festa do Forró",
-      lineUp: [LineupModel(nome: "Wesley Safadão", url: _foto)],
+      dataDoEvento: DateTime(2026, 6, 10, 17, 0),
+      titulo: "Noite do Sertanejo",
+      lineUp: [LineupModel(nome: "Sonia Blade", url: _foto)],
       categoria: "Show",
-      artistas: "Wesley Safadão",
-      localizacao: "Arena Fonte Nova - Salvador, BA",
+      artistas: "Sonia blade",
+      localizacao: "Paraná Expo - Maringá, PR",
       informacoes:
           "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
     ),
     EventModel(
-      dataDoEvento: DateTime(2026, 8, 15, 20, 0),
-      titulo: "Hip Hop Nation",
-      lineUp: [LineupModel(nome: "Emicida", url: _foto)],
-      categoria: "Festival",
-      artistas: "Emicida",
-      localizacao: "Allianz Parque - São Paulo, SP",
-      informacoes:
-          "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
-    ),
-    EventModel(
-      dataDoEvento: DateTime(2026, 9, 20, 18, 0),
-      titulo: "Rock in Curitiba",
-      lineUp: [LineupModel(nome: "Fresno", url: _foto)],
-      categoria: "Festival",
-      artistas: "Fresno",
-      localizacao: "Pedreira Paulo Leminski - Curitiba, PR",
-      informacoes:
-          "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
-    ),
-    EventModel(
-      dataDoEvento: DateTime(2026, 10, 3, 22, 0),
-      titulo: "Noite do Funk",
-      lineUp: [LineupModel(nome: "Ludmilla", url: _foto)],
-      categoria: "Baile",
-      artistas: "Ludmilla",
-      localizacao: "Jeunesse Arena - Rio de Janeiro, RJ",
-      informacoes:
-          "Classificação do evento: 18+\nAcesso restrito a maiores de 18 anos mediante apresentação de documento oficial com foto.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
-    ),
-    EventModel(
-      dataDoEvento: DateTime(2026, 11, 7, 19, 0),
-      titulo: "Eletrônica BR",
-      lineUp: [LineupModel(nome: "Alok", url: _foto)],
-      categoria: "Festival",
-      artistas: "Alok",
-      localizacao: "Complexo do Ibirapuera - São Paulo, SP",
-      informacoes:
-          "Classificação do evento: 18+\nAcesso restrito a maiores de 18 anos mediante apresentação de documento oficial com foto.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
-    ),
-    EventModel(
-      dataDoEvento: DateTime(2026, 12, 31, 23, 0),
-      titulo: "Réveillon do Sol",
-      lineUp: [LineupModel(nome: "Ivete Sangalo", url: _foto)],
-      categoria: "Festa",
-      artistas: "Ivete Sangalo",
-      localizacao: "Praia de Copacabana - Rio de Janeiro, RJ",
-      informacoes:
-          "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
-    ),
-    EventModel(
-      dataDoEvento: DateTime(2027, 1, 15, 21, 0),
-      titulo: "Pagode de Verão",
-      lineUp: [LineupModel(nome: "Thiaguinho", url: _foto)],
+      dataDoEvento: DateTime(2026, 6, 10, 17, 0),
+      titulo: "Noite do Sertanejo",
+      lineUp: [LineupModel(nome: "Sonia Blade", url: _foto)],
       categoria: "Show",
-      artistas: "Thiaguinho",
-      localizacao: "Via Funchal - São Paulo, SP",
+      artistas: "Sonia blade",
+      localizacao: "Paraná Expo - Maringá, PR",
       informacoes:
           "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
     ),
-    EventModel(
-      dataDoEvento: DateTime(2027, 2, 20, 20, 0),
-      titulo: "Carnaval Eletrônico",
-      lineUp: [LineupModel(nome: "Anitta", url: _foto)],
-      categoria: "Festa",
-      artistas: "Anitta",
-      localizacao: "Sambódromo do Anhembi - São Paulo, SP",
-      informacoes:
-          "Classificação do evento: 18+\nAcesso restrito a maiores de 18 anos mediante apresentação de documento oficial com foto.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
+  ];
+
+  List<ExclusiveOffersModel> get offers => [
+    ExclusiveOffersModel(
+      lugar: "Firula Bar",
+      desconto: 15,
+      condicao: "Novos Clientes",
     ),
-    EventModel(
-      dataDoEvento: DateTime(2027, 3, 12, 18, 30),
-      titulo: "Samba do Morro",
-      lineUp: [LineupModel(nome: "Diogo Nogueira", url: _foto)],
-      categoria: "Show",
-      artistas: "Diogo Nogueira",
-      localizacao: "Circo Voador - Rio de Janeiro, RJ",
-      informacoes:
-          "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
+    ExclusiveOffersModel(
+      lugar: "Firula Bar",
+      desconto: 15,
+      condicao: "Novos Clientes",
+    ),
+    ExclusiveOffersModel(
+      lugar: "Firula Bar",
+      desconto: 15,
+      condicao: "Novos Clientes",
+    ),
+    ExclusiveOffersModel(
+      lugar: "Firula Bar",
+      desconto: 15,
+      condicao: "Novos Clientes",
+    ),
+    ExclusiveOffersModel(
+      lugar: "Firula Bar",
+      desconto: 15,
+      condicao: "Novos Clientes",
     ),
   ];
 
@@ -137,7 +97,6 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
               child: PageView.builder(
                 padEnds: false,
                 controller: PageController(viewportFraction: 0.95),
-
                 itemCount: event.length,
                 itemBuilder: (context, index) {
                   return FeaturedEvents(event: event[index]);
@@ -165,9 +124,9 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
-                    CategoryHighlightsSection(),
                     SizedBox(height: 20),
+                    CategoryHighlightsSection(),
+                    SizedBox(height: 30),
 
                     Align(
                       alignment: Alignment.centerLeft,
@@ -212,7 +171,22 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      height: 150,
+                      child: PageView.builder(
+                        padEnds: false,
+                        controller: PageController(viewportFraction: 0.95),
+                        itemCount: offers.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8),
+                            child: ExclusiveOffers(offer: offers[index]),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 30),
 
                     Align(
                       alignment: Alignment.centerLeft,
