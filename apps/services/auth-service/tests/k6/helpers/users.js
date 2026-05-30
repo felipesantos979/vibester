@@ -4,7 +4,6 @@ import { BASE_URL } from '../config.js';
 
 const HEADERS = { 'Content-Type': 'application/json' };
 
-// Gera dados únicos por VU + iteração para garantir registros distintos no banco
 export function generateUser() {
   const uid = `${Date.now()}_vu${__VU}_it${__ITER}`;
   return {

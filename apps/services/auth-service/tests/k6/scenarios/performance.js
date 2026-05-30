@@ -23,9 +23,9 @@ const TARGET_VUS = VUS.PERFORMANCE;
 
 export const options = {
   stages: [
-    { duration: '1m', target: Math.ceil(TARGET_VUS * 0.3) },  // aquecimento
-    { duration: '3m', target: TARGET_VUS },                    // carga estável
-    { duration: '1m', target: 0 },                             // ramp down
+    { duration: '1m', target: Math.ceil(TARGET_VUS * 0.3) },  
+    { duration: '3m', target: TARGET_VUS },                    
+    { duration: '1m', target: 0 },                             
   ],
   thresholds: THRESHOLDS.performance,
 };
@@ -33,12 +33,10 @@ export const options = {
 export default function () {
   const user = generateUser();
 
-  // Registra o usuário (grava no banco)
   const regRes = register(user);
 
   if (regRes.status === 201) {
     sleep(0.3);
-    // Faz login com o usuário recém-criado
     login({ email: user.email, password: user.password });
   }
 

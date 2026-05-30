@@ -28,7 +28,6 @@ export const options = {
     { duration: '1m', target: 0 },
   ],
   thresholds: THRESHOLDS.breakpoint,
-  // Não aborta o teste quando thresholds falham — queremos registrar tudo
   thresholdAbort: false,
 };
 

@@ -21,12 +21,12 @@ const TARGET_VUS = VUS.STRESS;
 
 export const options = {
   stages: [
-    { duration: '1m', target: Math.ceil(TARGET_VUS * 0.25) },  // degrau 1 — 25%
-    { duration: '2m', target: Math.ceil(TARGET_VUS * 0.5) },   // degrau 2 — 50%
-    { duration: '2m', target: Math.ceil(TARGET_VUS * 0.75) },  // degrau 3 — 75%
-    { duration: '3m', target: TARGET_VUS },                     // pico máximo
-    { duration: '2m', target: Math.ceil(TARGET_VUS * 0.5) },   // recuo parcial
-    { duration: '1m', target: 0 },                              // ramp down
+    { duration: '1m', target: Math.ceil(TARGET_VUS * 0.25) },
+    { duration: '2m', target: Math.ceil(TARGET_VUS * 0.5) },  
+    { duration: '2m', target: Math.ceil(TARGET_VUS * 0.75) },  
+    { duration: '3m', target: TARGET_VUS },                    
+    { duration: '2m', target: Math.ceil(TARGET_VUS * 0.5) },  
+    { duration: '1m', target: 0 },                             
   ],
   thresholds: THRESHOLDS.stress,
 };
