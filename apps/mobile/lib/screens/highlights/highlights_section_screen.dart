@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
@@ -6,6 +8,7 @@ import 'package:mobile/screens/highlights/category_highlights_section.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/close_to_you.dart';
 import 'package:mobile/widgets/cards/featured_events.dart';
+import 'package:mobile/widgets/cards/weekly_events.dart';
 import 'package:mobile/widgets/indicators/lineup_place_indicator.dart';
 
 class HighlightsSectionScreen extends StatefulWidget {
@@ -17,6 +20,31 @@ class HighlightsSectionScreen extends StatefulWidget {
 }
 
 class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
+  late PageController _pageController;
+  late Timer _timer;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(viewportFraction: 0.95);
+    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+      _currentPage = (_currentPage + 1) % event.length;
+      _pageController.animateToPage(
+        _currentPage,
+        duration: const Duration(milliseconds: 700),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
   static const String _foto =
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgpnQNClh0kA43xMUXgiu_GKAqIL97g2dMY80DJ4A15pnck6ZxZ6APvn2KKdSIxajG8RSdRq6mesWTCn0kIItn6tlCqAZkE8Nx-snm2TCW&s=10";
 
@@ -83,7 +111,7 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
     ),
     EventModel(
       dataDoEvento: DateTime(2026, 12, 31, 23, 0),
-      titulo: "Réveillon do Sol",
+      titulo: "Réveillon do Solaaaaaaaaasdasdasdadsadasddd",
       lineUp: [LineupModel(nome: "Ivete Sangalo", url: _foto)],
       categoria: "Festa",
       artistas: "Ivete Sangalo",
@@ -194,6 +222,23 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 22,
+                        ),
+                      ),
+                    ),
+
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: SizedBox(
+                        height: 270,
+                        child: PageView.builder(
+                          padEnds: false,
+                          controller: _pageController,
+                          onPageChanged: (index) =>
+                              setState(() => _currentPage = index),
+                          itemCount: event.length,
+                          itemBuilder: (context, index) {
+                            return WeeklyEvents(evento: event[index]);
+                          },
                         ),
                       ),
                     ),

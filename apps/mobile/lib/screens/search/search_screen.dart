@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/search_bar.dart';
-import 'package:mobile/widgets/cards/highlights_card.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
