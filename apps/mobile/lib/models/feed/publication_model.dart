@@ -5,6 +5,7 @@ class PublicationModel {
   final String description;
   final String location;
   final DateTime publicatedAt;
+  final int likes;
 
   PublicationModel({
     required this.autor,
@@ -13,5 +14,6 @@ class PublicationModel {
     required this.description,
     required this.location,
     required this.publicatedAt,
+    required this.likes,
   });
 }

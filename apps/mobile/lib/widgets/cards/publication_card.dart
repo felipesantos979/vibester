@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/feed/publication_model.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
+import 'package:mobile/widgets/indicators/like_indicator.dart';
 
 class PublicationCard extends StatelessWidget {
   final PublicationModel publication;
@@ -120,7 +121,10 @@ class PublicationCard extends StatelessWidget {
             ),
           ),
 
-          SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [LikeIndicator(publication: publication)],
+          ),
 
           MyDivider(height: 1, width: double.infinity),
         ],
