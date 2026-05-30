@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/screens/feed/feed_screen.dart';
 import 'package:mobile/screens/highlights/highlights_section_screen.dart';
 import 'package:mobile/screens/places/hot_places_screen.dart';
 import 'package:mobile/utils/colors.dart';
@@ -58,9 +59,7 @@ class HomeTab extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            Center(
-              child: Text("Feed", style: TextStyle(color: Colors.white)),
-            ),
+            FeedScreen(),
             HighlightsSectionScreen(),
             HotPlacesScreen(),
           ],
