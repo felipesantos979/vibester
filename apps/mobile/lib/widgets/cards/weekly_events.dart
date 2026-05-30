@@ -60,7 +60,7 @@ class _WeeklyEventsState extends State<WeeklyEvents> {
                         children: [
                           Icon(
                             Icons.calendar_month,
-                            color: Colors.white70,
+                            color: Color(colorAmbar),
                             size: 22,
                           ),
                           const SizedBox(width: 6),
@@ -70,7 +70,7 @@ class _WeeklyEventsState extends State<WeeklyEvents> {
                               "pt_BR",
                             ).format(widget.evento.dataDoEvento).toUpperCase(),
                             style: GoogleFonts.inter(
-                              color: Colors.white30,
+                              color: Colors.white54,
                               fontSize: 13,
                             ),
                           ),

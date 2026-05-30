@@ -17,7 +17,7 @@ class _ExclusiveOffersState extends State<ExclusiveOffers> {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Color(colorNoturno),
+        color: Color(colorNavy),
         borderRadius: BorderRadius.circular(60),
         border: Border.all(color: Color(colorBrasa).withAlpha(60), width: 2),
       ),
@@ -64,7 +64,7 @@ class _ExclusiveOffersState extends State<ExclusiveOffers> {
                           Text(
                             '${widget.offer.desconto}% OFF',
                             style: TextStyle(
-                              color: Color(colorBrasa),
+                              color: Color(colorAmbar),
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),

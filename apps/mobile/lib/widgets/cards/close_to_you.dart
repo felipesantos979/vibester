@@ -158,11 +158,11 @@ class _CloseToYouState extends State<CloseToYou> {
         return Container(
           margin: EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: Color(colorNoturno),
+            color: Color(colorNavy),
             borderRadius: BorderRadius.circular(70),
             border: Border.all(
-              color: Color(colorAmbar).withAlpha(60),
-              width: 1,
+              color: Color(colorBrasa).withAlpha(60),
+              width: 2,
             ),
           ),
           child: Material(
@@ -228,7 +228,7 @@ class _CloseToYouState extends State<CloseToYou> {
                                 children: [
                                   Icon(
                                     Icons.star_border,
-                                    color: Color(colorBrasa),
+                                    color: Color(colorAmbar),
                                     size: 20,
                                   ),
                                   SizedBox(width: 3),
