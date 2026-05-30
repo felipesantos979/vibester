@@ -99,15 +99,6 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
       desconto: 15,
       condicao: "Novos Clientes",
     ),
-    EventModel(
-      dataDoEvento: DateTime(2026, 12, 31, 23, 0),
-      titulo: "Réveillon do Solaaaaaaaaasdasdasdadsadasddd",
-      lineUp: [LineupModel(nome: "Ivete Sangalo", url: _foto)],
-      categoria: "Festa",
-      artistas: "Ivete Sangalo",
-      localizacao: "Praia de Copacabana - Rio de Janeiro, RJ",
-      informacoes:
-          "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
     ExclusiveOffersModel(
       lugar: "Firula Bar",
       desconto: 15,

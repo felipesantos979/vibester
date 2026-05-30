@@ -80,7 +80,6 @@ class _ExclusiveOffersState extends State<ExclusiveOffers> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Text(""),
                           Text(
                             widget.offer.condicao,
                             style: TextStyle(
