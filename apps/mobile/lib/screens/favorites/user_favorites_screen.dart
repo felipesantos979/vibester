@@ -1,0 +1,276 @@
+import 'package:flutter/material.dart';
+import 'package:mobile/screens/favorites/I_will_go_screen.dart';
+import 'package:mobile/screens/favorites/favorites_screen.dart';
+import 'package:mobile/utils/colors.dart';
+import 'package:mobile/utils/divider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+class UserFavoritesScreen extends StatefulWidget {
+  const UserFavoritesScreen({super.key});
+
+  @override
+  State<UserFavoritesScreen> createState() => _UserFavoritesScreenState();
+}
+
+class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
+  int _currentIndex = 0;
+  int lugaresFavoritos = 12;
+  int eventosConfirmados = 4;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Widget> tabs = [FavoritesScreen(), IWillGoScreen()];
+
+    return Scaffold(
+      backgroundColor: Color(colorNoturno),
+      appBar: AppBar(
+        backgroundColor: Color(colorNavy),
+        elevation: 0,
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        title: Image.asset(
+          'assets/img/tipografia.png',
+          height: 30,
+          fit: BoxFit.contain,
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(
+                  top: 15,
+                  left: 16,
+                  right: 16,
+                  bottom: 20,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 7),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Sua Vibe",
+                            style: TextStyle(
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          "Lugares que você curte e eventos interessados",
+                          style: TextStyle(
+                            color: Colors.white38,
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+
+              Container(
+                margin: const EdgeInsets.only(
+                  top: 0,
+                  bottom: 10,
+                  left: 16,
+                  right: 16,
+                ),
+                width: double.infinity,
+                height: 70,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Color(colorNavy),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.only(left: 16),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(colorBrasa),
+                                width: 1,
+                              ),
+                            ),
+                            child: Icon(
+                              Icons.favorite_outline,
+                              color: Color(colorBrasa),
+                              fontWeight: FontWeight(20),
+                            ),
+                          ),
+                          Container(margin: EdgeInsets.only(left: 5)),
+                          Container(
+                            margin: const EdgeInsets.only(),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      lugaresFavoritos.toString(),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      " LUGARES",
+                                      style: TextStyle(
+                                        color: Colors.white38,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "FAVORITOS",
+                                  style: TextStyle(
+                                    color: Colors.white38,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.only(right: 16),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(9),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(colorBrasa),
+                                width: 1,
+                              ),
+                            ),
+                            child: Transform.rotate(
+                              angle: -0.5,
+                              child: FaIcon(
+                                FontAwesomeIcons.ticket,
+                                color: Color(colorBrasa),
+                                size: 21,
+                              ),
+                            ),
+                          ),
+                          Container(margin: EdgeInsets.only(left: 5)),
+                          Container(
+                            margin: const EdgeInsets.only(),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      eventosConfirmados.toString(),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      " EVENTOS",
+                                      style: TextStyle(
+                                        color: Colors.white38,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "CONFIRMADOS",
+                                  style: TextStyle(
+                                    color: Colors.white38,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: ['Favoritos', 'Vou ir'].asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final label = entry.value;
+                  final isActive = _currentIndex == index;
+
+                  return GestureDetector(
+                    onTap: () => setState(() => _currentIndex = index),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      child: Column(
+                        children: [
+                          Text(
+                            label,
+                            style: TextStyle(
+                              color: isActive ? Colors.white : Colors.white38,
+                              fontWeight: isActive
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          if (isActive)
+                            Container(
+                              height: 3,
+                              width: 24,
+                              color: Color(colorBrasa),
+                            )
+                          else
+                            const SizedBox(height: 2),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+
+              MyDivider(height: 1, width: double.infinity),
+              tabs[_currentIndex],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
