@@ -34,7 +34,8 @@ class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
           fit: BoxFit.contain,
         ),
       ),
-      body: SafeArea(
+      body: Padding(
+        padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -69,7 +70,7 @@ class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
                           "Lugares que você curte e eventos interessados",
                           style: TextStyle(
                             color: Colors.white38,
-                            fontSize: 14,
+                            fontSize: 12.5,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -80,12 +81,6 @@ class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
               ),
 
               Container(
-                margin: const EdgeInsets.only(
-                  top: 0,
-                  bottom: 10,
-                  left: 16,
-                  right: 16,
-                ),
                 width: double.infinity,
                 height: 70,
                 decoration: BoxDecoration(

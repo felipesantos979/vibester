@@ -125,7 +125,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         'Os lugares que você ama acompanhar de perto.',
                         style: TextStyle(
                           color: Colors.white38,
-                          fontSize: 15,
+                          fontSize: 12.5,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -135,7 +135,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               ),
             );
           }
-      
+
           return PlaceCardForFavorites(
             place: favorites[index - 1],
             onTap: () {
