@@ -1,5 +1,5 @@
 {
-  "name": "user-service",
+  "name": "establishment-service",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:push": "prisma db push",
@@ -16,7 +16,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "@fastify/cors": "^11.2.0",
     "@fastify/jwt": "^10.0.0",
