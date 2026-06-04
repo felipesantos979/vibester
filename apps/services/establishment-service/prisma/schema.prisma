@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -8,15 +7,32 @@ datasource db {
 }
 
 model Establishment {
-  id             String @id @default(cuid())
+  id             String  @id @default(uuid())
+  googlePlaceId  String? @unique
   name           String
-  photoUrl       String
-  bannerUrl      String
+  photoUrl       String?
+  bannerUrl      String?
   category       String
-  priceIndicator String
-  averageRating  Float  @default(0.0)
+  priceIndicator String?
+  averageRating  Float   @default(0.0)
   latitude       Float
   longitude      Float
+  openingHours   EstablishmentOpeningHour[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("establishments")
+}
+
+
+model EstablishmentOpeningHour {
+  id              String        @id @default(uuid())
+  establishmentId String
+  dayOfWeek       Int
+  openTime        String
+  closeTime       String
+
+  establishment   Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+
+  @@map("establishment_opening_hours")
 }

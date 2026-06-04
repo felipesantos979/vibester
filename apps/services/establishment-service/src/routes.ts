@@ -2,11 +2,14 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import { 
   listEstablishmentsController, 
   updateEstablishmentRatingController,
-  getEstablishmentProfileController
+  getEstablishmentProfileController,
+  listOpenEstablishmentsController
 } from "./controllers/establishment.controller";
 
 export async function establishmentRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
   fastify.get("/establishments", listEstablishmentsController);
+  fastify.get("/establishments/open", listOpenEstablishmentsController);
+
   fastify.get("/establishments/:id", getEstablishmentProfileController);
   fastify.patch("/establishments/:id/rating", updateEstablishmentRatingController);
 }
