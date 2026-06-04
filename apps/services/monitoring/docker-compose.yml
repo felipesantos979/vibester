@@ -7,6 +7,7 @@ networks:
 volumes:
   prometheus_data:
   grafana_data:
+  influxdb_data:
 
 services:
   node_exporter:
@@ -41,6 +42,20 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
       - /cgroup:/cgroup:ro
+
+  influxdb:
+    image: influxdb:1.8
+    container_name: influxdb
+    restart: unless-stopped
+    networks:
+      - monitoring
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=k6
+      - INFLUXDB_HTTP_AUTH_ENABLED=false
+    volumes:
+      - influxdb_data:/var/lib/influxdb
 
   prometheus:
     image: prom/prometheus:latest
