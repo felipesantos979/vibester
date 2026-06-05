@@ -242,11 +242,9 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
                   borderRadius: BorderRadius.circular(30),
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pop(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => HomeScreen(),
-                        ),
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
                       );
                     },
                     borderRadius: BorderRadius.circular(30),

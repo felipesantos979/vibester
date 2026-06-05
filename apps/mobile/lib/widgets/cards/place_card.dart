@@ -29,12 +29,25 @@ class PlaceCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: SizedBox(
-                      height: 70,
-                      width: 70,
-                      child: Placeholder(),
+                  Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(colorAmbar).withOpacity(0.6),
+                          blurRadius: 10,
+                          offset: const Offset(0, 1),
+                          spreadRadius: 2,
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      child: SizedBox(
+                        height: 80,
+                        width: 80,
+                        child: Image.asset(place.profileImage),
+                      ),
                     ),
                   ),
                   SizedBox(width: 12),
@@ -71,6 +84,7 @@ class PlaceCard extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      SizedBox(height: 3),
                       MovimentoIndicator(nivel: place.nivelMovimento),
                     ],
                   ),

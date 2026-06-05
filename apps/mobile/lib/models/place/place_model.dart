@@ -8,7 +8,8 @@ class PlaceModel {
   final String endereco;
   final int qtdAvaliacoes;
   final List<double> distribuicao;
-  final double? distancia; 
+  final double? distancia;
+  final String profileImage;
 
   PlaceModel({
     required this.nome,
@@ -20,6 +21,7 @@ class PlaceModel {
     required this.endereco,
     required this.distribuicao,
     required this.qtdAvaliacoes,
+    this.profileImage = '',
     this.distancia,
   });
 }
