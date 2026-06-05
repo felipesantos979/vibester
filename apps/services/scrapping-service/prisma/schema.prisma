@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model CurrentPopularity {
+  id              String   @id @default(uuid())
+  establishmentId String   @unique
+  googlePlaceId   String
+  level           MovementLevel
+  source          MovementSource
+  score           Int?
+  statusText  String?
+  timeSpent   String?
+  isEstimated Boolean @default(false)
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+
+  @@map("current_popularity")
+}
+
+enum MovementLevel {
+  VERY_LOW
+  LOW
+  MEDIUM
+  HIGH
+  VERY_HIGH
+  UNAVAILABLE
+}
+
+enum MovementSource {
+  SERPAPI
+  GOOGLE_MAPS
+  MANUAL
+  ESTIMATED
+}
+
+model PopularTimesDaily {
+  id              String   @id @default(uuid())
+  establishmentId String
+  googlePlaceId   String
+  capturedDate    DateTime
+  dayOfWeek       Int
+  hour            Int
+  busynessScore   Int
+  isCurrent       Boolean  @default(false)
+  statusText      String?
+  createdAt       DateTime @default(now())
+
+  @@index([establishmentId, dayOfWeek, hour])
+  @@index([capturedDate])
+  @@map("popular_times_daily")
+}
