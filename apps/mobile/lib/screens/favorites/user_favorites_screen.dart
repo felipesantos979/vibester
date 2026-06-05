@@ -34,236 +34,241 @@ class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
           fit: BoxFit.contain,
         ),
       ),
-      body: Padding(
-        padding: EdgeInsetsGeometry.symmetric(horizontal: 10),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(
-                  top: 15,
-                  left: 16,
-                  right: 16,
-                  bottom: 20,
-                ),
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 7),
-                      child: Row(
-                        children: [
-                          Text(
-                            "Sua Vibe",
-                            style: TextStyle(
-                              fontSize: 22,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
+      body: SingleChildScrollView(
+        padding: EdgeInsets.only(
+          left: 10,
+          right: 10,
+          bottom:
+              kBottomNavigationBarHeight +
+              MediaQuery.of(context).padding.bottom +
+              16,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(
+                top: 15,
+                left: 16,
+                right: 16,
+                bottom: 20,
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 7),
+                    child: Row(
                       children: [
                         Text(
-                          "Lugares que você curte e eventos interessados",
+                          "Sua Vibe",
                           style: TextStyle(
-                            color: Colors.white38,
-                            fontSize: 12.5,
+                            fontSize: 22,
+                            color: Colors.white,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  Row(
+                    children: [
+                      Text(
+                        "Lugares que você curte e eventos interessados",
+                        style: TextStyle(
+                          color: Colors.white38,
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
+            ),
 
-              Container(
-                width: double.infinity,
-                height: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  color: Color(colorNavy),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      margin: EdgeInsets.only(left: 16),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(7),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Color(colorBrasa),
-                                width: 1,
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.favorite_outline,
+            Container(
+              width: double.infinity,
+              height: 70,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Color(colorNavy),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(left: 16),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(7),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
                               color: Color(colorBrasa),
-                              fontWeight: FontWeight(20),
+                              width: 1,
                             ),
                           ),
-                          Container(margin: EdgeInsets.only(left: 5)),
-                          Container(
-                            margin: const EdgeInsets.only(),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      lugaresFavoritos.toString(),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                          child: Icon(
+                            Icons.favorite_outline,
+                            color: Color(colorBrasa),
+                            fontWeight: FontWeight(20),
+                          ),
+                        ),
+                        Container(margin: EdgeInsets.only(left: 5)),
+                        Container(
+                          margin: const EdgeInsets.only(),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    lugaresFavoritos.toString(),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    Text(
-                                      " LUGARES",
-                                      style: TextStyle(
-                                        color: Colors.white38,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  "FAVORITOS",
-                                  style: TextStyle(
-                                    color: Colors.white38,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
                                   ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    Container(
-                      alignment: Alignment.center,
-                      margin: EdgeInsets.only(right: 16),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(9),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Color(colorBrasa),
-                                width: 1,
-                              ),
-                            ),
-                            child: Transform.rotate(
-                              angle: -0.5,
-                              child: FaIcon(
-                                FontAwesomeIcons.ticket,
-                                color: Color(colorBrasa),
-                                size: 21,
-                              ),
-                            ),
-                          ),
-                          Container(margin: EdgeInsets.only(left: 5)),
-                          Container(
-                            margin: const EdgeInsets.only(),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      eventosConfirmados.toString(),
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                  Text(
+                                    " LUGARES",
+                                    style: TextStyle(
+                                      color: Colors.white38,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    Text(
-                                      " EVENTOS",
-                                      style: TextStyle(
-                                        color: Colors.white38,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Text(
-                                  "CONFIRMADOS",
-                                  style: TextStyle(
-                                    color: Colors.white38,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
                                   ),
+                                ],
+                              ),
+                              Text(
+                                "FAVORITOS",
+                                style: TextStyle(
+                                  color: Colors.white38,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
+                  ),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: ['Favoritos', 'Vou ir'].asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final label = entry.value;
-                  final isActive = _currentIndex == index;
-
-                  return GestureDetector(
-                    onTap: () => setState(() => _currentIndex = index),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            label,
-                            style: TextStyle(
-                              color: isActive ? Colors.white : Colors.white38,
-                              fontWeight: isActive
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          if (isActive)
-                            Container(
-                              height: 3,
-                              width: 24,
+                  Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(right: 16),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(9),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
                               color: Color(colorBrasa),
-                            )
-                          else
-                            const SizedBox(height: 2),
-                        ],
-                      ),
+                              width: 1,
+                            ),
+                          ),
+                          child: Transform.rotate(
+                            angle: -0.5,
+                            child: FaIcon(
+                              FontAwesomeIcons.ticket,
+                              color: Color(colorBrasa),
+                              size: 21,
+                            ),
+                          ),
+                        ),
+                        Container(margin: EdgeInsets.only(left: 5)),
+                        Container(
+                          margin: const EdgeInsets.only(),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    eventosConfirmados.toString(),
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    " EVENTOS",
+                                    style: TextStyle(
+                                      color: Colors.white38,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "CONFIRMADOS",
+                                style: TextStyle(
+                                  color: Colors.white38,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                  );
-                }).toList(),
+                  ),
+                ],
               ),
+            ),
 
-              MyDivider(height: 1, width: double.infinity),
-              tabs[_currentIndex],
-            ],
-          ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: ['Favoritos', 'Vou ir'].asMap().entries.map((entry) {
+                final index = entry.key;
+                final label = entry.value;
+                final isActive = _currentIndex == index;
+
+                return GestureDetector(
+                  onTap: () => setState(() => _currentIndex = index),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
+                    child: Column(
+                      children: [
+                        Text(
+                          label,
+                          style: TextStyle(
+                            color: isActive ? Colors.white : Colors.white38,
+                            fontWeight: isActive
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        if (isActive)
+                          Container(
+                            height: 3,
+                            width: 24,
+                            color: Color(colorBrasa),
+                          )
+                        else
+                          const SizedBox(height: 2),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+
+            MyDivider(height: 1, width: double.infinity),
+            tabs[_currentIndex],
+          ],
         ),
       ),
     );

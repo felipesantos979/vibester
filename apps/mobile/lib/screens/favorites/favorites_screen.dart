@@ -99,7 +99,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.only(top: 16),
         itemCount: favorites.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
