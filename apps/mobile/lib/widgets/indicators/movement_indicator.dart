@@ -8,21 +8,29 @@ class MovimentoIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color _getColor(int nivel) {
-      if (nivel <= 2) return Color(colorAmbar).withAlpha(200);
-      if (nivel <= 3) return Color(colorAmbar).withAlpha(250);
-      return Color(colorAmbar);
+      if (nivel <= 2) return Color(colorBrasa).withAlpha(150);
+      if (nivel <= 3) return Color(colorBrasa).withAlpha(70);
+      return Color(colorBrasa);
     }
 
     return Row(
       children: List.generate(5, (index) {
         return Container(
           margin: EdgeInsets.symmetric(horizontal: 2),
-          width: 11,
-          height: 16,
+          width: 16,
+          height: 9,
           decoration: BoxDecoration(
-            color: index < nivel ? _getColor(nivel) : Colors.white24,
+            color: index < nivel ? _getColor(nivel) : Color(colorNoturno),
             borderRadius: BorderRadius.circular(2),
-            border: BoxBorder.all(color: Color(colorAmbar), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Color(colorBrasa).withOpacity(0.6),
+                blurRadius: 10,
+                offset: const Offset(0, 1),
+                spreadRadius: 1,
+              ),
+            ],
+            border: BoxBorder.all(color: Color(colorBrasa), width: 1),
           ),
         );
       }),

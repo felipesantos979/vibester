@@ -38,10 +38,7 @@ class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
         padding: EdgeInsets.only(
           left: 10,
           right: 10,
-          bottom:
-              kBottomNavigationBarHeight +
-              MediaQuery.of(context).padding.bottom +
-              16,
+          bottom: MediaQuery.of(context).padding.bottom,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

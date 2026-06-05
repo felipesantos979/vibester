@@ -59,7 +59,27 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                       child: SizedBox(
                         width: 100,
                         height: 100,
-                        child: ClipOval(child: Container(color: Colors.white)),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(colorAmbar).withOpacity(0.6),
+                                blurRadius: 10,
+                                offset: const Offset(0, 1),
+                                spreadRadius: 3,
+                              ),
+                            ],
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: SizedBox(
+                              height: 80,
+                              width: 80,
+                              child: Image.asset(widget.place.profileImage),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],

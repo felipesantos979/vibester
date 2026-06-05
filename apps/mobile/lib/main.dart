@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/screens/home/initial_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,12 +16,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        textTheme: GoogleFonts.interTextTheme(),
-        fontFamily: GoogleFonts.inter().fontFamily,
+    return ChangeNotifierProvider(
+      create: (_) => PlaceListProvider(),
+      child: MaterialApp(
+        theme: ThemeData(
+          textTheme: GoogleFonts.interTextTheme(),
+          fontFamily: GoogleFonts.inter().fontFamily,
+        ),
+        home: InitialScreen(),
       ),
-      home: InitialScreen(),
     );
   }
 }
