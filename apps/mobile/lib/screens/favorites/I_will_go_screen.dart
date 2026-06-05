@@ -54,7 +54,7 @@ class _IWillGoScreenState extends State<IWillGoScreen> {
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: EdgeInsets.only(top: 16),
         itemCount: events.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {

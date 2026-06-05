@@ -4,11 +4,13 @@ import 'package:mobile/utils/colors.dart';
 class CustomSearchBar extends StatelessWidget {
   final TextEditingController controller;
   final VoidCallback onChanged;
+  final VoidCallback? onSubmitted;
 
   const CustomSearchBar({
     super.key,
     required this.controller,
     required this.onChanged,
+    this.onSubmitted,
   });
 
   @override
@@ -25,6 +27,7 @@ class CustomSearchBar extends StatelessWidget {
         cursorColor: Color(colorAmbar),
         style: const TextStyle(color: Colors.white),
         onChanged: (_) => onChanged(),
+        onSubmitted: (_) => onSubmitted?.call(),
         decoration: InputDecoration(
           hintText: 'Buscar por nome ou categoria...',
           hintStyle: TextStyle(color: Colors.white38, fontSize: 14),
