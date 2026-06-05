@@ -96,10 +96,13 @@ class PublicationCard extends StatelessWidget {
             ),
           ),
 
-          Image.network(
-            publication.publicationImage,
-            width: double.infinity,
-            fit: BoxFit.cover,
+          AspectRatio(
+            aspectRatio: 4 / 5,
+            child: Image.network(
+              publication.publicationImage,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
           ),
 
           Padding(
