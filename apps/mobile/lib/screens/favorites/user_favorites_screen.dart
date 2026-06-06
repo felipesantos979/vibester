@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/providers/events/events_list_provider.dart';
+import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/screens/favorites/I_will_go_screen.dart';
 import 'package:mobile/screens/favorites/favorites_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 class UserFavoritesScreen extends StatefulWidget {
   const UserFavoritesScreen({super.key});
@@ -14,12 +17,15 @@ class UserFavoritesScreen extends StatefulWidget {
 
 class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
   int _currentIndex = 0;
-  int lugaresFavoritos = 12;
-  int eventosConfirmados = 4;
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> tabs = [FavoritesScreen(), IWillGoScreen()];
+    final event = Provider.of<EventsListProvider>(context);
+    final places = Provider.of<PlaceListProvider>(context);
+
+    int lugaresFavoritos = places.favorites.length;
+    int eventosConfirmados = event.favorites.length;
 
     return Scaffold(
       backgroundColor: Color(colorNoturno),
@@ -29,7 +35,7 @@ class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Image.asset(
-          'assets/img/tipografia.png',
+          'assets/img/logo/tipografia.png',
           height: 30,
           fit: BoxFit.contain,
         ),

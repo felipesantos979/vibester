@@ -1,55 +1,100 @@
+// ignore_for_file: prefer_final_fields
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/utils/colors.dart';
 
-class PrimaryButton extends StatelessWidget {
+class PrimaryButton extends StatefulWidget {
   final String label;
   final VoidCallback onPressed;
+  final ButtonState state;
 
   const PrimaryButton({
     super.key,
     required this.label,
     required this.onPressed,
+    this.state = ButtonState.idle,
   });
 
   @override
+  State<PrimaryButton> createState() => _PrimaryButtonState();
+}
+
+class _PrimaryButtonState extends State<PrimaryButton> {
+  @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return AnimatedContainer(
+      duration: const Duration(seconds: 2),
+      curve: Curves.easeOutBack,
       width: 350,
-      height: 50,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Color(colorAmbar).withOpacity(0.5),
-              blurRadius: 12,
-              spreadRadius: 1,
-            ),
-            BoxShadow(
-              color: Color(colorAmbar).withOpacity(0.3),
-              blurRadius: 20,
-              spreadRadius: 1,
-            ),
-            BoxShadow(
-              color: Color(colorAmbar).withOpacity(0.15),
-              blurRadius: 30,
-              spreadRadius: 1,
-            ),
-          ],
-        ),
-        child: ElevatedButton(
-          onPressed: onPressed,
-          style: ElevatedButton.styleFrom(backgroundColor: Color(colorAmbar)),
-          child: Text(
-            label,
-            style: GoogleFonts.inter(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+      height: 60,
+      decoration: BoxDecoration(
+        color: widget.state.color,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Color(colorAmbar).withOpacity(0.5),
+            blurRadius: 12,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Color(colorAmbar).withOpacity(0.3),
+            blurRadius: 20,
+            spreadRadius: 1,
+          ),
+          BoxShadow(
+            color: Color(colorAmbar).withOpacity(0.15),
+            blurRadius: 30,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(30),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(30),
+          onTap: widget.onPressed,
+          child: Center(
+            child: widget.state == ButtonState.idle
+                ? Text(
+                    widget.label,
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    widget.state.label,
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
           ),
         ),
       ),
     );
   }
+}
+
+enum ButtonState {
+  idle,
+  loading,
+  success,
+  error;
+
+  Color get color => switch (this) {
+    ButtonState.idle => Color(colorAmbar),
+    ButtonState.loading => const Color(0xFFFFAA00),
+    ButtonState.success => Color(colorNavy),
+    ButtonState.error => const Color(0xFFF44336),
+  };
+
+  String get label => switch (this) {
+    ButtonState.idle => 'Seguir',
+    ButtonState.loading => 'Carregando...',
+    ButtonState.success => 'Seguindo',
+    ButtonState.error => 'Erro',
+  };
 }

@@ -125,4 +125,13 @@ class EventsListProvider extends ChangeNotifier {
   ];
 
   List<EventModel> get events => _events;
+
+  List<EventModel> get favorites =>
+      _events.where((e) => e.isFavorite == true).toList();
+
+  void toggleFavorite(String titulo) {
+    final event = _events.firstWhere((e) => e.titulo == titulo);
+    event.isFavorite = !event.isFavorite;
+    notifyListeners();
+  }
 }

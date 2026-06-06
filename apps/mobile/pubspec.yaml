@@ -65,3 +65,5 @@ flutter:
   assets:
     - assets/img/
     - assets/img/places/
+    - assets/img/mascote/
+    - assets/img/logo/

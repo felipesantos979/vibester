@@ -9,6 +9,7 @@ class EventModel {
   final String informacoes;
   final String artistas;
   final String imageUrl;
+  bool isFavorite;
 
   EventModel({
     required this.dataDoEvento,
@@ -19,5 +20,6 @@ class EventModel {
     required this.informacoes,
     required this.artistas,
     this.imageUrl = '',
+    this.isFavorite = false,
   });
 }

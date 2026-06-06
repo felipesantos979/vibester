@@ -25,7 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
         centerTitle: true,
         automaticallyImplyLeading: false,
         title: Image.asset(
-          'assets/img/tipografia.png',
+          'assets/img/logo/tipografia.png',
           height: 30,
           fit: BoxFit.contain,
         ),

@@ -16,14 +16,16 @@ class IWillGoScreen extends StatefulWidget {
 class _IWillGoScreenState extends State<IWillGoScreen> {
   @override
   Widget build(BuildContext context) {
-    final List<EventModel> events = context.watch<EventsListProvider>().events;
+    final List<EventModel> favorites = context
+        .watch<EventsListProvider>()
+        .favorites;
     return ColoredBox(
       color: Color(colorNoturno),
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.only(top: 16),
-        itemCount: events.length + 1,
+        itemCount: favorites.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Padding(
@@ -60,13 +62,13 @@ class _IWillGoScreenState extends State<IWillGoScreen> {
           }
 
           return IWillGoEventCard(
-            event: events[index - 1],
+            event: favorites[index - 1],
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      EventDetailScreen(eventModel: events[index - 1]),
+                      EventDetailScreen(eventModel: favorites[index - 1]),
                 ),
               );
             },

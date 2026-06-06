@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/user/user_model.dart';
-import 'package:mobile/screens/events/event_list_screen.dart';
+import 'package:mobile/screens/events/favorites_events_screen.dart';
 import 'package:mobile/screens/highlights/property_highlights_screen.dart';
 import 'package:mobile/screens/places/favorite_places_screen.dart';
 import 'package:mobile/utils/colors.dart';
@@ -315,7 +315,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   children: [
                     Center(child: PropertyHighlightsScreen()),
                     Center(child: FavoritePlacesScreen()),
-                    Center(child: EventListScreen()),
+                    Center(child: FavoritesEventsScreen()),
                   ],
                 ),
               ),

@@ -24,7 +24,10 @@ class _InitialScreenState extends State<InitialScreen> {
           margin: EdgeInsets.all(20),
           child: Column(
             children: [
-              SizedBox(height: 250, child: Image.asset('assets/img/logo.png')),
+              SizedBox(
+                height: 250,
+                child: Image.asset('assets/img/logo/logo.png'),
+              ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -50,7 +53,7 @@ class _InitialScreenState extends State<InitialScreen> {
                   ),
                   SizedBox(width: 12),
                   Image.asset(
-                    'assets/img/mascote.png',
+                    'assets/img/mascote/mascote.png',
                     width: 100,
                     height: 120,
                   ),

@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/models/place/place_model.dart';
-import 'package:mobile/providers/place/place_list_provider.dart';
-import 'package:mobile/screens/places/place_detail_screen.dart';
+import 'package:mobile/models/event/event_model.dart';
+import 'package:mobile/providers/events/events_list_provider.dart';
+import 'package:mobile/screens/events/event_detail_screen.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/cards/place/place_card.dart';
+import 'package:mobile/widgets/cards/event/event_card.dart';
 import 'package:provider/provider.dart';
 
-class FavoritePlacesScreen extends StatefulWidget {
-  const FavoritePlacesScreen({super.key});
+class FavoritesEventsScreen extends StatefulWidget {
+  const FavoritesEventsScreen({super.key});
 
   @override
-  State<FavoritePlacesScreen> createState() => _FavoritePlacesScreenState();
+  State<FavoritesEventsScreen> createState() => _FavoritesEventsScreenState();
 }
 
-class _FavoritePlacesScreenState extends State<FavoritePlacesScreen> {
+class _FavoritesEventsScreenState extends State<FavoritesEventsScreen> {
   @override
   Widget build(BuildContext context) {
-    final List<PlaceModel> favorites = context
-        .watch<PlaceListProvider>()
+    final List<EventModel> favorites = context
+        .watch<EventsListProvider>()
         .favorites;
     return Scaffold(
       backgroundColor: Color(colorNoturno),
@@ -31,13 +31,13 @@ class _FavoritePlacesScreenState extends State<FavoritePlacesScreen> {
                     width: 200,
                     child: Opacity(
                       opacity: 0.8,
-                      child: Image.asset('assets/img/lupa.png'),
+                      child: Image.asset('assets/img/mascote/lupa.png'),
                     ),
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Nenhum lugar marcado como favorito',
+                  'Nenhum evento confirmado',
                   style: TextStyle(
                     color: Colors.white38,
                     fontSize: 16,
@@ -48,17 +48,16 @@ class _FavoritePlacesScreenState extends State<FavoritePlacesScreen> {
             )
           : ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              itemCount: favorites.length + 1,
+              itemCount: favorites.length,
               itemBuilder: (context, index) {
-                if (index == favorites.length) return SizedBox(height: 80);
-                return PlaceCard(
-                  place: favorites[index],
+                return EventCard(
+                  event: favorites[index],
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            PlaceDetailScreen(place: favorites[index]),
+                            EventDetailScreen(eventModel: favorites[index]),
                       ),
                     );
                   },

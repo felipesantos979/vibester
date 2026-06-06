@@ -70,7 +70,7 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
               child: SizedBox(
                 width: 130,
                 height: 300,
-                child: Image.asset('assets/img/mascote.png'),
+                child: Image.asset('assets/img/mascote/mascote.png'),
               ),
             ),
 

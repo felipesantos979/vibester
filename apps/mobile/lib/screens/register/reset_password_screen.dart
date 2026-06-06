@@ -24,7 +24,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               child: SizedBox(
                 width: 130,
                 height: 265,
-                child: Image.asset('assets/img/mascote.png'),
+                child: Image.asset('assets/img/mascote/mascote.png'),
               ),
             ),
 
