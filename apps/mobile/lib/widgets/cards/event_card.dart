@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/utils/colors.dart';
+import 'package:mobile/utils/app_progress_indicator.dart';
 
 class EventCard extends StatelessWidget {
   final EventModel event;
@@ -23,8 +25,13 @@ class EventCard extends StatelessWidget {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              //trocar pra imagem que vai vir do banco dps
-              Placeholder(),
+              CachedNetworkImage(
+                imageUrl: event.imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (_, _) =>
+                    const Center(child: AppProgressIndicator()),
+                errorWidget: (_, _, _) => const Icon(Icons.error),
+              ),
 
               DecoratedBox(
                 decoration: BoxDecoration(

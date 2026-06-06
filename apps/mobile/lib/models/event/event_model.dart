@@ -8,6 +8,7 @@ class EventModel {
   final String localizacao;
   final String informacoes;
   final String artistas;
+  final String imageUrl;
 
   EventModel({
     required this.dataDoEvento,
@@ -17,5 +18,6 @@ class EventModel {
     required this.localizacao,
     required this.informacoes,
     required this.artistas,
+    this.imageUrl = '',
   });
 }

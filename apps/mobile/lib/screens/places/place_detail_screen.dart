@@ -40,8 +40,11 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       appBar: AppBar(
-        title: Text(widget.place.nome),
-        backgroundColor: Color(colorNavy),
+        title: Text(
+          widget.place.nome,
+          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Color(colorNoturno),
         foregroundColor: Colors.white,
       ),
       body: NestedScrollView(
@@ -53,9 +56,38 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                   clipBehavior: Clip.none,
                   alignment: Alignment.bottomCenter,
                   children: [
-                    SizedBox(height: 100, child: Placeholder()),
+                    SizedBox(
+                      height: 250,
+                      width: double.infinity,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.network(
+                            'https://scontent.fmgf12-1.fna.fbcdn.net/v/t39.30808-6/494058401_1250374963761853_838903228158441111_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x1365&ctp=s2048x1365&_nc_cat=107&ccb=1-7&_nc_sid=f727a1&_nc_ohc=n_nwB0sNQRcQ7kNvwF6SbCp&_nc_oc=AdoxdhtjEJsKGNsgN-GWn6WJky-QXk7QWw8rd7t2lXj4_o3eYXqsf9tRT_B34xu18BinKdIRL23Gz0NDNoE3741r&_nc_zt=23&_nc_ht=scontent.fmgf12-1.fna&_nc_gid=HPrvzHet1Uf_nAXF3973zw&_nc_ss=7b2a8&oh=00_Af_Dwo9PEMLPCYVqL3aT0RhK0mf502SSmdV0217yY97RMQ&oe=6A2942C2',
+                            fit: BoxFit.cover,
+                          ),
+
+                          // Gradiente escurecendo para baixo
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.transparent,
+                                  Color(colorNoturno).withOpacity(0.3),
+                                  Color(colorNoturno).withOpacity(0.7),
+                                  Color(colorNoturno),
+                                ],
+                                stops: const [0.0, 0.4, 0.7, 1.0],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                     Positioned(
-                      bottom: -50,
+                      bottom: -25,
                       child: SizedBox(
                         width: 100,
                         height: 100,
@@ -84,7 +116,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                     ),
                   ],
                 ),
-                const SizedBox(height: 60),
+                const SizedBox(height: 40),
 
                 Text(
                   widget.place.nome.toUpperCase(),

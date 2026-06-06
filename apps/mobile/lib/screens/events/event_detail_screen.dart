@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
+import 'package:mobile/utils/app_progress_indicator.dart';
 import 'package:mobile/widgets/cards/map_event.dart';
 import 'package:mobile/widgets/indicators/lineup_indicator.dart';
 import 'package:mobile/widgets/buttons/secundary_button.dart';
@@ -49,7 +51,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     ),
 
                     //lugar da imagem
-                    child: Placeholder(),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.eventModel.imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (_, _) =>
+                          const Center(child: AppProgressIndicator()),
+                      errorWidget: (_, _, _) => const Icon(Icons.error),
+                    ),
                   ),
                 ),
 
