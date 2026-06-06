@@ -49,7 +49,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     setState(() {
                       if (pesquisaController.text.isNotEmpty) {
                         ultimasPesquisas.insert(0, pesquisaController.text);
-                        if (ultimasPesquisas.length > 10) {
+                        pesquisaController.clear();
+                        if (ultimasPesquisas.length > 5) {
                           ultimasPesquisas.removeLast();
                         }
                       }
