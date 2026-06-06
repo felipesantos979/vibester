@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/place/place_model.dart';
+import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/screens/events/event_list_screen.dart';
 import 'package:mobile/screens/highlights/property_highlights_screen.dart';
 import 'package:mobile/screens/places/place_reviews_screen.dart';
@@ -9,6 +10,7 @@ import 'package:mobile/widgets/indicators/category_indicator.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/widgets/indicators/place_stats_bar.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
+import 'package:provider/provider.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
   final PlaceModel place;
@@ -37,6 +39,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<PlaceListProvider>(context);
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       appBar: AppBar(
@@ -158,7 +161,15 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                   seguidores: '12k',
                   avaliacao: widget.place.avaliacao,
                 ),
-                PrimaryButton(label: 'Seguir', onPressed: () {}),
+                PrimaryButton(
+                  label: 'Seguir',
+                  state: widget.place.isFavorite
+                      ? ButtonState.success
+                      : ButtonState.idle,
+                  onPressed: () {
+                    provider.toggleFavorite(widget.place.nome);
+                  },
+                ),
                 const SizedBox(height: 20),
               ],
             ),

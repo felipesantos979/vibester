@@ -10,6 +10,7 @@ class PlaceModel {
   final List<double> distribuicao;
   final double? distancia;
   final String profileImage;
+  bool isFavorite;
 
   PlaceModel({
     required this.nome,
@@ -23,5 +24,6 @@ class PlaceModel {
     required this.qtdAvaliacoes,
     this.profileImage = '',
     this.distancia,
+    this.isFavorite = false,
   });
 }

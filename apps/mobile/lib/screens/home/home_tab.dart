@@ -35,7 +35,7 @@ class HomeTab extends StatelessWidget {
             ),
           ),
           title: Image.asset(
-            'assets/img/tipografia.png',
+            'assets/img/logo/tipografia.png',
             height: 20,
             fit: BoxFit.contain,
           ),

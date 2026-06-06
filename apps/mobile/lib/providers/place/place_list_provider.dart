@@ -123,4 +123,13 @@ class PlaceListProvider extends ChangeNotifier {
   ];
 
   List<PlaceModel> get places => _places;
+
+  List<PlaceModel> get favorites =>
+      _places.where((p) => p.isFavorite == true).toList();
+
+  void toggleFavorite(String nome) {
+    final place = _places.firstWhere((p) => p.nome == nome);
+    place.isFavorite = !place.isFavorite;
+    notifyListeners();
+  }
 }

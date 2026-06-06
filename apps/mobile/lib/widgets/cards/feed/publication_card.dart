@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/feed/publication_model.dart';
+import 'package:mobile/utils/app_progress_indicator.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/widgets/indicators/like_indicator.dart';
@@ -98,10 +100,12 @@ class PublicationCard extends StatelessWidget {
 
           AspectRatio(
             aspectRatio: 4 / 5,
-            child: Image.network(
-              publication.publicationImage,
-              width: double.infinity,
+            child: CachedNetworkImage(
+              imageUrl: publication.publicationImage,
               fit: BoxFit.cover,
+              placeholder: (_, _) =>
+                  const Center(child: AppProgressIndicator()),
+              errorWidget: (_, _, _) => const Icon(Icons.error),
             ),
           ),
 

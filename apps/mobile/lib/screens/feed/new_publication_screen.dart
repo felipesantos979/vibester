@@ -67,6 +67,8 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
                   }
                 },
               ),
+              SizedBox(height: 20),
+              SizedBox(child: Image.asset('assets/img/mascote/dica.png')),
             ],
           ),
         ),
