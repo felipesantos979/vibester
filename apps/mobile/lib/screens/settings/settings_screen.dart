@@ -256,33 +256,30 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
 
                   //Fantasma
-                  InkWell(
-                    onTap: () {},
-                    child: Row(
-                      children: [
-                        FaIcon(FontAwesomeIcons.ghost, color: Colors.white),
-                        SizedBox(width: 15),
-                        Expanded(
-                          child: Text(
-                            "Ghost Vibe",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  Row(
+                    children: [
+                      FaIcon(FontAwesomeIcons.ghost, color: Colors.white),
+                      SizedBox(width: 15),
+                      Expanded(
+                        child: Text(
+                          "Ghost Vibe",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Switch(
-                          value: modoFantasma,
-                          onChanged: (value) {
-                            setState(() {
-                              modoFantasma = value;
-                            });
-                          },
-                          activeColor: Color(colorBrasa),
-                        ),
-                      ],
-                    ),
+                      ),
+                      Switch(
+                        value: modoFantasma,
+                        onChanged: (value) {
+                          setState(() {
+                            modoFantasma = value;
+                          });
+                        },
+                        activeColor: Color(colorBrasa),
+                      ),
+                    ],
                   ),
                   Container(
                     margin: EdgeInsets.only(left: 30, right: 5),
