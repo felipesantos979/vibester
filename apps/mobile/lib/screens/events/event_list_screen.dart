@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/event/event_model.dart';
-import 'package:mobile/models/event/lineup_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
 import 'package:mobile/screens/events/event_detail_screen.dart';
 import 'package:mobile/utils/colors.dart';
