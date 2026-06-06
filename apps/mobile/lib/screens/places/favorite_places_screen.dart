@@ -31,7 +31,7 @@ class _FavoritePlacesScreenState extends State<FavoritePlacesScreen> {
                     width: 200,
                     child: Opacity(
                       opacity: 0.8,
-                      child: Image.asset('assets/img/lupa.png'),
+                      child: Image.asset('assets/img/mascote/lupa.png'),
                     ),
                   ),
                 ),
