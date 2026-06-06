@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/screens/user/user_interests_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/date_picker_field.dart';
-import 'package:mobile/widgets/cards/editing_avatar.dart';
+import 'package:mobile/widgets/cards/users/editing_avatar.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
 import 'package:mobile/widgets/text-field/primary_text_field.dart';
 
