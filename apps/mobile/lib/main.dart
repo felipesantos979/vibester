@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/providers/events/events_list_provider.dart';
 import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/screens/home/initial_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -16,8 +17,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => PlaceListProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => PlaceListProvider()),
+        ChangeNotifierProvider(create: (_) => EventsListProvider()),
+      ],
       child: MaterialApp(
         theme: ThemeData(
           textTheme: GoogleFonts.interTextTheme(),

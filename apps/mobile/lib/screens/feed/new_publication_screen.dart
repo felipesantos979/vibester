@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/screens/feed/feed_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/location_picker.dart';
 import 'package:mobile/utils/location_picker_tile.dart';

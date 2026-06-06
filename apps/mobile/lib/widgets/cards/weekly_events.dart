@@ -1,7 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/models/event/event_model.dart';
+import 'package:mobile/screens/events/event_detail_screen.dart';
+import 'package:mobile/utils/app_progress_indicator.dart';
 import 'package:mobile/utils/colors.dart';
 
 class WeeklyEvents extends StatefulWidget {
@@ -15,71 +18,87 @@ class WeeklyEvents extends StatefulWidget {
 class _WeeklyEventsState extends State<WeeklyEvents> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 17.0),
-      child: Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Color(colorBrasa), width: 2),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(29),
-          child: Container(
-            color: Color(colorNavy),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Imagem
-                SizedBox(
-                  height: widget.evento.titulo.length < 40 ? 180 : 160,
-                  width: double.infinity,
-                  child: Image.network(
-                    'https://lets.events/blog/wp-content/uploads/2017/09/top-da-balada-o-que-faz-uma-balada-ter-sucesso.jpeg',
-                    fit: BoxFit.cover,
+    return InkWell(
+      onTap: () {
+        setState(() {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  EventDetailScreen(eventModel: widget.evento),
+            ),
+          );
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 17.0),
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Color(colorBrasa), width: 1.3),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(29),
+            child: Container(
+              color: Color(colorNavy),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Imagem
+                  SizedBox(
+                    height: widget.evento.titulo.length < 40 ? 180 : 160,
+                    width: double.infinity,
+                    child: CachedNetworkImage(
+                      imageUrl: widget.evento.imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (_, _) =>
+                          const Center(child: AppProgressIndicator()),
+                      errorWidget: (_, _, _) => const Icon(Icons.error),
+                    ),
                   ),
-                ),
 
-                // Textos
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.evento.titulo,
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                  // Textos
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.evento.titulo,
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
                         ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.calendar_month,
-                            color: Color(colorAmbar),
-                            size: 22,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            DateFormat(
-                              "EEE dd MMM  HH:mm",
-                              "pt_BR",
-                            ).format(widget.evento.dataDoEvento).toUpperCase(),
-                            style: GoogleFonts.inter(
-                              color: Colors.white54,
-                              fontSize: 13,
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.calendar_month,
+                              color: Color(colorAmbar),
+                              size: 22,
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            const SizedBox(width: 6),
+                            Text(
+                              DateFormat("EEE dd MMM  HH:mm", "pt_BR")
+                                  .format(widget.evento.dataDoEvento)
+                                  .toUpperCase(),
+                              style: GoogleFonts.inter(
+                                color: Colors.white54,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
