@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/utils/app_progress_indicator.dart';
-import 'package:mobile/widgets/cards/map_event.dart';
+import 'package:mobile/widgets/cards/users/map_event.dart';
 import 'package:mobile/widgets/indicators/lineup_indicator.dart';
 import 'package:mobile/widgets/buttons/secundary_button.dart';
 import 'package:mobile/widgets/buttons/tertiary_button.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/cards/review_card.dart';
+import 'package:mobile/widgets/cards/event/review_card.dart';
 import 'package:mobile/widgets/indicators/review_indicator.dart';
 
 class PlaceReviewsScreen extends StatefulWidget {

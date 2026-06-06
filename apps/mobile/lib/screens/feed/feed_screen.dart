@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile/models/feed/publication_model.dart';
 import 'package:mobile/screens/feed/new_publication_screen.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/cards/publication_card.dart';
+import 'package:mobile/widgets/cards/feed/publication_card.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});

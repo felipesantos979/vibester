@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/location_picker.dart';
 import 'package:mobile/utils/location_picker_tile.dart';
-import 'package:mobile/widgets/cards/post_photo_picker.dart';
+import 'package:mobile/widgets/cards/feed/post_photo_picker.dart';
 import 'package:mobile/widgets/text-field/caption_text_field.dart';
 
 class NewPublicationScreen extends StatefulWidget {

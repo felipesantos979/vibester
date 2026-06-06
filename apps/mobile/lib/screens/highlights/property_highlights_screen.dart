@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/highlights/highlight_model.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/cards/highlights_card.dart';
+import 'package:mobile/widgets/cards/highlights/highlights_card.dart';
 
 class PropertyHighlightsScreen extends StatefulWidget {
   const PropertyHighlightsScreen({super.key});

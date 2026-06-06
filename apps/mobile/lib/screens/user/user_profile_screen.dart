@@ -7,7 +7,7 @@ import 'package:mobile/screens/places/favorite_places_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/utils/editable_text_field.dart';
-import 'package:mobile/widgets/cards/profile_avatar.dart';
+import 'package:mobile/widgets/cards/users/profile_avatar.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});

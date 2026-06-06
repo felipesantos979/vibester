@@ -7,10 +7,10 @@ import 'package:mobile/models/place/exclusive_offers_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
 import 'package:mobile/screens/highlights/category_highlights_section.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/cards/close_to_you.dart';
-import 'package:mobile/widgets/cards/exclusive_offers.dart';
-import 'package:mobile/widgets/cards/featured_events.dart';
-import 'package:mobile/widgets/cards/weekly_events.dart';
+import 'package:mobile/widgets/cards/highlights/close_to_you.dart';
+import 'package:mobile/widgets/cards/highlights/exclusive_offers.dart';
+import 'package:mobile/widgets/cards/event/featured_events.dart';
+import 'package:mobile/widgets/cards/event/weekly_events.dart';
 import 'package:mobile/widgets/indicators/lineup_place_indicator.dart';
 import 'package:provider/provider.dart';
 
