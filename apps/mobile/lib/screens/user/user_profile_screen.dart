@@ -4,6 +4,7 @@ import 'package:mobile/models/user/user_model.dart';
 import 'package:mobile/screens/events/favorites_events_screen.dart';
 import 'package:mobile/screens/highlights/property_highlights_screen.dart';
 import 'package:mobile/screens/places/favorite_places_screen.dart';
+import 'package:mobile/screens/settings/settings_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/utils/editable_text_field.dart';
@@ -229,19 +230,34 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                        ),
-                        height: 30,
-                        width: 150,
-                        child: Center(
-                          child: Text(
-                            'Editar perfil',
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                      Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(50),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SettingsScreen(),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(50),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white, width: 1),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            height: 30,
+                            width: 150,
+                            child: Center(
+                              child: Text(
+                                'Configurações',
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
