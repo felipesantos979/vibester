@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => EventsListProvider()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           textTheme: GoogleFonts.interTextTheme(),
           fontFamily: GoogleFonts.inter().fontFamily,
