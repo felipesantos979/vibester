@@ -1,6 +1,7 @@
+import 'package:mobile/providers/user/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/models/user/user_model.dart';
 import 'package:mobile/screens/events/favorites_events_screen.dart';
 import 'package:mobile/screens/highlights/property_highlights_screen.dart';
 import 'package:mobile/screens/places/favorite_places_screen.dart';
@@ -21,17 +22,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final userMock = UserModel(
-    nome: 'Victor Marchi',
-    nomeUsuario: '@vitin',
-    bio: 'founder of vibester.',
-    seguidores: 1302,
-    seguindo: 32,
-    eventosVisitados: 123,
-    fotoPerfil:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCNBLmnNWfkgI83S1NuVF2k6dMjISlhRVMKQ&s',
-  );
-
   bool _showAppBarAvatar = false;
 
   @override
@@ -48,6 +38,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserProvider>().user;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -79,7 +71,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   offset: _showAppBarAvatar ? Offset(-1.2, 0) : Offset(-1.2, 0),
                   child: CircleAvatar(
                     radius: 16,
-                    backgroundImage: NetworkImage(userMock.fotoPerfil),
+                    backgroundImage: NetworkImage(user.fotoPerfil),
                   ),
                 ),
               ),
@@ -87,7 +79,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 duration: Duration(milliseconds: 300),
                 offset: _showAppBarAvatar ? Offset(0.19, 0) : Offset(0, 0),
                 child: Text(
-                  userMock.nomeUsuario,
+                  user.nomeUsuario,
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -119,13 +111,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 children: [
                   Padding(
                     padding: EdgeInsets.only(top: 30.0),
-                    child: ProfileAvatar(imageUrl: userMock.fotoPerfil),
+                    child: ProfileAvatar(imageUrl: user.fotoPerfil),
                   ),
 
                   SizedBox(height: 12),
 
                   Text(
-                    '${userMock.nome}',
+                    '${user.nome}',
                     style: GoogleFonts.inter(
                       color: Colors.white,
                       fontSize: 40,
@@ -136,7 +128,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   SizedBox(height: 12),
 
                   EditableTextField(
-                    label: userMock.nomeUsuario,
+                    label: user.nomeUsuario,
                     height: 30,
                     width: 150,
                   ),
@@ -144,7 +136,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   SizedBox(height: 20),
 
                   Text(
-                    userMock.bio,
+                    user.bio,
                     style: GoogleFonts.inter(
                       color: Colors.white70,
                       fontWeight: FontWeight.bold,
@@ -159,7 +151,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       Column(
                         children: [
                           Text(
-                            userMock.seguidores.toString(),
+                            user.seguidores.toString(),
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -182,7 +174,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       Column(
                         children: [
                           Text(
-                            userMock.seguindo.toString(),
+                            user.seguindo.toString(),
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -205,7 +197,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       Column(
                         children: [
                           Text(
-                            userMock.eventosVisitados.toString(),
+                            user.eventosVisitados.toString(),
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
