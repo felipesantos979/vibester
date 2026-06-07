@@ -56,16 +56,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 190,
+              height: Platform.isIOS ? 190 : 150,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white38, width: 1),
               ),
+
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+
                   //Infos
                   InkWell(
                     onTap: () {
@@ -77,6 +79,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       );
                     },
+
                     child: Row(
                       children: [
                         Icon(Icons.person, color: Colors.white54),
@@ -95,6 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
+
                   Container(
                     margin: EdgeInsets.only(left: 30, right: 5),
                     color: Colors.white38,
@@ -123,6 +127,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
+
                   Container(
                     margin: EdgeInsets.only(left: 30, right: 5),
                     color: Colors.white38,
@@ -141,6 +146,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       );
                     },
+
                     child: Row(
                       children: [
                         Icon(Icons.settings_outlined, color: Colors.white54),
@@ -186,16 +192,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: Platform.isIOS ? 230 : 180,
+              height: Platform.isIOS ? 230 : 150,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white38, width: 1),
               ),
+
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+
                   //Permição
                   InkWell(
                     onTap: () {},
@@ -217,6 +225,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
+
                   Container(
                     margin: EdgeInsets.only(left: 30, right: 5),
                     color: Colors.white38,
@@ -239,17 +248,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ),
                         ),
                       ),
-                      Switch(
-                        value: modoFantasma,
-                        onChanged: (value) {
-                          setState(() {
-                            modoFantasma = value;
-                          });
-                        },
-                        activeColor: Color(colorBrasa),
+
+                      Transform.scale(
+                        scale: Platform.isIOS ? 1.0 : 0.8,
+                        child: Switch(
+                          value: modoFantasma,
+                          onChanged: (value) {
+                            setState(() {
+                              modoFantasma = value;
+                            });
+                          },
+                          activeColor: Color(colorBrasa),
+                        ),
                       ),
                     ],
                   ),
+
                   Container(
                     margin: EdgeInsets.only(left: 30, right: 5),
                     color: Colors.white38,
@@ -305,13 +319,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 190,
+              height: Platform.isIOS ? 190 : 150,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white38, width: 1),
               ),
+
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -324,7 +339,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Icons.notifications_outlined,
                           color: Colors.white54,
                         ),
+                        
                         SizedBox(width: 10),
+
                         Expanded(
                           child: Text(
                             "Amigos na Área",
@@ -339,6 +356,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
+
                   Container(
                     margin: EdgeInsets.only(left: 30, right: 5),
                     color: Colors.white38,
@@ -355,7 +373,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Icons.calendar_today_outlined,
                           color: Colors.white54,
                         ),
+
                         SizedBox(width: 10),
+
                         Expanded(
                           child: Text(
                             "Atualizações de Eventos",
@@ -370,6 +390,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
+
                   Container(
                     margin: EdgeInsets.only(left: 30, right: 5),
                     color: Colors.white38,
@@ -386,7 +407,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Icons.confirmation_number_outlined,
                           color: Colors.white54,
                         ),
+
                         SizedBox(width: 10),
+
                         Expanded(
                           child: Text(
                             "Promoções e Parcerias",
@@ -428,16 +451,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 190,
+              height: Platform.isIOS ? 190 : 150,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white38, width: 1),
               ),
+
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+
                   //Ajuda
                   InkWell(
                     onTap: () {},
@@ -459,6 +484,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
+
                   Container(
                     margin: EdgeInsets.only(left: 30, right: 5),
                     color: Colors.white38,
@@ -487,6 +513,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
+
                   Container(
                     margin: EdgeInsets.only(left: 30, right: 5),
                     color: Colors.white38,

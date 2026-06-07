@@ -104,8 +104,6 @@ class IWillGoEventCard extends StatelessWidget {
                               top: 8,
                               right: 8,
                               child: Container(
-                                width: 60,
-                                height: 25,
                                 decoration: BoxDecoration(
                                   color: Color(colorAmbar).withAlpha(20),
                                   borderRadius: BorderRadius.circular(15),
@@ -114,6 +112,7 @@ class IWillGoEventCard extends StatelessWidget {
                                     width: 1,
                                   ),
                                 ),
+                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [

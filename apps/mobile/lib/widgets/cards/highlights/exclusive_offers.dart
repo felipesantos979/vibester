@@ -23,10 +23,10 @@ class _ExclusiveOffersState extends State<ExclusiveOffers> {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(70),
+        borderRadius: BorderRadius.circular(55),
         child: InkWell(
           onTap: () {},
-          borderRadius: BorderRadius.circular(70),
+          borderRadius: BorderRadius.circular(55),
           splashColor: Color(colorAmbar),
           child: Stack(
             children: [

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/utils/colors.dart';
@@ -52,7 +54,7 @@ class _AccountManagementSettingsScreenState
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 180,
+              height: Platform.isIOS ? 180 : 105,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
