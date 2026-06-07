@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/screens/settings/account_management_settings_screen.dart';
 import 'package:mobile/screens/settings/personal_information_settings_screen.dart';
 import 'package:mobile/utils/colors.dart';
@@ -12,58 +15,24 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final Color _color = Color.fromARGB(255, 30, 32, 33);
+  final Color _color = Color(colorDarkGrey);
   bool modoFantasma = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Configurações',
+          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Color(colorNoturno),
+        foregroundColor: Colors.white,
+      ),
       backgroundColor: Color(colorNoturno),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.only(top: 60, left: 16, right: 16),
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      padding: EdgeInsets.all(0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(colorNoturno),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: Color(colorBrasa),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Configurações",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             SizedBox(height: 30),
 
             Container(
@@ -72,9 +41,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     "CONTA",
-                    style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 20,
+                    style: GoogleFonts.inter(
+                      color: Colors.white70,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -87,7 +56,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 150,
+              height: 190,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
@@ -110,15 +79,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                     child: Row(
                       children: [
-                        Icon(Icons.person, color: Colors.white),
+                        Icon(Icons.person, color: Colors.white54),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Informações Pessoais",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -138,15 +107,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onTap: () {},
                     child: Row(
                       children: [
-                        Icon(Icons.security_outlined, color: Colors.white),
+                        Icon(Icons.security_outlined, color: Colors.white54),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Segurança",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -174,15 +143,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     },
                     child: Row(
                       children: [
-                        Icon(Icons.settings_outlined, color: Colors.white),
+                        Icon(Icons.settings_outlined, color: Colors.white54),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Gerenciamento de Conta",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -202,9 +171,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     "PRIVACIDADE",
-                    style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 20,
+                    style: GoogleFonts.inter(
+                      color: Colors.white70,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -217,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 150,
+              height: Platform.isIOS ? 230 : 180,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
@@ -232,15 +201,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onTap: () {},
                     child: Row(
                       children: [
-                        Icon(Icons.location_on_outlined, color: Colors.white),
+                        Icon(Icons.location_on_outlined, color: Colors.white54),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Permissões de Localização",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 19,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -258,15 +227,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   //Fantasma
                   Row(
                     children: [
-                      FaIcon(FontAwesomeIcons.ghost, color: Colors.white),
+                      FaIcon(FontAwesomeIcons.ghost, color: Colors.white54),
                       SizedBox(width: 15),
                       Expanded(
                         child: Text(
                           "Ghost Vibe",
-                          style: TextStyle(
+                          style: GoogleFonts.inter(
                             color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -293,15 +262,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onTap: () {},
                     child: Row(
                       children: [
-                        Icon(Icons.visibility_outlined, color: Colors.white),
+                        Icon(Icons.visibility_outlined, color: Colors.white60),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Visualizar Vibe Checks",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -321,9 +290,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     "NOTIFICAÇÕES",
-                    style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 20,
+                    style: GoogleFonts.inter(
+                      color: Colors.white70,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -336,7 +305,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 150,
+              height: 190,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
@@ -351,15 +320,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onTap: () {},
                     child: Row(
                       children: [
-                        Icon(Icons.notifications_outlined, color: Colors.white),
+                        Icon(
+                          Icons.notifications_outlined,
+                          color: Colors.white54,
+                        ),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Amigos na Área",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -381,16 +353,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Icon(
                           Icons.calendar_today_outlined,
-                          color: Colors.white,
+                          color: Colors.white54,
                         ),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Atualizações de Eventos",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -412,16 +384,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Icon(
                           Icons.confirmation_number_outlined,
-                          color: Colors.white,
+                          color: Colors.white54,
                         ),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Promoções e Parcerias",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -441,9 +413,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 children: [
                   Text(
                     "AJUDA",
-                    style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 20,
+                    style: GoogleFonts.inter(
+                      color: Colors.white70,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -456,7 +428,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 150,
+              height: 190,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
@@ -471,15 +443,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onTap: () {},
                     child: Row(
                       children: [
-                        Icon(Icons.help_outline, color: Colors.white),
+                        Icon(Icons.help_outline, color: Colors.white54),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Central de Ajuda",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -499,15 +471,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onTap: () {},
                     child: Row(
                       children: [
-                        Icon(Icons.group_outlined, color: Colors.white),
+                        Icon(Icons.group_outlined, color: Colors.white54),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Convidar um Amigo",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -527,15 +499,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     onTap: () {},
                     child: Row(
                       children: [
-                        Icon(Icons.description_outlined, color: Colors.white),
+                        Icon(Icons.description_outlined, color: Colors.white54),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Termos e Política",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),

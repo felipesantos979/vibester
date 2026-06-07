@@ -22,7 +22,7 @@ class _TertiaryButtonState extends State<TertiaryButton> {
   @override
   Widget build(BuildContext context) {
     return AnimatedContainer(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 3),
       curve: Curves.easeOutBack,
       width: double.infinity,
       height: 60,

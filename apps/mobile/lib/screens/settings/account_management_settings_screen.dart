@@ -1,65 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/utils/colors.dart';
 
 class AccountManagementSettingsScreen extends StatefulWidget {
   const AccountManagementSettingsScreen({super.key});
 
   @override
-  State<AccountManagementSettingsScreen> createState() => _AccountManagementSettingsScreenState();
+  State<AccountManagementSettingsScreen> createState() =>
+      _AccountManagementSettingsScreenState();
 }
 
-class _AccountManagementSettingsScreenState extends State<AccountManagementSettingsScreen> {
-  final Color _color = Color.fromARGB(255, 30, 32, 33);
+class _AccountManagementSettingsScreenState
+    extends State<AccountManagementSettingsScreen> {
+  final Color _color = Color(colorDarkGrey);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Gerenciar Conta',
+          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Color(colorNoturno),
+        foregroundColor: Colors.white,
+      ),
       backgroundColor: Color(colorNoturno),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.only(top: 60, left: 16, right: 16),
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      padding: EdgeInsets.all(0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(colorNoturno),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: Color(colorBrasa),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Gerenciar Conta",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             SizedBox(height: 30),
 
             Container(
@@ -68,9 +37,9 @@ class _AccountManagementSettingsScreenState extends State<AccountManagementSetti
                 children: [
                   Text(
                     "DADOS E ATIVIDADE",
-                    style: TextStyle(
-                      color: Colors.white54,
-                      fontSize: 20,
+                    style: GoogleFonts.inter(
+                      color: Colors.white70,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -83,7 +52,7 @@ class _AccountManagementSettingsScreenState extends State<AccountManagementSetti
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 105,
+              height: 180,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
@@ -98,15 +67,15 @@ class _AccountManagementSettingsScreenState extends State<AccountManagementSetti
                     onTap: () {},
                     child: Row(
                       children: [
-                        Icon(Icons.person, color: Colors.white),
+                        Icon(Icons.person, color: Colors.white54),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Historico de Vibe Checks",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 19.5,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
@@ -126,15 +95,15 @@ class _AccountManagementSettingsScreenState extends State<AccountManagementSetti
                     onTap: () {},
                     child: Row(
                       children: [
-                        Icon(Icons.security_outlined, color: Colors.white),
+                        Icon(Icons.security_outlined, color: Colors.white54),
                         SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             "Vincular e Gerenciar Contas",
-                            style: TextStyle(
+                            style: GoogleFonts.inter(
                               color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),

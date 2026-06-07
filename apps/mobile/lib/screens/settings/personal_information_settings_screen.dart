@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/utils/colors.dart';
+import 'package:mobile/widgets/cards/users/editing_avatar.dart';
 
 class PersonalInformationSettingsScreen extends StatefulWidget {
   const PersonalInformationSettingsScreen({super.key});
@@ -18,32 +20,124 @@ class _PersonalInformationSettingsScreenState
   String email = "victor.marchi@gmail.com";
   String telefone = "+55 (44) 9 9999-9999";
   String dataNascimento = "07/03/2006";
-  String cidade = "Maringa, pr";
+  String cidade = "Maringá, PR";
 
-  void _editarCampo(String titulo, String valorAtual, Function(String) onSalvar) {
+  void _editarCampo(
+    String titulo,
+    String valorAtual,
+    Function(String) onSalvar,
+  ) {
     final controller = TextEditingController(text: valorAtual);
+    final focusNode = FocusNode();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Color(colorNoturno),
-        title: Text(titulo, style: TextStyle(color: Colors.white)),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          style: TextStyle(color: Colors.white),
-          cursorColor: Color(colorAmbar),
-          decoration: InputDecoration(
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white38),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Color(colorAmbar)),
-            ),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Color(colorDarkGrey).withAlpha(230),
+            borderRadius: BorderRadius.circular(16),
           ),
-          onSubmitted: (value) {
-            onSalvar(value);
-            Navigator.pop(context);
-          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // cabeçalho com cor diferente
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: Color(colorNavy).withAlpha(230),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                ),
+                child: Text(
+                  'Alterar $titulo',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
+              // corpo com o campo
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                child: TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  autofocus: true,
+                  style: TextStyle(color: Colors.white),
+                  cursorColor: Color(colorAmbar),
+                  decoration: InputDecoration(
+                    enabledBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white38),
+                    ),
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(color: Color(colorAmbar)),
+                    ),
+                  ),
+                ),
+              ),
+
+              // botões
+              Padding(
+                padding: EdgeInsets.only(bottom: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        focusNode.unfocus();
+                        onSalvar(controller.text);
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'Confirmar',
+                        style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    SizedBox(width: 16),
+                    TextButton(
+                      onPressed: () {
+                        focusNode.unfocus();
+                        Navigator.pop(context);
+                      },
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'Cancelar',
+                        style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -51,55 +145,21 @@ class _PersonalInformationSettingsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final Color _color = Color.fromARGB(255, 30, 32, 33);
+    final Color _color = Color(colorDarkGrey);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Informações pessoais',
+          style: GoogleFonts.inter(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Color(colorNoturno),
+        foregroundColor: Colors.white,
+      ),
       backgroundColor: Color(colorNoturno),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              margin: const EdgeInsets.only(top: 60, left: 16, right: 16),
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Container(
-                      height: 40,
-                      width: 40,
-                      padding: EdgeInsets.all(0),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Color(colorNoturno),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        icon: Icon(
-                          Icons.arrow_back_ios_new,
-                          color: Color(colorBrasa),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "Informações Pessoais",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             SizedBox(height: 30),
 
             Container(
@@ -116,20 +176,11 @@ class _PersonalInformationSettingsScreenState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(height: 4),
-                  Container(
-                    width: 140,
-                    height: 140,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Color(colorNoturno), width: 7),
-                    ),
-                    child: ClipOval(
-                      child: Image.network(
+                  EditableAvatar(
+                    radius: 64,
+                    imageUrl:
                         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCNBLmnNWfkgI83S1NuVF2k6dMjISlhRVMKQ&s',
-                      ),
-                    ),
                   ),
-                  SizedBox(height: 10),
                   Text(
                     nome,
                     style: TextStyle(
@@ -151,9 +202,9 @@ class _PersonalInformationSettingsScreenState
                 children: [
                   Text(
                     "DADOS",
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: Colors.white54,
-                      fontSize: 20,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -166,7 +217,7 @@ class _PersonalInformationSettingsScreenState
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 270,
+              height: 320,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
@@ -187,22 +238,49 @@ class _PersonalInformationSettingsScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("NOME", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                              Text(
+                                "Nome",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               SizedBox(height: 2),
-                              Text(nome, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white60, fontSize: 15, fontWeight: FontWeight.bold)),
+                              Text(
+                                nome,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white60,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        Icon(Icons.edit_outlined, color: Colors.white38, size: 18),
+                        Icon(
+                          Icons.edit_outlined,
+                          color: Colors.white38,
+                          size: 18,
+                        ),
                         SizedBox(width: 5),
                       ],
                     ),
                   ),
-                  Container(margin: EdgeInsets.only(left: 5, right: 5), color: Colors.white38, width: double.infinity, height: 1),
+                  Container(
+                    margin: EdgeInsets.only(left: 5, right: 5),
+                    color: Colors.white38,
+                    width: double.infinity,
+                    height: 1,
+                  ),
+                  SizedBox(height: 12),
                   GestureDetector(
-                    onTap: () => _editarCampo("Nome de Usuário", nomeUsuario, (valor) {
-                      setState(() => nomeUsuario = valor);
-                    }),
+                    onTap: () =>
+                        _editarCampo("Nome de Usuário", nomeUsuario, (valor) {
+                          setState(() => nomeUsuario = valor);
+                        }),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -210,18 +288,44 @@ class _PersonalInformationSettingsScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("NOME DE USUÁRIO", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                              Text(
+                                "Nome de usuário",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               SizedBox(height: 2),
-                              Text(nomeUsuario, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white60, fontSize: 15, fontWeight: FontWeight.bold)),
+                              Text(
+                                nomeUsuario,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white60,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        Icon(Icons.edit_outlined, color: Colors.white38, size: 18),
+                        Icon(
+                          Icons.edit_outlined,
+                          color: Colors.white38,
+                          size: 18,
+                        ),
                         SizedBox(width: 5),
                       ],
                     ),
                   ),
-                  Container(margin: EdgeInsets.only(left: 5, right: 5), color: Colors.white38, width: double.infinity, height: 1),
+                  Container(
+                    margin: EdgeInsets.only(left: 5, right: 5),
+                    color: Colors.white38,
+                    width: double.infinity,
+                    height: 1,
+                  ),
+                  SizedBox(height: 12),
                   GestureDetector(
                     onTap: () => _editarCampo("Bio", bio, (valor) {
                       setState(() => bio = valor);
@@ -233,22 +337,49 @@ class _PersonalInformationSettingsScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("BIO", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                              Text(
+                                "Bio",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               SizedBox(height: 2),
-                              Text(bio, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white60, fontSize: 15, fontWeight: FontWeight.bold)),
+                              Text(
+                                bio,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white60,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        Icon(Icons.edit_outlined, color: Colors.white38, size: 18),
+                        Icon(
+                          Icons.edit_outlined,
+                          color: Colors.white38,
+                          size: 18,
+                        ),
                         SizedBox(width: 5),
                       ],
                     ),
                   ),
-                  Container(margin: EdgeInsets.only(left: 5, right: 5), color: Colors.white38, width: double.infinity, height: 1),
+                  Container(
+                    margin: EdgeInsets.only(left: 5, right: 5),
+                    color: Colors.white38,
+                    width: double.infinity,
+                    height: 1,
+                  ),
+                  SizedBox(height: 12),
                   GestureDetector(
-                    onTap: () => _editarCampo("Interesses", interesses, (valor) {
-                      setState(() => interesses = valor);
-                    }),
+                    onTap: () =>
+                        _editarCampo("Interesses", interesses, (valor) {
+                          setState(() => interesses = valor);
+                        }),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -256,13 +387,33 @@ class _PersonalInformationSettingsScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("INTERESSES", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                              Text(
+                                "Interesses",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               SizedBox(height: 2),
-                              Text(interesses, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white60, fontSize: 15, fontWeight: FontWeight.bold)),
+                              Text(
+                                interesses,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white60,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        Icon(Icons.edit_outlined, color: Colors.white38, size: 18),
+                        Icon(
+                          Icons.edit_outlined,
+                          color: Colors.white38,
+                          size: 18,
+                        ),
                         SizedBox(width: 5),
                       ],
                     ),
@@ -279,9 +430,9 @@ class _PersonalInformationSettingsScreenState
                 children: [
                   Text(
                     "INFORMAÇÕES DA CONTA",
-                    style: TextStyle(
+                    style: GoogleFonts.inter(
                       color: Colors.white54,
-                      fontSize: 20,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -294,7 +445,7 @@ class _PersonalInformationSettingsScreenState
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 270,
+              height: 320,
               padding: EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: _color,
@@ -315,18 +466,43 @@ class _PersonalInformationSettingsScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("E-MAIL", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                              Text(
+                                "E-mail",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               SizedBox(height: 2),
-                              Text(email, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white60, fontSize: 15, fontWeight: FontWeight.bold)),
+                              Text(
+                                email,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white60,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        Icon(Icons.edit_outlined, color: Colors.white38, size: 18),
+                        Icon(
+                          Icons.edit_outlined,
+                          color: Colors.white38,
+                          size: 18,
+                        ),
                         SizedBox(width: 5),
                       ],
                     ),
                   ),
-                  Container(margin: EdgeInsets.only(left: 5, right: 5), color: Colors.white38, width: double.infinity, height: 1),
+                  Container(
+                    margin: EdgeInsets.only(left: 5, right: 5),
+                    color: Colors.white38,
+                    width: double.infinity,
+                    height: 1,
+                  ),
                   GestureDetector(
                     onTap: () => _editarCampo("Telefone", telefone, (valor) {
                       setState(() => telefone = valor);
@@ -338,22 +514,51 @@ class _PersonalInformationSettingsScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("TELEFONE", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                              Text(
+                                "Telefone",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               SizedBox(height: 2),
-                              Text(telefone, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white60, fontSize: 15, fontWeight: FontWeight.bold)),
+                              Text(
+                                telefone,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white60,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        Icon(Icons.edit_outlined, color: Colors.white38, size: 18),
+                        Icon(
+                          Icons.edit_outlined,
+                          color: Colors.white38,
+                          size: 18,
+                        ),
                         SizedBox(width: 5),
                       ],
                     ),
                   ),
-                  Container(margin: EdgeInsets.only(left: 5, right: 5), color: Colors.white38, width: double.infinity, height: 1),
+                  Container(
+                    margin: EdgeInsets.only(left: 5, right: 5),
+                    color: Colors.white38,
+                    width: double.infinity,
+                    height: 1,
+                  ),
                   GestureDetector(
-                    onTap: () => _editarCampo("Data de Nascimento", dataNascimento, (valor) {
-                      setState(() => dataNascimento = valor);
-                    }),
+                    onTap: () => _editarCampo(
+                      "Data de Nascimento",
+                      dataNascimento,
+                      (valor) {
+                        setState(() => dataNascimento = valor);
+                      },
+                    ),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -361,18 +566,43 @@ class _PersonalInformationSettingsScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("DATA DE NASCIMENTO", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                              Text(
+                                "Data de nascimento",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               SizedBox(height: 2),
-                              Text(dataNascimento, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white60, fontSize: 15, fontWeight: FontWeight.bold)),
+                              Text(
+                                dataNascimento,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white60,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        Icon(Icons.edit_outlined, color: Colors.white38, size: 18),
+                        Icon(
+                          Icons.edit_outlined,
+                          color: Colors.white38,
+                          size: 18,
+                        ),
                         SizedBox(width: 5),
                       ],
                     ),
                   ),
-                  Container(margin: EdgeInsets.only(left: 5, right: 5), color: Colors.white38, width: double.infinity, height: 1),
+                  Container(
+                    margin: EdgeInsets.only(left: 5, right: 5),
+                    color: Colors.white38,
+                    width: double.infinity,
+                    height: 1,
+                  ),
                   GestureDetector(
                     onTap: () => _editarCampo("Cidade", cidade, (valor) {
                       setState(() => cidade = valor);
@@ -384,13 +614,33 @@ class _PersonalInformationSettingsScreenState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text("CIDADE", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                              Text(
+                                "Cidade",
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               SizedBox(height: 2),
-                              Text(cidade, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white60, fontSize: 15, fontWeight: FontWeight.bold)),
+                              Text(
+                                cidade,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.inter(
+                                  color: Colors.white60,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        Icon(Icons.edit_outlined, color: Colors.white38, size: 18),
+                        Icon(
+                          Icons.edit_outlined,
+                          color: Colors.white38,
+                          size: 18,
+                        ),
                         SizedBox(width: 5),
                       ],
                     ),
