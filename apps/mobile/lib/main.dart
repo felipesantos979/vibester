@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
+import 'package:mobile/providers/feed/publication_list_provider.dart';
 import 'package:mobile/providers/place/place_list_provider.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/screens/home/initial_screen.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +23,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => PlaceListProvider()),
         ChangeNotifierProvider(create: (_) => EventsListProvider()),
+        ChangeNotifierProvider(create: (_) => PublicationListProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

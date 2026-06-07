@@ -1,8 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/feed/publication_model.dart';
-import 'package:mobile/utils/app_progress_indicator.dart';
+import 'package:mobile/screens/user/user_profile_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/widgets/indicators/like_indicator.dart';
@@ -24,6 +25,13 @@ class PublicationCard extends StatelessWidget {
     return 'há ${(diff.inDays / 365).floor()} anos';
   }
 
+  Widget _buildImage(String src) {
+    if (src.startsWith('http')) {
+      return Image.network(src, fit: BoxFit.cover);
+    }
+    return Image.file(File(src), fit: BoxFit.cover);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -36,60 +44,71 @@ class PublicationCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Color(colorAmbar), width: 2),
-                    borderRadius: BorderRadius.all(Radius.circular(36)),
+                InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserProfileScreen(),
+                    ),
                   ),
-                  child: CircleAvatar(
-                    radius: 30,
-                    backgroundImage: NetworkImage(
-                      publication.autorProfileImage,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Color(colorAmbar), width: 2),
+                      borderRadius: BorderRadius.all(Radius.circular(36)),
+                    ),
+                    child: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: NetworkImage(
+                        publication.autorProfileImage,
+                      ),
                     ),
                   ),
                 ),
                 SizedBox(width: 10),
                 Expanded(
-                  child: Column(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        publication.autor,
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              publication.autor,
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            if (publication.location != null)
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    color: Color(colorBrasa),
+                                    size: 16,
+                                  ),
+                                  SizedBox(width: 3),
+                                  Text(
+                                    publication.location!,
+                                    style: GoogleFonts.inter(
+                                      color: Color(colorBrasa).withAlpha(150),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.location_on_outlined,
-                                color: Color(colorBrasa),
-                                size: 16,
-                              ),
-                              SizedBox(width: 3),
-                              Text(
-                                publication.location,
-                                style: GoogleFonts.inter(
-                                  color: Color(colorBrasa).withAlpha(150),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            _timeAgo(publication.publicatedAt),
-                            style: GoogleFonts.inter(
-                              color: Colors.white.withAlpha(80),
-                              fontSize: 11,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        _timeAgo(publication.publicatedAt),
+                        style: GoogleFonts.inter(
+                          color: Colors.white.withAlpha(80),
+                          fontSize: 11,
+                        ),
                       ),
                     ],
                   ),
@@ -98,14 +117,11 @@ class PublicationCard extends StatelessWidget {
             ),
           ),
 
-          AspectRatio(
-            aspectRatio: 4 / 5,
-            child: CachedNetworkImage(
-              imageUrl: publication.publicationImage,
-              fit: BoxFit.cover,
-              placeholder: (_, _) =>
-                  const Center(child: AppProgressIndicator()),
-              errorWidget: (_, _, _) => const Icon(Icons.error),
+          Container(
+            color: Colors.grey.withAlpha(50),
+            child: AspectRatio(
+              aspectRatio: 4 / 5,
+              child: _buildImage(publication.publicationImage),
             ),
           ),
 
