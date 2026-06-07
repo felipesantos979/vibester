@@ -1,3 +1,5 @@
+import 'package:mobile/providers/user/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/utils/colors.dart';
@@ -13,14 +15,6 @@ class PersonalInformationSettingsScreen extends StatefulWidget {
 
 class _PersonalInformationSettingsScreenState
     extends State<PersonalInformationSettingsScreen> {
-  String nome = "Victor Marchi";
-  String nomeUsuario = "Nego.Doce";
-  String bio = "fouder of viberter.";
-  String interesses = "O caba gosta de codar";
-  String email = "victor.marchi@gmail.com";
-  String telefone = "+55 (44) 9 9999-9999";
-  String dataNascimento = "07/03/2006";
-  String cidade = "Maringá, PR";
 
   void _editarCampo(
     String titulo,
@@ -145,6 +139,7 @@ class _PersonalInformationSettingsScreenState
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserProvider>().user;
     final Color _color = Color(colorDarkGrey);
 
     return Scaffold(
@@ -182,7 +177,7 @@ class _PersonalInformationSettingsScreenState
                         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCNBLmnNWfkgI83S1NuVF2k6dMjISlhRVMKQ&s',
                   ),
                   Text(
-                    nome,
+                    user.nome,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
@@ -228,9 +223,9 @@ class _PersonalInformationSettingsScreenState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => _editarCampo("Nome", nome, (valor) {
-                      setState(() => nome = valor);
-                    }),
+                    onTap: () => _editarCampo("Nome", user.nome, (valor) {
+  context.read<UserProvider>().atualizarCampo('nome', valor);
+}),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -248,7 +243,7 @@ class _PersonalInformationSettingsScreenState
                               ),
                               SizedBox(height: 2),
                               Text(
-                                nome,
+                                user.nome,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.inter(
@@ -277,10 +272,9 @@ class _PersonalInformationSettingsScreenState
                   ),
                   SizedBox(height: 12),
                   GestureDetector(
-                    onTap: () =>
-                        _editarCampo("Nome de Usuário", nomeUsuario, (valor) {
-                          setState(() => nomeUsuario = valor);
-                        }),
+                    onTap: () => _editarCampo("Nome de Usuário", user.nomeUsuario, (valor) {
+  context.read<UserProvider>().atualizarCampo('nomeUsuario', valor);
+}),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -298,7 +292,7 @@ class _PersonalInformationSettingsScreenState
                               ),
                               SizedBox(height: 2),
                               Text(
-                                nomeUsuario,
+                                user.nomeUsuario,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.inter(
@@ -327,9 +321,9 @@ class _PersonalInformationSettingsScreenState
                   ),
                   SizedBox(height: 12),
                   GestureDetector(
-                    onTap: () => _editarCampo("Bio", bio, (valor) {
-                      setState(() => bio = valor);
-                    }),
+                    onTap: () => _editarCampo("Bio", user.bio, (valor) {
+  context.read<UserProvider>().atualizarCampo('bio', valor);
+}),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -347,7 +341,7 @@ class _PersonalInformationSettingsScreenState
                               ),
                               SizedBox(height: 2),
                               Text(
-                                bio,
+                                user.bio,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.inter(
@@ -376,10 +370,9 @@ class _PersonalInformationSettingsScreenState
                   ),
                   SizedBox(height: 12),
                   GestureDetector(
-                    onTap: () =>
-                        _editarCampo("Interesses", interesses, (valor) {
-                          setState(() => interesses = valor);
-                        }),
+                    onTap: () => _editarCampo("Interesses", user.interesses, (valor) {
+  context.read<UserProvider>().atualizarCampo('interesses', valor);
+}),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -397,7 +390,7 @@ class _PersonalInformationSettingsScreenState
                               ),
                               SizedBox(height: 2),
                               Text(
-                                interesses,
+                                user.interesses,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -456,9 +449,9 @@ class _PersonalInformationSettingsScreenState
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   GestureDetector(
-                    onTap: () => _editarCampo("E-mail", email, (valor) {
-                      setState(() => email = valor);
-                    }),
+                    onTap: () => _editarCampo("E-mail", user.email, (valor) {
+  context.read<UserProvider>().atualizarCampo('email', valor);
+}),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -476,7 +469,7 @@ class _PersonalInformationSettingsScreenState
                               ),
                               SizedBox(height: 2),
                               Text(
-                                email,
+                                user.email,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.inter(
@@ -504,9 +497,9 @@ class _PersonalInformationSettingsScreenState
                     height: 1,
                   ),
                   GestureDetector(
-                    onTap: () => _editarCampo("Telefone", telefone, (valor) {
-                      setState(() => telefone = valor);
-                    }),
+                    onTap: () => _editarCampo("Telefone", user.telefone, (valor) {
+  context.read<UserProvider>().atualizarCampo('telefone', valor);
+}),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -524,7 +517,7 @@ class _PersonalInformationSettingsScreenState
                               ),
                               SizedBox(height: 2),
                               Text(
-                                telefone,
+                                user.telefone,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.inter(
@@ -552,13 +545,9 @@ class _PersonalInformationSettingsScreenState
                     height: 1,
                   ),
                   GestureDetector(
-                    onTap: () => _editarCampo(
-                      "Data de Nascimento",
-                      dataNascimento,
-                      (valor) {
-                        setState(() => dataNascimento = valor);
-                      },
-                    ),
+                    onTap: () => _editarCampo("Data de Nascimento", user.dataNascimento, (valor) {
+  context.read<UserProvider>().atualizarCampo('dataNascimento', valor);
+}),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -576,7 +565,7 @@ class _PersonalInformationSettingsScreenState
                               ),
                               SizedBox(height: 2),
                               Text(
-                                dataNascimento,
+                                user.dataNascimento,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.inter(
@@ -604,9 +593,9 @@ class _PersonalInformationSettingsScreenState
                     height: 1,
                   ),
                   GestureDetector(
-                    onTap: () => _editarCampo("Cidade", cidade, (valor) {
-                      setState(() => cidade = valor);
-                    }),
+                    onTap: () => _editarCampo("Cidade", user.cidade, (valor) {
+  context.read<UserProvider>().atualizarCampo('cidade', valor);
+}),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -624,7 +613,7 @@ class _PersonalInformationSettingsScreenState
                               ),
                               SizedBox(height: 2),
                               Text(
-                                cidade,
+                                user.cidade,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.inter(
