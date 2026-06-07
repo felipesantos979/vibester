@@ -51,16 +51,10 @@ class PublicationCard extends StatelessWidget {
                       builder: (context) => UserProfileScreen(),
                     ),
                   ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(colorAmbar), width: 2),
-                      borderRadius: BorderRadius.all(Radius.circular(36)),
-                    ),
-                    child: CircleAvatar(
-                      radius: 30,
-                      backgroundImage: NetworkImage(
-                        publication.autorProfileImage,
-                      ),
+                  child: CircleAvatar(
+                    radius: 27,
+                    backgroundImage: NetworkImage(
+                      publication.autorProfileImage,
                     ),
                   ),
                 ),
@@ -78,11 +72,19 @@ class PublicationCard extends StatelessWidget {
                               style: GoogleFonts.inter(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                fontSize: 14,
+                              ),
+                            ),
+                            Text(
+                              _timeAgo(publication.publicatedAt),
+                              style: GoogleFonts.inter(
+                                color: Colors.white.withAlpha(80),
+                                fontSize: 11,
                               ),
                             ),
                             if (publication.location != null)
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Icon(
                                     Icons.location_on_outlined,
@@ -101,13 +103,6 @@ class PublicationCard extends StatelessWidget {
                                 ],
                               ),
                           ],
-                        ),
-                      ),
-                      Text(
-                        _timeAgo(publication.publicatedAt),
-                        style: GoogleFonts.inter(
-                          color: Colors.white.withAlpha(80),
-                          fontSize: 11,
                         ),
                       ),
                     ],
