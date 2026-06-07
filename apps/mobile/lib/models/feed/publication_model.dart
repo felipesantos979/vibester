@@ -3,7 +3,7 @@ class PublicationModel {
   final String autorProfileImage;
   final String publicationImage;
   final String description;
-  final String location;
+  final String? location;
   final DateTime publicatedAt;
   final int likes;
 
@@ -14,6 +14,6 @@ class PublicationModel {
     required this.description,
     required this.location,
     required this.publicatedAt,
-    required this.likes,
+    this.likes = 0,
   });
 }
