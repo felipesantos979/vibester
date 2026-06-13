@@ -30,7 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final screens = [
       HomeTab(
         navbarVisibleNotifier: _navbarVisibleNotifier,
-        onTabChanged: () { // Reseta a barra ao trocar de aba pelo TabBar ou swipe
+        onTabChanged: () {
+          // Reseta a barra ao trocar de aba pelo TabBar ou swipe
           setState(() => _navbarVisible = true);
           _navbarVisibleNotifier.value = true;
         },
@@ -46,7 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: NotificationListener<ScrollNotification>(
         //Serve para definir o estado. Controla tmb o botão da tela de feed pra sumir junto da barra. Tmb valida pra não sumir com PageView
         onNotification: (notification) {
-          if (_isTabSwitching) return false; // Ignora scroll durante troca de aba
+          if (_isTabSwitching)
+            return false; // Ignora scroll durante troca de aba
 
           if (notification is ScrollUpdateNotification &&
               notification.metrics.axis == Axis.vertical) {

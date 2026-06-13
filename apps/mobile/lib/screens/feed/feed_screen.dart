@@ -33,7 +33,7 @@ class _FeedScreenState extends State<FeedScreen> {
           RefreshIndicator(
             color: Color(colorAmbar),
             onRefresh: () =>
-                context.read<PublicationListProvider>().fetchPublications(),
+                context.watch<PublicationListProvider>().fetchPublications(),
             child: ListView.builder(
               controller: _scrollController,
               padding: EdgeInsets.only(bottom: 80, top: 20),
@@ -47,9 +47,9 @@ class _FeedScreenState extends State<FeedScreen> {
             bottom: 100,
             right: 16,
             child: ValueListenableBuilder<bool>(
-              valueListenable: widget.navbarVisibleNotifier, //recebe o estado e muda tudo do builder
+              valueListenable: widget
+                  .navbarVisibleNotifier, //recebe o estado e muda tudo do builder
               builder: (context, visible, child) {
-
                 //Teste pro botão simir
                 return AnimatedSlide(
                   offset: visible ? Offset.zero : const Offset(0, 3),
@@ -62,7 +62,8 @@ class _FeedScreenState extends State<FeedScreen> {
                   ),
                 );
               },
-              child: FloatingActionButton( //O botão fica fora do builder para não reconstruir o designe
+              child: FloatingActionButton(
+                //O botão fica fora do builder para não reconstruir o designe
                 onPressed: () async {
                   await Navigator.push(
                     context,
