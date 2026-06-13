@@ -15,23 +15,82 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  bool _navbarVisible = true;
+  bool _isTabSwitching = false; // Bloqueia o listener durante a troca de aba
+  final _navbarVisibleNotifier = ValueNotifier<bool>(true);
 
-  final List<Widget> _screens = [
-    HomeTab(),
-    SearchScreen(),
-    UserFavoritesScreen(),
-    UserProfileScreen(),
-  ];
+  @override
+  void dispose() {
+    _navbarVisibleNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final screens = [
+      HomeTab(
+        navbarVisibleNotifier: _navbarVisibleNotifier,
+        onTabChanged: () { // Reseta a barra ao trocar de aba pelo TabBar ou swipe
+          setState(() => _navbarVisible = true);
+          _navbarVisibleNotifier.value = true;
+        },
+      ),
+      SearchScreen(),
+      UserFavoritesScreen(),
+      UserProfileScreen(),
+    ];
+
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       extendBody: true,
-      body: _screens[_currentIndex],
-      bottomNavigationBar: CustomNavbar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+      body: NotificationListener<ScrollNotification>(
+        //Serve para definir o estado. Controla tmb o botão da tela de feed pra sumir junto da barra. Tmb valida pra não sumir com PageView
+        onNotification: (notification) {
+          if (_isTabSwitching) return false; // Ignora scroll durante troca de aba
+
+          if (notification is ScrollUpdateNotification &&
+              notification.metrics.axis == Axis.vertical) {
+            final delta = notification.scrollDelta ?? 0;
+
+            if (delta > 2 && _navbarVisible) {
+              setState(() => _navbarVisible = false);
+              _navbarVisibleNotifier.value = false;
+            } else if (delta < -2 && !_navbarVisible) {
+              setState(() => _navbarVisible = true);
+              _navbarVisibleNotifier.value = true;
+            }
+          }
+          return false;
+        },
+        child: screens[_currentIndex],
+      ),
+      bottomNavigationBar: IgnorePointer(
+        ignoring: !_navbarVisible,
+        child: AnimatedSlide(
+          offset: _navbarVisible ? Offset.zero : const Offset(0, 1),
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          child: AnimatedOpacity(
+            opacity: _navbarVisible ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            child: CustomNavbar(
+              currentIndex: _currentIndex,
+              //Serve pra todas as telas resetarem ao trocar de tela, pra não perder a barra
+              onTap: (index) {
+                setState(() {
+                  _currentIndex = index;
+                  _navbarVisible = true;
+                  _navbarVisibleNotifier.value = true;
+                  _isTabSwitching = true;
+                });
+                Future.delayed(const Duration(milliseconds: 400), () {
+                  if (mounted) setState(() => _isTabSwitching = false);
+                });
+              },
+            ),
+          ),
+        ),
       ),
     );
   }
