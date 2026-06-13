@@ -3,7 +3,7 @@ import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/screens/places/place_detail_screen.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/cards/place_card.dart';
+import 'package:mobile/widgets/cards/place/place_card.dart';
 import 'package:provider/provider.dart';
 
 class FavoritesScreen extends StatefulWidget {
@@ -16,14 +16,16 @@ class FavoritesScreen extends StatefulWidget {
 class _FavoritesScreenState extends State<FavoritesScreen> {
   @override
   Widget build(BuildContext context) {
-    final List<PlaceModel> places = context.watch<PlaceListProvider>().places;
+    final List<PlaceModel> favorites = context
+        .watch<PlaceListProvider>()
+        .favorites;
     return ColoredBox(
       color: Color(colorNoturno),
       child: ListView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
         padding: EdgeInsets.symmetric(vertical: 16),
-        itemCount: places.length + 1,
+        itemCount: favorites.length + 1,
         itemBuilder: (context, index) {
           if (index == 0) {
             return Padding(
@@ -60,13 +62,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           }
 
           return PlaceCard(
-            place: places[index - 1],
+            place: favorites[index - 1],
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      PlaceDetailScreen(place: places[index - 1]),
+                      PlaceDetailScreen(place: favorites[index - 1]),
                 ),
               );
             },

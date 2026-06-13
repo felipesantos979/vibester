@@ -1,13 +1,15 @@
+import 'package:mobile/providers/user/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/models/user/user_model.dart';
-import 'package:mobile/screens/events/event_list_screen.dart';
+import 'package:mobile/screens/events/favorites_events_screen.dart';
 import 'package:mobile/screens/highlights/property_highlights_screen.dart';
 import 'package:mobile/screens/places/favorite_places_screen.dart';
+import 'package:mobile/screens/settings/settings_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/utils/editable_text_field.dart';
-import 'package:mobile/widgets/cards/profile_avatar.dart';
+import 'package:mobile/widgets/cards/users/profile_avatar.dart';
 
 class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
@@ -19,17 +21,6 @@ class UserProfileScreen extends StatefulWidget {
 class _UserProfileScreenState extends State<UserProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-
-  final userMock = UserModel(
-    nome: 'Victor Marchi',
-    nomeUsuario: '@vitin',
-    bio: 'founder of vibester.',
-    seguidores: 1302,
-    seguindo: 32,
-    eventosVisitados: 123,
-    fotoPerfil:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCNBLmnNWfkgI83S1NuVF2k6dMjISlhRVMKQ&s',
-  );
 
   bool _showAppBarAvatar = false;
 
@@ -47,6 +38,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    final user = context.watch<UserProvider>().user;
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -78,7 +71,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   offset: _showAppBarAvatar ? Offset(-1.2, 0) : Offset(-1.2, 0),
                   child: CircleAvatar(
                     radius: 16,
-                    backgroundImage: NetworkImage(userMock.fotoPerfil),
+                    backgroundImage: NetworkImage(user.fotoPerfil),
                   ),
                 ),
               ),
@@ -86,7 +79,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 duration: Duration(milliseconds: 300),
                 offset: _showAppBarAvatar ? Offset(0.19, 0) : Offset(0, 0),
                 child: Text(
-                  userMock.nomeUsuario,
+                  user.nomeUsuario,
                   style: GoogleFonts.inter(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -118,13 +111,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 children: [
                   Padding(
                     padding: EdgeInsets.only(top: 30.0),
-                    child: ProfileAvatar(imageUrl: userMock.fotoPerfil),
+                    child: ProfileAvatar(imageUrl: user.fotoPerfil),
                   ),
 
                   SizedBox(height: 12),
 
                   Text(
-                    '${userMock.nome}',
+                    '${user.nome}',
                     style: GoogleFonts.inter(
                       color: Colors.white,
                       fontSize: 40,
@@ -135,7 +128,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   SizedBox(height: 12),
 
                   EditableTextField(
-                    label: userMock.nomeUsuario,
+                    label: user.nomeUsuario,
                     height: 30,
                     width: 150,
                   ),
@@ -143,7 +136,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   SizedBox(height: 20),
 
                   Text(
-                    userMock.bio,
+                    user.bio,
                     style: GoogleFonts.inter(
                       color: Colors.white70,
                       fontWeight: FontWeight.bold,
@@ -158,7 +151,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       Column(
                         children: [
                           Text(
-                            userMock.seguidores.toString(),
+                            user.seguidores.toString(),
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -181,7 +174,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       Column(
                         children: [
                           Text(
-                            userMock.seguindo.toString(),
+                            user.seguindo.toString(),
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -204,7 +197,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       Column(
                         children: [
                           Text(
-                            userMock.eventosVisitados.toString(),
+                            user.eventosVisitados.toString(),
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -229,19 +222,34 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                        ),
-                        height: 30,
-                        width: 150,
-                        child: Center(
-                          child: Text(
-                            'Editar perfil',
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
+                      Material(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(50),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SettingsScreen(),
+                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(50),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.white, width: 1),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            height: 30,
+                            width: 150,
+                            child: Center(
+                              child: Text(
+                                'Configurações',
+                                style: GoogleFonts.inter(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -315,7 +323,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   children: [
                     Center(child: PropertyHighlightsScreen()),
                     Center(child: FavoritePlacesScreen()),
-                    Center(child: EventListScreen()),
+                    Center(child: FavoritesEventsScreen()),
                   ],
                 ),
               ),

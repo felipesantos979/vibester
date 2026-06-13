@@ -14,6 +14,8 @@ class EmailConfirmScreen extends StatefulWidget {
 }
 
 class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
+  bool _pinError = false;
+  final _pinController = TextEditingController();
   void _aoVerificar() {
     if (!context.mounted) return;
 
@@ -25,6 +27,12 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
         MaterialPageRoute(builder: (context) => ProfileEditingScreen()),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _pinController.dispose();
+    super.dispose();
   }
 
   @override
@@ -61,6 +69,20 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
       ),
     );
 
+    final errorTheme = defaultTheme.copyWith(
+      decoration: defaultTheme.decoration!.copyWith(
+        border: Border.all(color: Colors.red, width: 2),
+        color: Colors.red.withOpacity(0.08),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.red.withOpacity(0.25),
+            blurRadius: 8,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+    );
+
     return Scaffold(
       backgroundColor: Color(colorDarkGrey),
       body: SingleChildScrollView(
@@ -70,7 +92,7 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
               child: SizedBox(
                 width: 130,
                 height: 300,
-                child: Image.asset('assets/img/mascote.png'),
+                child: Image.asset('assets/img/mascote/mascote.png'),
               ),
             ),
 
@@ -117,6 +139,9 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
               length: 5,
               defaultPinTheme: defaultTheme,
               focusedPinTheme: focusedTheme,
+              errorPinTheme: errorTheme,
+              controller: _pinController,
+              forceErrorState: _pinError,
             ),
 
             SizedBox(height: 50),
@@ -124,6 +149,11 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
             PrimaryButton(
               label: 'Verificar e-mail',
               onPressed: () {
+                if (_pinController.text.length < 5) {
+                  setState(() => _pinError = true);
+                  return;
+                }
+                setState(() => _pinError = false);
                 _aoVerificar();
               },
             ),

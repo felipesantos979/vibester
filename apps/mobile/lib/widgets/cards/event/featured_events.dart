@@ -1,6 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
+import 'package:mobile/screens/events/event_detail_screen.dart';
+import 'package:mobile/utils/app_progress_indicator.dart';
 import 'package:mobile/utils/colors.dart';
 
 class FeaturedEvents extends StatefulWidget {
@@ -16,6 +19,16 @@ class _FeaturedEventsState extends State<FeaturedEvents> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      onTap: () {
+        setState(() {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EventDetailScreen(eventModel: widget.event),
+            ),
+          );
+        });
+      },
       child: Card(
         margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
@@ -24,8 +37,13 @@ class _FeaturedEventsState extends State<FeaturedEvents> {
           child: Stack(
             fit: StackFit.expand,
             children: [
-              //trocar pra imagem que vai vir do banco dps
-              Placeholder(),
+              CachedNetworkImage(
+                imageUrl: widget.event.imageUrl,
+                fit: BoxFit.cover,
+                placeholder: (_, _) =>
+                    const Center(child: AppProgressIndicator()),
+                errorWidget: (_, _, _) => const Icon(Icons.error),
+              ),
 
               DecoratedBox(
                 decoration: BoxDecoration(

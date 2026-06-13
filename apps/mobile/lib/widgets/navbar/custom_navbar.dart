@@ -29,53 +29,50 @@ class CustomNavbar extends StatelessWidget {
       Icons.person_rounded,
     ];
 
-    return Container(
-      height: (Platform.isIOS ? 75 : 70),
-      decoration: BoxDecoration(
-        color: const Color(colorNavy),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.white.withOpacity(0.8),
-            blurRadius: 10,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: List.generate(items.length, (index) {
-          final isActive = index == currentIndex;
-          return GestureDetector(
-            onTap: () => onTap!(index),
-            behavior: HitTestBehavior.opaque,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 1000),
-              curve: Curves.easeOutBack,
-              width: isActive ? 52 : 48,
-              height: isActive ? 52 : 48,
-              decoration: isActive
-                  ? BoxDecoration(
-                      color: Color(colorAmbar),
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(colorAmbar).withOpacity(0.4),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    )
-                  : null,
-              child: Icon(
-                isActive ? activeItems[index] : items[index],
-                color: isActive ? Colors.white : Colors.white54,
-                size: isActive
-                    ? (Platform.isIOS ? 26 : 24)
-                    : (Platform.isIOS ? 26 : 24),
+    return Padding(
+      padding: EdgeInsets.only(left: 16, right: 16, bottom: 12, top: 8),
+      child: Container(
+        height: (Platform.isIOS ? 70 : 80),
+        decoration: BoxDecoration(
+          color: const Color(colorNavy),
+          borderRadius: const BorderRadius.all(Radius.circular(70)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: List.generate(items.length, (index) {
+            final isActive = index == currentIndex;
+            return GestureDetector(
+              onTap: () => onTap!(index),
+              behavior: HitTestBehavior.opaque,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 1000),
+                curve: Curves.easeOutBack,
+                width: isActive ? 52 : 48,
+                height: isActive ? 52 : 48,
+                decoration: isActive
+                    ? BoxDecoration(
+                        color: Color(colorAmbar),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(colorAmbar).withOpacity(0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      )
+                    : null,
+                child: Icon(
+                  isActive ? activeItems[index] : items[index],
+                  color: isActive ? Colors.white : Colors.white54,
+                  size: isActive
+                      ? (Platform.isIOS ? 26 : 24)
+                      : (Platform.isIOS ? 26 : 24),
+                ),
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }

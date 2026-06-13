@@ -23,13 +23,15 @@ class LineupIndicator extends StatelessWidget {
         itemBuilder: (context, index) {
           final artista = lineup![index];
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                width: 80,
-                height: 80,
+                width: 83,
+                height: 83,
+                padding: EdgeInsets.all(3),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: Color(colorAmbar), width: 3),
+                  border: Border.all(color: Color(colorAmbar), width: 2),
                 ),
                 child: ClipOval(
                   child: Image.network(

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/highlights/highlight_model.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/cards/highlights_card.dart';
+import 'package:mobile/widgets/cards/highlights/highlights_card.dart';
 
 class PropertyHighlightsScreen extends StatefulWidget {
   const PropertyHighlightsScreen({super.key});
@@ -51,7 +51,7 @@ class _PropertyHighlightsScreenState extends State<PropertyHighlightsScreen> {
       //Uso o gridview no lugar do listview pq é mais simples de mecher e de montar as imagens
       //O gridview pega toda a largura ta tela, q é dividido pelo crossAC e pelo childAR
       body: GridView.builder(
-        itemCount: highlights.length,
+        itemCount: 4,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           //pega a largura da tela dividido por 2 (pra dar duas imagens por linha)
           crossAxisCount: 2,

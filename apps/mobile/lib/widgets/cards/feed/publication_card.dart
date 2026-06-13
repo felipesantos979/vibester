@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/feed/publication_model.dart';
+import 'package:mobile/screens/user/user_profile_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/widgets/indicators/like_indicator.dart';
@@ -22,6 +25,13 @@ class PublicationCard extends StatelessWidget {
     return 'há ${(diff.inDays / 365).floor()} anos';
   }
 
+  Widget _buildImage(String src) {
+    if (src.startsWith('http')) {
+      return Image.network(src, fit: BoxFit.cover);
+    }
+    return Image.file(File(src), fit: BoxFit.cover);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -34,13 +44,15 @@ class PublicationCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Color(colorAmbar), width: 2),
-                    borderRadius: BorderRadius.all(Radius.circular(36)),
+                InkWell(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserProfileScreen(),
+                    ),
                   ),
                   child: CircleAvatar(
-                    radius: 30,
+                    radius: 27,
                     backgroundImage: NetworkImage(
                       publication.autorProfileImage,
                     ),
@@ -48,46 +60,50 @@ class PublicationCard extends StatelessWidget {
                 ),
                 SizedBox(width: 10),
                 Expanded(
-                  child: Column(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        publication.autor,
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.location_on_outlined,
-                                color: Color(colorBrasa),
-                                size: 16,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              publication.autor,
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
                               ),
-                              SizedBox(width: 3),
-                              Text(
-                                publication.location,
-                                style: GoogleFonts.inter(
-                                  color: Color(colorBrasa).withAlpha(150),
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            _timeAgo(publication.publicatedAt),
-                            style: GoogleFonts.inter(
-                              color: Colors.white.withAlpha(80),
-                              fontSize: 11,
                             ),
-                          ),
-                        ],
+                            Text(
+                              _timeAgo(publication.publicatedAt),
+                              style: GoogleFonts.inter(
+                                color: Colors.white.withAlpha(80),
+                                fontSize: 11,
+                              ),
+                            ),
+                            if (publication.location != null)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    color: Color(colorBrasa),
+                                    size: 16,
+                                  ),
+                                  SizedBox(width: 3),
+                                  Text(
+                                    publication.location!,
+                                    style: GoogleFonts.inter(
+                                      color: Color(colorBrasa).withAlpha(150),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -96,12 +112,11 @@ class PublicationCard extends StatelessWidget {
             ),
           ),
 
-          AspectRatio(
-            aspectRatio: 4 / 5,
-            child: Image.network(
-              publication.publicationImage,
-              width: double.infinity,
-              fit: BoxFit.cover,
+          Container(
+            color: Colors.grey.withAlpha(50),
+            child: AspectRatio(
+              aspectRatio: 4 / 5,
+              child: _buildImage(publication.publicationImage),
             ),
           ),
 

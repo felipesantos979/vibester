@@ -53,35 +53,53 @@ class _CaptionTextFieldState extends State<CaptionTextField> {
         ),
         const SizedBox(height: 8),
 
-        Container(
-          decoration: BoxDecoration(
-            color: Color(colorNoturno),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: _focusNode.hasFocus ? Color(colorAmbar) : Colors.white10,
-              width: 1.3,
+        TextFormField(
+          textInputAction: TextInputAction.done,
+          controller: widget.controller,
+          focusNode: _focusNode,
+          maxLength: widget.maxLength,
+          maxLines: 5,
+          cursorColor: Colors.white54,
+          minLines: 4,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            height: 1.5,
+          ),
+          decoration: InputDecoration(
+            hintText: 'Compartilhe sua experiência...',
+            hintStyle: TextStyle(color: Colors.white.withOpacity(0.35)),
+            counterText: '',
+            contentPadding: const EdgeInsets.all(16),
+            filled: true,
+            fillColor: Color(colorNoturno),
+            errorStyle: const TextStyle(color: Colors.redAccent, fontSize: 12),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: const BorderSide(color: Colors.white10, width: 1.3),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: const BorderSide(
+                color: Color(colorAmbar),
+                width: 1.3,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: const BorderSide(color: Colors.redAccent, width: 1.3),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(18),
+              borderSide: const BorderSide(color: Colors.redAccent, width: 1.3),
             ),
           ),
-          child: TextFormField(
-            controller: widget.controller,
-            focusNode: _focusNode,
-            maxLength: widget.maxLength,
-            maxLines: 5,
-            cursorColor: Colors.white54,
-            minLines: 4,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              height: 1.5,
-            ),
-            decoration: InputDecoration(
-              hintText: 'Compartilhe sua experiência...',
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.35)),
-              counterText: '',
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.all(16),
-            ),
-          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Adicione uma legenda!';
+            }
+            return null;
+          },
         ),
 
         const SizedBox(height: 8),

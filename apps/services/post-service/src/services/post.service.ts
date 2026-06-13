@@ -1,0 +1,90 @@
+import { randomUUID } from "crypto";
+import { PostRepository } from "../repository/post.repository";
+import {
+    CreatePostInput,
+    Post,
+    UpdatePostInput
+} from "../types/post.types";
+
+export class PostService {
+
+    constructor(
+        private readonly postRepository: PostRepository
+    ) { }
+
+    async create(input: CreatePostInput): Promise<Post> {
+
+        const post: Post = {
+            postId: randomUUID(),
+            userId: input.userId,
+            establishmentId: input.establishmentId,
+            imageUrls: input.imageUrls,
+            caption: input.caption,
+            totalLikes: 0,
+            totalComments: 0,
+            isDeleted: false,
+            createdAt: new Date(),
+        };
+
+        await Promise.all([
+            this.postRepository.createPostById(post),
+            this.postRepository.createPostByUser(post)
+        ]);
+
+        if (post.establishmentId) { await this.postRepository.createPostByEstablishment(post) }
+
+        return post;
+    }
+
+    async findById(postId: string) {
+        return this.postRepository.findById(postId);
+    }
+
+    async findByUser(userId: string) {
+        return this.postRepository.findByUser(userId);
+    }
+
+    async findByEstablishment(establishmentId: string){
+        return this.postRepository.findByEstablishment(establishmentId);
+    }
+
+    async updateCaption(input: UpdatePostInput): Promise<Post> {
+        const post = await this.postRepository.findById(input.postId);
+
+        if (!post) { throw new Error("Post not found"); }
+
+        if (post.isDeleted) { throw new Error("Post is deleted"); }
+
+        const updatedAt = new Date();
+
+        await Promise.all([
+            this.postRepository.updateCaptionById(input.postId, input.caption, updatedAt),
+            this.postRepository.updateCaptionByUser(post.userId, post.createdAt, input.postId, input.caption, updatedAt),
+        ]);
+
+        if (post.establishmentId) { 
+            await this.postRepository.updateCaptionByEstablishment(post.establishmentId, post.createdAt, input.postId, input.caption, updatedAt); 
+        }
+
+        return {
+            ...post,
+            caption: input.caption,
+            updatedAt
+        };
+    }
+
+    async softDelete(postId: string) {
+        const post = await this.postRepository.findById(postId);
+
+        if (!post) { throw new Error("Post not found"); }
+
+        await Promise.all([
+            this.postRepository.softDeleteById(postId),
+            this.postRepository.softDeleteByUser(post.userId, post.createdAt, postId)
+        ]);
+
+        if (post.establishmentId){
+            await this.postRepository.softDeleteByEstablishment(post.establishmentId, post.createdAt, post.postId);
+        }
+    }
+}

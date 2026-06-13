@@ -3,7 +3,7 @@ import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/screens/places/place_detail_screen.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/cards/place_card.dart';
+import 'package:mobile/widgets/cards/place/place_card.dart';
 import 'package:provider/provider.dart';
 
 class FavoritePlacesScreen extends StatefulWidget {
@@ -16,20 +16,22 @@ class FavoritePlacesScreen extends StatefulWidget {
 class _FavoritePlacesScreenState extends State<FavoritePlacesScreen> {
   @override
   Widget build(BuildContext context) {
-    final List<PlaceModel> places = context.read<PlaceListProvider>().places;
+    final List<PlaceModel> favorites = context
+        .watch<PlaceListProvider>()
+        .favorites;
     return Scaffold(
       backgroundColor: Color(colorNoturno),
-      body: places.isEmpty
+      body: favorites.isEmpty
           ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Center(
                   child: SizedBox(
-                    height: 100,
-                    width: 100,
+                    height: 200,
+                    width: 200,
                     child: Opacity(
                       opacity: 0.8,
-                      child: Image.asset('assets/img/lupa.png'),
+                      child: Image.asset('assets/img/mascote/lupa.png'),
                     ),
                   ),
                 ),
@@ -46,18 +48,17 @@ class _FavoritePlacesScreenState extends State<FavoritePlacesScreen> {
             )
           : ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              itemCount: places.length + 1,
+              itemCount: favorites.length + 1,
               itemBuilder: (context, index) {
-                if (index == places.length) return SizedBox(height: 80);
-
+                if (index == favorites.length) return SizedBox(height: 80);
                 return PlaceCard(
-                  place: places[index],
+                  place: favorites[index],
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            PlaceDetailScreen(place: places[index]),
+                            PlaceDetailScreen(place: favorites[index]),
                       ),
                     );
                   },

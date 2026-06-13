@@ -3,15 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
-import 'package:mobile/models/event/lineup_model.dart';
 import 'package:mobile/models/place/exclusive_offers_model.dart';
+import 'package:mobile/providers/events/events_list_provider.dart';
 import 'package:mobile/screens/highlights/category_highlights_section.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/widgets/cards/close_to_you.dart';
-import 'package:mobile/widgets/cards/exclusive_offers.dart';
-import 'package:mobile/widgets/cards/featured_events.dart';
-import 'package:mobile/widgets/cards/weekly_events.dart';
+import 'package:mobile/widgets/cards/highlights/close_to_you.dart';
+import 'package:mobile/widgets/cards/highlights/exclusive_offers.dart';
+import 'package:mobile/widgets/cards/event/featured_events.dart';
+import 'package:mobile/widgets/cards/event/weekly_events.dart';
 import 'package:mobile/widgets/indicators/lineup_place_indicator.dart';
+import 'package:provider/provider.dart';
 
 class HighlightsSectionScreen extends StatefulWidget {
   const HighlightsSectionScreen({super.key});
@@ -30,6 +31,7 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.95);
+    List<EventModel> event = context.read<EventsListProvider>().events;
     _timer = Timer.periodic(const Duration(seconds: 4), (_) {
       _currentPage = (_currentPage + 1) % event.length;
       _pageController.animateToPage(
@@ -46,42 +48,6 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
     _pageController.dispose();
     super.dispose();
   }
-
-  static const String _foto =
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgpnQNClh0kA43xMUXgiu_GKAqIL97g2dMY80DJ4A15pnck6ZxZ6APvn2KKdSIxajG8RSdRq6mesWTCn0kIItn6tlCqAZkE8Nx-snm2TCW&s=10";
-
-  List<EventModel> get event => [
-    EventModel(
-      dataDoEvento: DateTime(2026, 6, 10, 17, 0),
-      titulo: "Noite do Sertanejo",
-      lineUp: [LineupModel(nome: "Sonia Blade", url: _foto)],
-      categoria: "Show",
-      artistas: "Sonia blade",
-      localizacao: "Paraná Expo - Maringá, PR",
-      informacoes:
-          "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
-    ),
-    EventModel(
-      dataDoEvento: DateTime(2026, 6, 10, 17, 0),
-      titulo: "Noite do Sertanejo",
-      lineUp: [LineupModel(nome: "Sonia Blade", url: _foto)],
-      categoria: "Show",
-      artistas: "Sonia blade",
-      localizacao: "Paraná Expo - Maringá, PR",
-      informacoes:
-          "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
-    ),
-    EventModel(
-      dataDoEvento: DateTime(2026, 6, 10, 17, 0),
-      titulo: "Noite do Sertanejo",
-      lineUp: [LineupModel(nome: "Sonia Blade", url: _foto)],
-      categoria: "Show",
-      artistas: "Sonia blade",
-      localizacao: "Paraná Expo - Maringá, PR",
-      informacoes:
-          "Classificação do evento: 16+\nMenores de 16 anos somente acompanhados dos pais ou responsáveis legais, mediante apresentação de documento oficial com foto.\nAcesso à área open bar restrito a maiores de 18 anos.\nProibida a venda de bebida alcoólica para menores de 18 anos (Lei Federal 13.106/16).\nDescumprimento da classificação indicativa pode impedir a entrada no evento sem direito a reembolso.",
-    ),
-  ];
 
   List<ExclusiveOffersModel> get offers => [
     ExclusiveOffersModel(
@@ -113,6 +79,7 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final List<EventModel> event = context.watch<EventsListProvider>().events;
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       body: ListView(

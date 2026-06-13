@@ -1,10 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
-import 'package:mobile/widgets/cards/map_event.dart';
+import 'package:mobile/providers/events/events_list_provider.dart';
+import 'package:mobile/utils/app_progress_indicator.dart';
+import 'package:mobile/widgets/cards/users/map_event.dart';
 import 'package:mobile/widgets/indicators/lineup_indicator.dart';
 import 'package:mobile/widgets/buttons/secundary_button.dart';
 import 'package:mobile/widgets/buttons/tertiary_button.dart';
+import 'package:provider/provider.dart';
 import '../../utils/colors.dart';
 import 'package:intl/intl.dart';
 
@@ -21,7 +25,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-
+    final provider = Provider.of<EventsListProvider>(context);
     return Scaffold(
       backgroundColor: Color(colorNoturno),
 
@@ -49,7 +53,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     ),
 
                     //lugar da imagem
-                    child: Placeholder(),
+                    child: CachedNetworkImage(
+                      imageUrl: widget.eventModel.imageUrl,
+                      fit: BoxFit.cover,
+                      placeholder: (_, _) =>
+                          const Center(child: AppProgressIndicator()),
+                      errorWidget: (_, _, _) => const Icon(Icons.error),
+                    ),
                   ),
                 ),
 
@@ -255,7 +265,15 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 const SizedBox(height: 16),
 
                 //Botão de "VOU IR" (add função posteriormente)
-                TertiaryButton(label: "VOU IR", onPressed: () {}),
+                TertiaryButton(
+                  label: "VOU IR",
+                  state: widget.eventModel.isFavorite
+                      ? ButtonState.success
+                      : ButtonState.idle,
+                  onPressed: () {
+                    provider.toggleFavorite(widget.eventModel.titulo);
+                  },
+                ),
 
                 //Espaçamento entre itens
                 const SizedBox(height: 16),

@@ -1,11 +1,16 @@
 class UserModel {
-  final String? nome;
-  final String nomeUsuario;
-  final String bio;
-  final int seguidores;
-  final int seguindo;
-  final int eventosVisitados;
-  final String fotoPerfil;
+  String nome;
+  String nomeUsuario;
+  String bio;
+  int seguidores;
+  int seguindo;
+  int eventosVisitados;
+  String fotoPerfil;
+  String interesses;
+  String email;
+  String telefone;
+  String dataNascimento;
+  String cidade;
 
   UserModel({
     required this.nome,
@@ -15,5 +20,10 @@ class UserModel {
     required this.seguindo,
     required this.eventosVisitados,
     required this.fotoPerfil,
+    required this.interesses,
+    required this.email,
+    required this.telefone,
+    required this.dataNascimento,
+    required this.cidade,
   });
 }

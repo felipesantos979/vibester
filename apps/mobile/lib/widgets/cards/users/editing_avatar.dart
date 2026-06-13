@@ -6,8 +6,14 @@ import 'package:mobile/utils/colors.dart';
 class EditableAvatar extends StatefulWidget {
   final String? imageUrl;
   final ValueChanged<File>? onImageChanged;
+  final double radius;
 
-  const EditableAvatar({super.key, this.imageUrl, this.onImageChanged});
+  const EditableAvatar({
+    super.key,
+    this.imageUrl,
+    this.onImageChanged,
+    this.radius = 0,
+  });
 
   @override
   State<EditableAvatar> createState() => _EditableAvatarState();
@@ -76,7 +82,7 @@ class _EditableAvatarState extends State<EditableAvatar> {
             ),
             child: CircleAvatar(
               backgroundColor: Color(colorDarkGrey).withAlpha(150),
-              radius: 48,
+              radius: widget.radius > 0 ? widget.radius : 48,
               backgroundImage: _provider,
               child: _provider == null
                   ? Icon(Icons.camera_alt, color: Colors.white, size: 50)
