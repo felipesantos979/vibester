@@ -16,6 +16,8 @@ services:
   cassandra:
     image: cassandra:5.0
     container_name: post_db
+    mem_limit: 2g
+    memswap_limit: 2g
     ports:
       - "9042:9042"
     environment:
@@ -23,6 +25,8 @@ services:
       CASSANDRA_DC: $CASSANDRA_DC
       CASSANDRA_RACK: $CASSANDRA_RACK
       CASSANDRA_ENDPOINT_SNITCH: $ENDPOINT_SNITCH
+      MAX_HEAP_SIZE: 1G
+      HEAP_NEWSIZE: 256M
     volumes:
       - cassandra_data:/var/lib/cassandra
     healthcheck:
