@@ -21,6 +21,7 @@ class NewPublicationScreen extends StatefulWidget {
 }
 
 class _NewPublicationScreenState extends State<NewPublicationScreen> {
+  final _formKey = GlobalKey<FormState>();
   final legendaController = TextEditingController();
   String? selectedLocation;
   File? _publicationImage;
@@ -40,6 +41,7 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
               size: 30,
             ),
             onPressed: () {
+              if (!_formKey.currentState!.validate()) return;
               provider.addPublication(
                 PublicationModel(
                   autor: user.nomeUsuario,
@@ -61,42 +63,45 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
         backgroundColor: Color(colorNoturno),
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-          child: Column(
-            children: [
-              PostPhotoPicker(
-                onPhotoChanged: (file) {
-                  setState(() => _publicationImage = file);
-                },
-              ),
-              const SizedBox(height: 10),
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Column(
+              children: [
+                PostPhotoPicker(
+                  onPhotoChanged: (file) {
+                    setState(() => _publicationImage = file);
+                  },
+                ),
+                const SizedBox(height: 10),
 
-              CaptionTextField(controller: legendaController),
+                CaptionTextField(controller: legendaController),
 
-              const SizedBox(height: 10),
+                const SizedBox(height: 10),
 
-              LocationPickerTile(
-                selectedLocation: selectedLocation,
-                onTap: () async {
-                  final location = await showModalBottomSheet<String>(
-                    context: context,
-                    backgroundColor: Color(colorNoturno),
-                    isScrollControlled: true,
-                    builder: (_) => const LocationPicker(),
-                  );
+                LocationPickerTile(
+                  selectedLocation: selectedLocation,
+                  onTap: () async {
+                    final location = await showModalBottomSheet<String>(
+                      context: context,
+                      backgroundColor: Color(colorNoturno),
+                      isScrollControlled: true,
+                      builder: (_) => const LocationPicker(),
+                    );
 
-                  if (location != null) {
-                    setState(() {
-                      selectedLocation = location;
-                    });
-                  }
-                },
-              ),
-              SizedBox(height: 20),
-              SizedBox(child: Image.asset('assets/img/mascote/dica.png')),
-            ],
+                    if (location != null) {
+                      setState(() {
+                        selectedLocation = location;
+                      });
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
+                SizedBox(child: Image.asset('assets/img/mascote/dica.png')),
+              ],
+            ),
           ),
         ),
       ),

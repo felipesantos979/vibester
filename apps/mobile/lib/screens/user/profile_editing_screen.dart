@@ -29,13 +29,25 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
         child: Column(
           children: [
             Center(heightFactor: 2, child: EditableAvatar()),
-            PrimaryTextField(labelText: 'Nome', height: 60),
+            PrimaryTextField(
+              labelText: 'Nome',
+              height: 60,
+              textInputAction: TextInputAction.done,
+            ),
             SizedBox(height: 25),
             DatePickerField(labelText: 'Data de Nascimento', height: 60),
             SizedBox(height: 25),
-            PrimaryTextField(labelText: 'Nome de usuário', height: 60),
+            PrimaryTextField(
+              labelText: 'Nome de usuário',
+              height: 60,
+              textInputAction: TextInputAction.next,
+            ),
             SizedBox(height: 25),
-            PrimaryTextField(labelText: 'Bio', height: 90),
+            PrimaryTextField(
+              labelText: 'Bio',
+              height: 90,
+              textInputAction: TextInputAction.done,
+            ),
             SizedBox(height: 25),
             PrimaryButton(
               label: 'Cadastrar',
