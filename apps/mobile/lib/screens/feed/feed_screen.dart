@@ -33,7 +33,7 @@ class _FeedScreenState extends State<FeedScreen> {
           RefreshIndicator(
             color: Color(colorAmbar),
             onRefresh: () =>
-                context.watch<PublicationListProvider>().fetchPublications(),
+                context.read<PublicationListProvider>().fetchPublications(),
             child: ListView.builder(
               controller: _scrollController,
               padding: EdgeInsets.only(bottom: 80, top: 20),
