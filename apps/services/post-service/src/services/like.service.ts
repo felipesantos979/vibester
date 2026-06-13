@@ -1,0 +1,79 @@
+import { LikeRepository } from "../repository/like.repository";
+import { PostRepository } from "../repository/post.repository";
+import { PostLike } from "../types/like.types";
+
+export class LikeService {
+    constructor(private readonly likeRepository: LikeRepository, private readonly postRepository: PostRepository) {}
+
+    async likePost(postId: string, userId: string): Promise<PostLike> {
+        const post = await this.postRepository.findById(postId);
+
+        if (!post) { throw new Error("Post not found"); }
+
+        if (post.isDeleted) { throw new Error("Post is deleted"); }
+
+        const existingLike = await this.likeRepository.findLikeByPostAndUser(postId, userId);
+
+        if (existingLike) { throw new Error("Post already liked"); }
+
+        const like: PostLike = {
+            postId,
+            userId,
+            likedAt: new Date()
+        };
+
+        const total_likes = post.totalLikes + 1;
+
+        await Promise.all([
+            this.likeRepository.createLikeByPost(like),
+            this.likeRepository.createLikeByUser(like),
+            this.postRepository.updateTotalLikesById(total_likes, postId),
+            this.postRepository.updateTotalLikesByUser(post.userId, post.createdAt, total_likes, postId)
+        ]);
+
+        if (post.establishmentId) {
+            await this.postRepository.updateTotalLikesByEstablishment(post.establishmentId, post.createdAt,
+                 total_likes, post.postId);
+        }
+
+        return like;
+    }
+
+    async unlikePost(postId: string, userId: string): Promise<void> {
+        const post = await this.postRepository.findById(postId);
+
+        if (!post) { throw new Error("Post not found"); }
+
+        const existingLike = await this.likeRepository.findLikeByPostAndUser(postId, userId);
+
+        if (!existingLike) { throw new Error("Like not found"); }
+
+        let totalLikes = post.totalLikes;
+
+        if (totalLikes > 0) {
+            totalLikes = totalLikes - 1;
+        } else {
+            throw new Error("Post has zero likes!");
+        }
+
+        await Promise.all([
+            this.likeRepository.deleteLikeByPost(postId, userId),
+            this.likeRepository.deleteLikeByUser(userId, existingLike.likedAt, postId),
+            this.postRepository.updateTotalLikesById(totalLikes, postId),
+            this.postRepository.updateTotalLikesByUser(post.userId, post.createdAt, totalLikes, postId)
+        ]);
+
+        if (post.establishmentId){
+            await this.postRepository.updateTotalLikesByEstablishment(post.establishmentId, post.createdAt,
+                 totalLikes, post.postId);
+        }
+    }
+
+    async findLikesByUser(userId: string): Promise<PostLike[]> {
+        return this.likeRepository.findLikesByUser(userId);
+    }
+
+    async findLikesByPost(postId: string): Promise<PostLike[]> {
+        return this.likeRepository.findLikesByPost(postId);
+    }
+}
