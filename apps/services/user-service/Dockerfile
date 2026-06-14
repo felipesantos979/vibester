@@ -16,4 +16,4 @@ RUN npm prune --omit=dev
 
 EXPOSE 3003
 
-CMD ["npm", "start"]
+CMD ["npm", "start"]# initial deploy
