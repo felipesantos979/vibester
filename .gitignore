@@ -1,0 +1,17 @@
+node_modules/
+
+dist/
+build/
+
+.env
+.env.local
+
+*.logs
+npm-debug.log*
+
+.vscode/
+.idea/
+
+*.tsbuildinfo
+
+/generated/prisma
