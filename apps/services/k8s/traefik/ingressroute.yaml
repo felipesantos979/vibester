@@ -1,0 +1,72 @@
+# IngressRoute HTTPS — roteia as requisições de api.vibester.com.br para os serviços internos.
+# TLS gerenciado automaticamente pelo certResolver "letsencrypt" configurado no Traefik.
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vibester-api-tls
+  namespace: gateway
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`api.vibester.com.br`) && PathPrefix(`/auth`)
+      kind: Rule
+      middlewares:
+        - name: strip-auth-prefix
+          namespace: gateway
+      services:
+        - name: auth-service
+          port: 3001
+
+    - match: Host(`api.vibester.com.br`) && PathPrefix(`/user`)
+      kind: Rule
+      middlewares:
+        - name: strip-user-prefix
+          namespace: gateway
+      services:
+        - name: user-service
+          port: 3003
+
+    - match: Host(`api.vibester.com.br`) && PathPrefix(`/establishment`)
+      kind: Rule
+      middlewares:
+        - name: strip-establishment-prefix
+          namespace: gateway
+      services:
+        - name: establishment-service
+          port: 3002
+
+    - match: Host(`api.vibester.com.br`) && PathPrefix(`/event`)
+      kind: Rule
+      middlewares:
+        - name: strip-event-prefix
+          namespace: gateway
+      services:
+        - name: event-service
+          port: 3334
+
+  tls:
+    certResolver: letsencrypt
+
+---
+# IngressRoute HTTP — redireciona todo tráfego na porta 80 para HTTPS.
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vibester-api-redirect
+  namespace: gateway
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`api.vibester.com.br`)
+      kind: Rule
+      middlewares:
+        - name: redirect-to-https
+          namespace: gateway
+      services:
+        # Serviço placeholder exigido pelo CRD; o middleware redireciona antes de chegar aqui.
+        - name: auth-service
+          port: 3001

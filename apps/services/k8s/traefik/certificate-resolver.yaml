@@ -1,0 +1,30 @@
+# HelmChartConfig sobrescreve os valores padrão do Traefik instalado pelo k3s.
+# Deve ficar em kube-system pois é onde o k3s gerencia o chart do Traefik.
+
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    # EntryPoints de rede
+    ports:
+      web:
+        port: 80
+        # Redireciona automaticamente todo tráfego HTTP para HTTPS
+        redirectTo:
+          port: websecure
+      websecure:
+        port: 443
+
+    # Configuração do certResolver ACME (Let's Encrypt)
+    additionalArguments:
+      - "--certificatesresolvers.letsencrypt.acme.email=guimassucato017@gmail.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/data/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+
+    # Persistência necessária para armazenar o acme.json entre restarts
+    persistence:
+      enabled: true
+      size: 128Mi

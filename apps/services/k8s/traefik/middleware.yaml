@@ -1,0 +1,58 @@
+# Middlewares de StripPrefix para remover o prefixo de rota antes de repassar ao serviço.
+# Exemplo: /auth/login → /login
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-auth-prefix
+  namespace: gateway
+spec:
+  stripPrefix:
+    prefixes:
+      - /auth
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-user-prefix
+  namespace: gateway
+spec:
+  stripPrefix:
+    prefixes:
+      - /user
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-establishment-prefix
+  namespace: gateway
+spec:
+  stripPrefix:
+    prefixes:
+      - /establishment
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-event-prefix
+  namespace: gateway
+spec:
+  stripPrefix:
+    prefixes:
+      - /event
+
+---
+# Middleware para redirecionar HTTP → HTTPS
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-to-https
+  namespace: gateway
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
