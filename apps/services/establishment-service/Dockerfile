@@ -8,7 +8,7 @@ RUN npm install
 
 COPY . .
 
-RUN npx prisma generate
+RUN DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder" npx prisma generate
 
 RUN npm run build
 
@@ -16,4 +16,4 @@ RUN npm prune --omit=dev
 
 EXPOSE 3002
 
-CMD ["npm", "start"]
+CMD ["npm", "start"]# initial deploy
