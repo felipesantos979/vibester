@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scrapping-service
+  namespace: default
+  labels:
+    app: scrapping-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scrapping-service
+  template:
+    metadata:
+      labels:
+        app: scrapping-service
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret
+      containers:
+        - name: scrapping-service
+          image: ghcr.io/GITHUB_OWNER/vibester-scrapping-service:latest
+          imagePullPolicy: Always
+          envFrom:
+            - secretRef:
+                name: scrapping-service-secret
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"

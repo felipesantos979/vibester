@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: establishment-service
+  namespace: default
+  labels:
+    app: establishment-service
+spec:
+  type: ClusterIP
+  selector:
+    app: establishment-service
+  ports:
+    - protocol: TCP
+      port: 3002
+      targetPort: 3002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: establishment-db
+  namespace: default
+  labels:
+    app: establishment-db
+spec:
+  type: ClusterIP
+  selector:
+    app: establishment-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
