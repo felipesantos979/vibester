@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service
+  namespace: default
+  labels:
+    app: auth-service
+spec:
+  # ClusterIP = acesso apenas interno ao cluster.
+  # Para expor externamente, altere para NodePort ou adicione um Ingress.
+  type: ClusterIP
+  selector:
+    app: auth-service
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-db
+  namespace: default
+  labels:
+    app: auth-db
+spec:
+  type: ClusterIP
+  selector:
+    app: auth-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
