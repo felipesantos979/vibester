@@ -19,7 +19,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: establishment-service
-          image: ghcr.io/GITHUB_OWNER/vibester-establishment-service:latest
+          image: ghcr.io/felipesantos979/vibester-establishment-service:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 3002
