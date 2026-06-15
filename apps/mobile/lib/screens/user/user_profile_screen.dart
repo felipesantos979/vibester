@@ -1,11 +1,11 @@
 import 'package:mobile/providers/user/user_provider.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/screens/events/favorites_events_screen.dart';
 import 'package:mobile/screens/highlights/property_highlights_screen.dart';
 import 'package:mobile/screens/places/favorite_places_screen.dart';
-import 'package:mobile/screens/settings/settings_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/utils/editable_text_field.dart';
@@ -227,12 +227,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         borderRadius: BorderRadius.circular(50),
                         child: InkWell(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SettingsScreen(),
-                              ),
-                            );
+                            Navigator.pushNamed(context, AppRoutes.settings);
                           },
                           borderRadius: BorderRadius.circular(50),
                           child: Container(

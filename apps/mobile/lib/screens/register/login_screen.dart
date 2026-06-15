@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/screens/home/home_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
-import 'package:mobile/screens/register/recover_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -200,12 +199,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         label: 'Entrar',
                         onPressed: () {
                           if (!_formKey.currentState!.validate()) return;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
-                            ),
-                          );
+                          Navigator.pushNamed(context, AppRoutes.home);
                         },
                       ),
                     ),
@@ -215,12 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.only(top: 90),
                     child: InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RecoverPasswordScreen(),
-                          ),
-                        );
+                        Navigator.pushNamed(context, AppRoutes.recoverPassword);
                       },
                       child: Text(
                         'Esqueci minha senha',

@@ -4,6 +4,7 @@ import 'package:mobile/models/feed/publication_model.dart';
 class PublicationListProvider extends ChangeNotifier {
   final List<PublicationModel> _publications = [
     PublicationModel(
+      id: 1,
       autor: 'aninha__',
       autorProfileImage: 'https://i.pravatar.cc/150?img=1',
       publicationImage: 'https://picsum.photos/seed/pub1/600/400',
@@ -14,6 +15,7 @@ class PublicationListProvider extends ChangeNotifier {
       likes: 133,
     ),
     PublicationModel(
+      id: 2,
       autor: 'carlinhos223',
       autorProfileImage: 'https://i.pravatar.cc/150?img=3',
       publicationImage: 'https://picsum.photos/seed/pub2/600/400',
@@ -24,6 +26,7 @@ class PublicationListProvider extends ChangeNotifier {
       likes: 133,
     ),
     PublicationModel(
+      id: 3,
       autor: 'bea_santos',
       autorProfileImage: 'https://i.pravatar.cc/150?img=5',
       publicationImage: 'https://picsum.photos/seed/pub3/600/400',
@@ -34,6 +37,7 @@ class PublicationListProvider extends ChangeNotifier {
       likes: 133,
     ),
     PublicationModel(
+      id: 4,
       autor: 'fael.costa',
       autorProfileImage: 'https://i.pravatar.cc/150?img=7',
       publicationImage: 'https://picsum.photos/seed/pub4/600/400',
@@ -44,6 +48,7 @@ class PublicationListProvider extends ChangeNotifier {
       likes: 13,
     ),
     PublicationModel(
+      id: 5,
       autor: 'ju.ferreira',
       autorProfileImage: 'https://i.pravatar.cc/150?img=9',
       publicationImage: 'https://picsum.photos/seed/pub5/600/400',
@@ -54,6 +59,7 @@ class PublicationListProvider extends ChangeNotifier {
       likes: 1331,
     ),
     PublicationModel(
+      id: 6,
       autor: 'lucas.oliveiraa',
       autorProfileImage: 'https://i.pravatar.cc/150?img=11',
       publicationImage: 'https://picsum.photos/seed/pub6/600/400',
@@ -64,6 +70,7 @@ class PublicationListProvider extends ChangeNotifier {
       likes: 131,
     ),
     PublicationModel(
+      id: 7,
       autor: 'fer.rocha23',
       autorProfileImage: 'https://i.pravatar.cc/150?img=13',
       publicationImage: 'https://picsum.photos/seed/pub7/600/400',
@@ -74,6 +81,7 @@ class PublicationListProvider extends ChangeNotifier {
       likes: 121,
     ),
     PublicationModel(
+      id: 8,
       autor: 'thi.alves',
       autorProfileImage: 'https://i.pravatar.cc/150?img=15',
       publicationImage: 'https://picsum.photos/seed/pub8/600/400',
@@ -84,6 +92,7 @@ class PublicationListProvider extends ChangeNotifier {
       likes: 132,
     ),
     PublicationModel(
+      id: 9,
       autor: 'isaa_nuunes',
       autorProfileImage: 'https://i.pravatar.cc/150?img=17',
       publicationImage: 'https://picsum.photos/seed/pub9/600/400',
@@ -94,6 +103,7 @@ class PublicationListProvider extends ChangeNotifier {
       likes: 133,
     ),
     PublicationModel(
+      id: 10,
       autor: 'diego_martins',
       autorProfileImage: 'https://i.pravatar.cc/150?img=19',
       publicationImage: 'https://picsum.photos/seed/pub10/600/400',
@@ -113,6 +123,17 @@ class PublicationListProvider extends ChangeNotifier {
   }
 
   Future<void> fetchPublications() async {
+    notifyListeners();
+  }
+
+  void toggleLike(int id) {
+    final index = _publications.indexWhere((p) => p.id == id);
+    if (index == -1) return;
+    final pub = _publications[index];
+    _publications[index] = pub.copyWith(
+      isLiked: !pub.isLiked,
+      likes: pub.isLiked ? pub.likes - 1 : pub.likes + 1,
+    );
     notifyListeners();
   }
 }

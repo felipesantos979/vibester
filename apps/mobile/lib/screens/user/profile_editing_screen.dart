@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/screens/user/user_interests_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/date_picker_field.dart';
 import 'package:mobile/widgets/cards/users/editing_avatar.dart';
@@ -52,12 +52,7 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
             PrimaryButton(
               label: 'Cadastrar',
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UserInterestsScreen(),
-                  ),
-                );
+                Navigator.pushNamed(context, AppRoutes.userInterests);
               },
             ),
           ],

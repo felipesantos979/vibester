@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/screens/settings/account_management_settings_screen.dart';
-import 'package:mobile/screens/settings/personal_information_settings_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -67,16 +66,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-
                   //Infos
                   InkWell(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PersonalInformationSettingsScreen(),
-                        ),
+                        AppRoutes.personalInformationSettings,
                       );
                     },
 
@@ -138,12 +133,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   //Gerenciar
                   InkWell(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              AccountManagementSettingsScreen(),
-                        ),
+                        AppRoutes.accountManagementSettings,
                       );
                     },
 
@@ -203,7 +195,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-
                   //Permição
                   InkWell(
                     onTap: () {},
@@ -339,7 +330,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           Icons.notifications_outlined,
                           color: Colors.white54,
                         ),
-                        
+
                         SizedBox(width: 10),
 
                         Expanded(
@@ -462,7 +453,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-
                   //Ajuda
                   InkWell(
                     onTap: () {},

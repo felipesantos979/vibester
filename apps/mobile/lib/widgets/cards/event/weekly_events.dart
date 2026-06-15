@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/models/event/event_model.dart';
-import 'package:mobile/screens/events/event_detail_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/app_progress_indicator.dart';
 import 'package:mobile/utils/colors.dart';
 
@@ -21,12 +21,10 @@ class _WeeklyEventsState extends State<WeeklyEvents> {
     return InkWell(
       onTap: () {
         setState(() {
-          Navigator.push(
+          Navigator.pushNamed(
             context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  EventDetailScreen(eventModel: widget.evento),
-            ),
+            AppRoutes.eventDetail,
+            arguments: widget.evento,
           );
         });
       },

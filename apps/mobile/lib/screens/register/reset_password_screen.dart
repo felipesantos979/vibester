@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/screens/register/login_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
 
@@ -203,12 +203,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         label: 'Confirmar Senha',
                         onPressed: () {
                           if (!_formKey.currentState!.validate()) return;
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => LoginScreen(),
-                            ),
-                          );
+                          Navigator.pushNamed(context, AppRoutes.login);
                         },
                       ),
                     ),

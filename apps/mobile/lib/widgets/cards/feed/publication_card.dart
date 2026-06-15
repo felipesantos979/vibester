@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/feed/publication_model.dart';
-import 'package:mobile/screens/user/user_profile_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/widgets/indicators/like_indicator.dart';
@@ -45,12 +45,7 @@ class PublicationCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 InkWell(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => UserProfileScreen(),
-                    ),
-                  ),
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
                   child: CircleAvatar(
                     radius: 27,
                     backgroundImage: NetworkImage(

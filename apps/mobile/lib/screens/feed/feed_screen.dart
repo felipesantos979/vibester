@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/feed/publication_model.dart';
 import 'package:mobile/providers/feed/publication_list_provider.dart';
-import 'package:mobile/screens/feed/new_publication_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/feed/publication_card.dart';
 import 'package:provider/provider.dart';
 
 class FeedScreen extends StatefulWidget {
   //Passa o estado da barra pra usar no botão de nova publicação
-  final ValueNotifier<bool> navbarVisibleNotifier;
+  final ValueNotifier<bool>? navbarVisibleNotifier;
 
-  const FeedScreen({super.key, required this.navbarVisibleNotifier});
+  const FeedScreen({super.key, this.navbarVisibleNotifier});
 
   @override
   State<FeedScreen> createState() => _FeedScreenState();
@@ -47,8 +47,9 @@ class _FeedScreenState extends State<FeedScreen> {
             bottom: 100,
             right: 16,
             child: ValueListenableBuilder<bool>(
-              valueListenable: widget
-                  .navbarVisibleNotifier, //recebe o estado e muda tudo do builder
+              valueListenable:
+                  widget.navbarVisibleNotifier ??
+                  ValueNotifier(true), //recebe o estado e muda tudo do builder
               builder: (context, visible, child) {
                 //Teste pro botão simir
                 return AnimatedSlide(
@@ -65,12 +66,7 @@ class _FeedScreenState extends State<FeedScreen> {
               child: FloatingActionButton(
                 //O botão fica fora do builder para não reconstruir o designe
                 onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NewPublicationScreen(),
-                    ),
-                  );
+                  await Navigator.pushNamed(context, AppRoutes.newPublication);
                   _scrollController.animateTo(
                     0,
                     duration: Duration(milliseconds: 300),

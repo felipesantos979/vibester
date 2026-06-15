@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
-import 'package:mobile/screens/events/event_detail_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/event/event_card.dart';
 import 'package:provider/provider.dart';
@@ -53,12 +53,10 @@ class _FavoritesEventsScreenState extends State<FavoritesEventsScreen> {
                 return EventCard(
                   event: favorites[index],
                   onTap: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            EventDetailScreen(eventModel: favorites[index]),
-                      ),
+                      AppRoutes.eventDetail,
+                      arguments: favorites[index],
                     );
                   },
                 );

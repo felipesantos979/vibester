@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/providers/place/place_list_provider.dart';
-import 'package:mobile/screens/places/place_detail_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/place/place_card.dart';
 import 'package:provider/provider.dart';
@@ -54,12 +54,10 @@ class _FavoritePlacesScreenState extends State<FavoritePlacesScreen> {
                 return PlaceCard(
                   place: favorites[index],
                   onTap: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            PlaceDetailScreen(place: favorites[index]),
-                      ),
+                      AppRoutes.placeDetail,
+                      arguments: favorites[index],
                     );
                   },
                 );

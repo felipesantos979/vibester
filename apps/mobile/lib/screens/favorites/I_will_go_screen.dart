@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
-import 'package:mobile/screens/events/event_detail_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/event/i_will_go_event_card.dart';
 import 'package:provider/provider.dart';
@@ -64,12 +64,10 @@ class _IWillGoScreenState extends State<IWillGoScreen> {
           return IWillGoEventCard(
             event: favorites[index - 1],
             onTap: () {
-              Navigator.push(
+              Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      EventDetailScreen(eventModel: favorites[index - 1]),
-                ),
+                AppRoutes.eventDetail,
+                arguments: favorites[index - 1],
               );
             },
           );
