@@ -66,7 +66,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                         fit: StackFit.expand,
                         children: [
                           Image.network(
-                            'https://scontent.fmgf12-1.fna.fbcdn.net/v/t39.30808-6/494058401_1250374963761853_838903228158441111_n.jpg?stp=dst-jpg_tt6&cstp=mx2048x1365&ctp=s2048x1365&_nc_cat=107&ccb=1-7&_nc_sid=f727a1&_nc_ohc=n_nwB0sNQRcQ7kNvwF6SbCp&_nc_oc=AdoxdhtjEJsKGNsgN-GWn6WJky-QXk7QWw8rd7t2lXj4_o3eYXqsf9tRT_B34xu18BinKdIRL23Gz0NDNoE3741r&_nc_zt=23&_nc_ht=scontent.fmgf12-1.fna&_nc_gid=HPrvzHet1Uf_nAXF3973zw&_nc_ss=7b2a8&oh=00_Af_Dwo9PEMLPCYVqL3aT0RhK0mf502SSmdV0217yY97RMQ&oe=6A2942C2',
+                            'https://media.gettyimages.com/id/1266107863/pt/foto/dj-playing-and-mixing-music-at-party.jpg?s=2048x2048&w=gi&k=20&c=Tmm9GWCaVF_gTB4becCcYTaNJEZepQG8VoxLAunIDKA=',
                             fit: BoxFit.cover,
                           ),
 

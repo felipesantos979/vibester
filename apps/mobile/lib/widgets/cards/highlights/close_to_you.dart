@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place/place_model.dart';
-import 'package:mobile/screens/places/place_detail_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 
 class CloseToYou extends StatefulWidget {
@@ -170,11 +170,10 @@ class _CloseToYouState extends State<CloseToYou> {
             borderRadius: BorderRadius.circular(70),
             child: InkWell(
               onTap: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => PlaceDetailScreen(place: place),
-                  ),
+                  AppRoutes.placeDetail,
+                  arguments: place,
                 );
               },
               borderRadius: BorderRadius.circular(70),

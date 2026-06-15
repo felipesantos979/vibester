@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/screens/register/email_confirm_screen.dart';
-import 'package:mobile/screens/register/reset_password_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
 
@@ -134,12 +134,9 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                               MaterialPageRoute(
                                 builder: (context) => EmailConfirmScreen(
                                   onEmailConfirmed: () {
-                                    Navigator.push(
+                                    Navigator.pushNamed(
                                       context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            ResetPasswordScreen(),
-                                      ),
+                                      AppRoutes.resetPassword,
                                     );
                                   },
                                 ),

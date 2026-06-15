@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
-import 'package:mobile/screens/events/event_detail_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/event/event_card.dart';
 import 'package:provider/provider.dart';
@@ -26,12 +26,10 @@ class _EventListScreenState extends State<EventListScreen> {
           return EventCard(
             event: event[index],
             onTap: () {
-              Navigator.push(
+              Navigator.pushNamed(
                 context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      EventDetailScreen(eventModel: event[index]),
-                ),
+                AppRoutes.eventDetail,
+                arguments: event[index],
               );
             },
           );

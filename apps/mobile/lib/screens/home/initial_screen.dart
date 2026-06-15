@@ -2,8 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/screens/register/login_screen.dart';
-import 'package:mobile/screens/register/register_screen.dart';
+import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 
 class InitialScreen extends StatefulWidget {
@@ -76,10 +75,7 @@ class _InitialScreenState extends State<InitialScreen> {
                     fixedSize: Size(300, 60),
                   ),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => RegisterScreen()),
-                    );
+                    Navigator.pushNamed(context, AppRoutes.register);
                   },
                   child: Text(
                     'COMEÇAR AGORA',
@@ -97,12 +93,7 @@ class _InitialScreenState extends State<InitialScreen> {
                   side: BorderSide(color: Color(colorAmbar), width: 1),
                 ),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
+                  Navigator.pushNamed(context, AppRoutes.login);
                 },
                 child: Text(
                   'JÁ TENHO UMA CONTA',
