@@ -56,4 +56,10 @@ jobs:
           script: |
             kubectl set image deployment/auth-service \
               auth-service=ghcr.io/${{ github.repository_owner }}/vibester-auth-service:${{ github.sha }}
-            kubectl rollout status deployment/auth-service --timeout=120s
+            kubectl rollout status deployment/auth-service --timeout=300s || {
+              echo "--- Pod describe ---"
+              kubectl describe pod -l app=auth-service
+              echo "--- Pod logs ---"
+              kubectl logs -l app=auth-service --tail=50 --previous 2>/dev/null || kubectl logs -l app=auth-service --tail=50
+              exit 1
+            }
