@@ -4,7 +4,11 @@ import { RegisterController } from "./controllers/register.controller";
 import { LoginController } from "./controllers/login.controller";
 
 export async function authRoutes(instance: FastifyInstance, options: FastifyPluginOptions) {
-    
+
+    instance.get("/health", async (_request: FastifyRequest, reply: FastifyReply) => {
+        return reply.status(200).send({ status: "ok" });
+    });
+
     instance.post("/register", async(
         request: FastifyRequest<{ Body: RegisterInputInterface }>,
         reply: FastifyReply) => {
