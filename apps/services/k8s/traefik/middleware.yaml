@@ -6,7 +6,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: strip-auth-prefix
-  namespace: gateway
+  namespace: default
 spec:
   stripPrefix:
     prefixes:
@@ -17,7 +17,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: strip-user-prefix
-  namespace: gateway
+  namespace: default
 spec:
   stripPrefix:
     prefixes:
@@ -28,7 +28,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: strip-establishment-prefix
-  namespace: gateway
+  namespace: default
 spec:
   stripPrefix:
     prefixes:
@@ -39,7 +39,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: strip-event-prefix
-  namespace: gateway
+  namespace: default
 spec:
   stripPrefix:
     prefixes:
@@ -51,7 +51,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: Middleware
 metadata:
   name: redirect-to-https
-  namespace: gateway
+  namespace: default
 spec:
   redirectScheme:
     scheme: https
