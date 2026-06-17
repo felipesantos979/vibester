@@ -5,7 +5,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: vibester-api-tls
-  namespace: gateway
+  namespace: default
 spec:
   entryPoints:
     - websecure
@@ -14,7 +14,7 @@ spec:
       kind: Rule
       middlewares:
         - name: strip-auth-prefix
-          namespace: gateway
+          namespace: default
       services:
         - name: auth-service
           port: 3001
@@ -23,7 +23,7 @@ spec:
       kind: Rule
       middlewares:
         - name: strip-user-prefix
-          namespace: gateway
+          namespace: default
       services:
         - name: user-service
           port: 3003
@@ -32,7 +32,7 @@ spec:
       kind: Rule
       middlewares:
         - name: strip-establishment-prefix
-          namespace: gateway
+          namespace: default
       services:
         - name: establishment-service
           port: 3002
@@ -41,7 +41,7 @@ spec:
       kind: Rule
       middlewares:
         - name: strip-event-prefix
-          namespace: gateway
+          namespace: default
       services:
         - name: event-service
           port: 3334
@@ -56,7 +56,7 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   name: vibester-api-redirect
-  namespace: gateway
+  namespace: default
 spec:
   entryPoints:
     - web
