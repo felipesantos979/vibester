@@ -1,0 +1,1067 @@
+{
+  "info": {
+    "_postman_id": "ef031317-aa67-4a91-9b28-6ddb25043fd7",
+    "name": "Vibester",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40391242"
+  },
+  "item": [
+    {
+      "name": "Auth-Service",
+      "item": [
+        {
+          "name": "Register new User",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"username\": \"erickin_do_grau\",\r\n    \"name\": \"Erick Grisoste\",\r\n    \"email\": \"erickgrisoste@gmail.com\",\r\n    \"password\": \"erick123\",\r\n    \"bornAt\": \"2026\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3000/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "register"
+              ]
+            },
+            "description": "# Register\n\n### 🇧🇷 PT-BR\n\nCria uma nova conta de usuário na plataforma.\n\n**Método:** `POST`\n\n**Endpoint:** `/register`\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| name | string | Sim | Nome completo do usuário. |\n| username | string | Sim | Nome de usuário único. |\n| email | string | Sim | Endereço de e-mail do usuário. |\n| password | string | Sim | Senha da conta. |\n| bornAt | datetime | Sim | Data de nascimento do usuário. |\n\n#### Observações\n\n- O `username` deve ser único.\n    \n- O `email` deve ser único.\n    \n- A senha será armazenada de forma criptografada.\n    \n- Após o cadastro, uma solicitação é enviada ao User-Service para criação do perfil do usuário.\n    \n\n#### Exemplo de Requisição\n\n``` json\n{  \n   \"name\": \"John Doe\",\n   \"username\": \"johndoe\",\n   \"email\": \"john@example.com\",\n   \"password\": \"123456\",\n   \"bornAt\": \"2000-01-01T00:00:00.000Z\"\n}\n\n ```\n\n**Response Example:** `User Registered Successfully`\n\n---\n\n### 🇺🇸 EN-US\n\nCreates a new user account on the platform.\n\n**Method:** `POST`\n\n**Endpoint:** `/register`\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| name | string | Yes | User's full name. |\n| username | string | Yes | Unique username. |\n| email | string | Yes | User email address. |\n| password | string | Yes | Account password. |\n| bornAt | datetime | Yes | User's birth date. |\n\n#### Notes\n\n- `username` must be unique.\n    \n- `email` must be unique.\n    \n- Passwords are stored securely using hashing.\n    \n- After registration, a request is sent to the User-Service to create the user's profile.\n    \n\n#### Request Example\n\n``` json\n{  \n   \"name\": \"John Doe\",\n   \"username\": \"johndoe\",\n   \"email\": \"john@example.com\",\n   \"password\": \"123456\",\n   \"bornAt\": \"2000-01-01T00:00:00.000Z\"\n}\n\n ```\n\n**Response Example:** `User Registered Successfully`"
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3000/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3000",
+              "path": [
+                "login"
+              ]
+            },
+            "description": "# Login\n\n### 🇧🇷 PT-BR\n\nAutentica um usuário utilizando e-mail ou nome de usuário e retorna um token JWT de acesso.\n\n**Método:** `POST`\n\n**Endpoint:** `/login`\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| email | string | Condicional | E-mail utilizado para autenticação. |\n| username | string | Condicional | Nome de usuário utilizado para autenticação. |\n| password | string | Sim | Senha da conta. |\n\n#### Observações\n\n- É necessário informar pelo menos um dos campos: `email` ou `username`.\n    \n- O campo `password` deve possuir no mínimo 6 caracteres.\n    \n- Em caso de sucesso, a API retorna um token JWT para autenticação das demais requisições.\n    \n\n#### Exemplo de Requisição\n\n**Login por e-mail**\n\n``` json\n{  \n   \"email\": \"john@example.com\",\n   \"password\": \"123456\"\n}\n\n ```\n\n**Login por username**\n\n``` json\n{  \n   \"username\": \"johndoe\",\n   \"password\": \"123456\"\n}\n\n ```\n\n**Response Example:** `Authenticated User`\n\n---\n\n### 🇺🇸 EN-US\n\nAuthenticates a user using either email or username and returns a JWT access token.\n\n**Method:** `POST`\n\n**Endpoint:** `/login`\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| email | string | Conditional | Email used for authentication. |\n| username | string | Conditional | Username used for authentication. |\n| password | string | Yes | Account password. |\n\n#### Notes\n\n- At least one of the following fields must be provided: `email` or `username`.\n    \n- The `password` field must contain at least 6 characters.\n    \n- On success, the API returns a JWT token that can be used to authenticate subsequent requests.\n    \n\n#### Request Example\n\n**Email login**\n\n``` json\n{  \n   \"email\": \"john@example.com\",\n   \"password\": \"123456\"\n}\n\n ```\n\n**Username login**\n\n``` json\n{  \n   \"username\": \"johndoe\",\n   \"password\": \"123456\"\n}\n\n ```\n\n**Response Example:** `Authenticated User`"
+          },
+          "response": []
+        }
+      ],
+      "description": "## 📂 Auth-Service\n\n### 🇧🇷 PT-BR\n\nResponsável pelas operações de autenticação e acesso da plataforma, permitindo o cadastro de novas contas e a autenticação de usuários através de e-mail ou nome de usuário.\n\n---\n\n### 🇺🇸 EN-US\n\nResponsible for authentication and access operations, allowing users to create new accounts and authenticate using either email or username."
+    },
+    {
+      "name": "Establishment-Service",
+      "item": [
+        {
+          "name": "Get All Establishment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/establishments?latitude=-23.424650272424707&longitude=-51.93644931296396&sortBy=distance",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3002",
+              "path": [
+                "establishments"
+              ],
+              "query": [
+                {
+                  "key": "latitude",
+                  "value": "-23.424650272424707"
+                },
+                {
+                  "key": "longitude",
+                  "value": "-51.93644931296396"
+                },
+                {
+                  "key": "category",
+                  "value": "night_club",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "minRating",
+                  "value": "4.5",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "search",
+                  "value": "bar",
+                  "type": "text",
+                  "disabled": true
+                },
+                {
+                  "key": "sortBy",
+                  "value": "distance"
+                }
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nRetorna uma lista de estabelecimentos disponíveis, permitindo filtros, busca, ordenação e cálculo de distância com base na localização do usuário.\n\n**Método:** `GET`\n\n**Endpoint:** `/establishments`\n\n| Parâmetro | Tipo | Obrigatório | Descrição | Exemplo |\n| --- | --- | --- | --- | --- |\n| latitude | number | Sim | Latitude da localização atual do usuário, utilizada para calcular a distância entre o usuário e os estabelecimentos retornados. | \\-23.424650272424707 |\n| longitude | number | Sim | Longitude da localização atual do usuário, utilizada para calcular a distância entre o usuário e os estabelecimentos retornados. | \\-51.93644931296396 |\n| category | string | Não | Filtra estabelecimentos por categoria. | night_club |\n| minRating | number | Não | Filtra estabelecimentos com avaliação mínima informada. | 4.5 |\n| search | string | Não | Realiza busca por nome ou termo relacionado ao estabelecimento. | bar |\n| sortBy | string | Não | Define o critério de ordenação dos resultados. | distance |\n\n### Observações\n\n#### `sortBy`\n\nOs seguintes valores são suportados:\n\n| Valor | Descrição |\n| --- | --- |\n| `distance` | Ordena os estabelecimentos pela distância em relação à localização do usuário. |\n| `rating` | Ordena os estabelecimentos pela avaliação média. |\n| `name` | Ordena os estabelecimentos em ordem alfabética pelo nome. |\n\n#### `category`\n\nOs seguintes valores são suportados:\n\n| Valor |\n| --- |\n| `night_club` |\n| `bar` |\n| `restaurant` |\n| `cafe` |\n\n#### `minRating`\n\n- Aceita valores entre **0** e **5**.\n    \n- Retorna apenas estabelecimentos cuja avaliação média seja maior ou igual ao valor informado.\n    \n\n#### `search`\n\n- Permite pesquisar estabelecimentos por nome ou termos relacionados.\n    \n- Exemplos:\n    \n    - `Vibester Bar`\n        \n    - `Pub`\n        \n    - `Hamburgueria`\n        \n    - `Café`\n        \n\nExemplo de resposta: `Lista de Estabelecimentos`\n\n---\n\n### 🇺🇸 EN-US\n\nReturns a list of available establishments, supporting filtering, search, sorting, and distance calculation based on the user's location.\n\n**Method:** `GET`\n\n**Endpoint:** `/establishments`\n\n| Parameter | Type | Required | Description | Example |\n| --- | --- | --- | --- | --- |\n| latitude | number | Yes | User's current latitude, used to calculate the distance between the user and the returned establishments. | \\-23.424650272424707 |\n| longitude | number | Yes | User's current longitude, used to calculate the distance between the user and the returned establishments. | \\-51.93644931296396 |\n| category | string | No | Filters establishments by category. | night_club |\n| minRating | number | No | Filters establishments by minimum average rating. | 4.5 |\n| search | string | No | Searches establishments by name or related terms. | bar |\n| sortBy | string | No | Defines the sorting criteria for the returned results. | distance |\n\n### Notes\n\n#### `sortBy`\n\nThe following values are supported:\n\n| Value | Description |\n| --- | --- |\n| `distance` | Sorts establishments by distance from the user's location. |\n| `rating` | Sorts establishments by average rating. |\n| `name` | Sorts establishments alphabetically by name. |\n\n#### `category`\n\nThe following values are supported:\n\n| Value |\n| --- |\n| `night_club` |\n| `bar` |\n| `restaurant` |\n| `cafe` |\n\n#### `minRating`\n\n- Accepts values between **0** and **5**.\n    \n- Returns only establishments whose average rating is greater than or equal to the specified value.  \n    \n\n#### `search`\n\n- Allows searching establishments by name or related terms.\n    \n- Examples:\n    \n    - `Vibester Bar`\n        \n    - `Pub`\n        \n    - `Burger Restaurant`\n        \n    - `Cafe`\n        \n\n**Response Example:** `Establishments List`"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Establishment Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/establishments/a320429a-3c6f-4527-ba45-f905f30a7c85",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3002",
+              "path": [
+                "establishments",
+                "a320429a-3c6f-4527-ba45-f905f30a7c85"
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nRetorna as informações detalhadas de um estabelecimento específico.\n\n**Método:** `GET`\n\n**Endpoint:** `/establishments/{establishmentId}`\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| establishmentId | UUID | Sim | Identificador único do estabelecimento. |\n\nExemplo de resposta:\n\n``` json\n{\n    \"icon\": \"https://cdn.vibester.com/establishments_icons/icon01.jpg\",\n    \"name\": \"Vibester Bar\",\n    \"banner\": \"https://cdn.vibester.com/establishments_banners/banner01.jpg\",\n    \"location\": {\n        \"latitude\": -23.42401289999999,\n        \"longitude\": -51.95148640000001\n    },\n    \"category\": \"bar\",\n    \"priceIndicator\": \"$40–60\",\n    \"rating\": 4.6\n}\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nReturns detailed information about a specific establishment.\n\n**Method:** `GET`\n\n**Endpoint:** `/establishments/{establishmentId}`\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| establishmentId | UUID | Yes | Unique establishment identifier |\n\nExemplo de resposta:\n\n``` json\n{\n    \"icon\": \"https://cdn.vibester.com/establishments_icons/icon01.jpg\",\n    \"name\": \"Vibester Bar\",\n    \"banner\": \"https://cdn.vibester.com/establishments_banners/banner01.jpg\",\n    \"location\": {\n        \"latitude\": -23.42401289999999,\n        \"longitude\": -51.95148640000001\n    },\n    \"category\": \"bar\",\n    \"priceIndicator\": \"$40–60\",\n    \"rating\": 4.6\n}\n\n ```"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Open Establishments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/establishments/open",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3002",
+              "path": [
+                "establishments",
+                "open"
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nRetorna todos os estabelecimentos que estão abertos no momento da consulta.\n\n**Método:** `GET`\n\n**Endpoint:** `/establishments/open`\n\nExemplo de resposta:\n\n``` json\n[\n  {\n    \"id\": UUID,\n    \"name\": \"Vibester Bar\",\n    \"category\": \"bar\",\n    \"averageRating\": 4.5,\n    \"latitude\": -23.4259204,\n    \"longitude\": -51.9343962,\n    \"openning_hours\": [\n      {\n        //Horário de atendimento\n      }\n    ]\n  },\n  {\n    \"id\": UUID,\n    \"name\": \"Bar Vibester\",\n    \"category\": \"bar\",\n    \"averageRating\": 4.5,\n    \"latitude\": -23.4259205,\n    \"longitude\": -51.9343963,\n    \"openning_hours\": [\n      {\n        //Horário de atendimento\n      }\n    ]\n  }\n]\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nReturns all establishments that are currently open at the time of the request.\n\n**Method:** `GET`\n\n**Endpoint:** `/establishments/open`\n\nResponse example:\n\n``` json\n[\n  {\n    \"id\": UUID,\n    \"name\": \"Vibester Bar\",\n    \"category\": \"bar\",\n    \"averageRating\": 4.5,\n    \"latitude\": -23.4259204,\n    \"longitude\": -51.9343962,\n    \"openning_hours\": [\n      {\n        //Opening hours\n      }\n    ]\n  },\n  {\n    \"id\": UUID,\n    \"name\": \"Bar Vibester\",\n    \"category\": \"bar\",\n    \"averageRating\": 4.5,\n    \"latitude\": -23.4259205,\n    \"longitude\": -51.9343963,\n    \"openning_hours\": [\n      {\n        //Opening hours\n      }\n    ]\n  }\n]\n\n ```"
+          },
+          "response": []
+        },
+        {
+          "name": "Rate Establishment",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"rating\": 5 }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3002/establishments/a320429a-3c6f-4527-ba45-f905f30a7c85/rating",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3002",
+              "path": [
+                "establishments",
+                "a320429a-3c6f-4527-ba45-f905f30a7c85",
+                "rating"
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nAtualiza a avaliação de um estabelecimento.\n\n**Método:** `PATCH`\n\n**Endpoint:** `/establishments/{establishmentId}/rating`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| establishmentId | UUID | Identificador único do estabelecimento. |\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| rating | number | Sim | Nova avaliação do estabelecimento. Deve ser um valor entre 0 e 5. |\n\n#### Observações\n\n- O valor de `rating` deve estar entre **0** e **5**.\n    \n- Valores fora desse intervalo devem ser rejeitados pela API.\n    \n- A avaliação enviada será utilizada para atualizar a nota média do estabelecimento.\n    \n\n**Exemplo de resposta:**\n\n``` json\n{\n    \"id\": UUID,\n    \"googlePlaceId\": GOOGLE_PLACE_ID,\n    \"name\": \"Vibester Bar\",\n    \"photoUrl\": \"https://cdn.vibester.com/establishment_icons/icon01.jpg\",\n    \"bannerUrl\": \"https://cdn.vibester.com/establishments_banners/banner01.jpg\",\n    \"category\": \"bar\",\n    \"priceIndicator\": \"$40–60\",\n    \"averageRating\": 5,\n    \"latitude\": -23.42401289999999,\n    \"longitude\": -51.95148640000001,\n    \"createdAt\": \"2026-01-01T15:00:00.000Z\",\n    \"updatedAt\": \"2026-01-01T15:30:00.000Z\"\n}\n\n ```\n\n---\n\n## Update Establishment Rating\n\n### 🇺🇸 EN-US\n\nUpdates an establishment's rating.\n\n**Method:** `PATCH`\n\n**Endpoint:** `/establishments/{establishmentId}/rating`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| establishmentId | UUID | Unique identifier of the establishment. |\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| rating | number | Yes | New establishment rating. Must be a value between 0 and 5. |\n\n#### Notes\n\n- The `rating` value must be between **0** and **5**.\n    \n- Values outside this range should be rejected by the API.\n    \n- The submitted rating will be used to update the establishment's average rating.\n    \n\n**Response Example:**\n\n``` json\n{\n    \"id\": UUID,\n    \"googlePlaceId\": GOOGLE_PLACE_ID,\n    \"name\": \"Vibester Bar\",\n    \"photoUrl\": \"https://cdn.vibester.com/establishment_icons/icon01.jpg\",\n    \"bannerUrl\": \"https://cdn.vibester.com/establishments_banners/banner01.jpg\",\n    \"category\": \"bar\",\n    \"priceIndicator\": \"$40–60\",\n    \"averageRating\": 5,\n    \"latitude\": -23.42401289999999,\n    \"longitude\": -51.95148640000001,\n    \"createdAt\": \"2026-01-01T15:00:00.000Z\",\n    \"updatedAt\": \"2026-01-01T15:30:00.000Z\"\n}\n\n ```"
+          },
+          "response": []
+        }
+      ],
+      "description": "**🇧🇷 PT-BR**\n\nResponsável pelas operações de consulta de estabelecimentos, permitindo listar estabelecimentos, visualizar perfis detalhados e consultar estabelecimentos atualmente abertos.\n\n---\n\n**🇺🇸 EN-US**\n\nResponsible for establishment retrieval operations, allowing users to list establishments, view detailed establishment profiles, and retrieve establishments that are currently open."
+    },
+    {
+      "name": "Event-Service",
+      "item": [
+        {
+          "name": "Create Event",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Festa Universitária\",\r\n  \"photoUrl\": \"https://cdn.vibester.com/events/photo01.jpg\",\r\n  \"category\": \"Festa\",\r\n  \"organizer\": \"Atlética Engenharia\",\r\n  \"location\": \"Maringá - PR\",\r\n  \"startDate\": \"2026-06-13T20:00:00.000Z\",\r\n  \"endDate\": \"2026-06-14T04:00:00.000Z\",\r\n  \"ticketLink\": \"https://exemplo.com/ingresso\",\r\n  \"latitude\": -23.420900,\r\n  \"longitude\": -51.933056\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:3334/api/events/",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3334",
+              "path": [
+                "api",
+                "events",
+                ""
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nCria um novo evento na plataforma.\n\n**Método:** `POST`\n\n**Endpoint:** `/api/events`\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| name | string | Sim | Nome do evento. |\n| photoUrl | string | Não | URL da imagem/foto do evento. |\n| category | string | Sim | Categoria do evento. |\n| organizer | string | Sim | Organização ou responsável pelo evento. |\n| location | string | Sim | Local onde o evento será realizado. |\n| startDate | datetime | Sim | Data e hora de início do evento. |\n| endDate | datetime | Sim | Data e hora de término do evento. |\n| ticketLink | string | Não | Link para compra de ingresso. |\n| latitude | number | Sim | Latitude da localização do evento. |\n| longitude | number | Sim | Longitude da localização do evento. |\n\nExemplo de requisição:\n\n``` json\n{\n  \"name\": \"Festa Universitária\",\n  \"photoUrl\": \"https://cdn.vibester.com/events/photo01.jpg\",\n  \"category\": \"Festa\",\n  \"organizer\": \"Atlética Engenharia\",\n  \"location\": \"Maringá - PR\",\n  \"startDate\": \"2026-06-10T22:00:00.000Z\",\n  \"endDate\": \"2026-06-11T04:00:00.000Z\",\n  \"ticketLink\": \"https://exemplo.com/ingresso\",\n  \"latitude\": -23.420999,\n  \"longitude\": -51.933056\n}\n\n ```\n\nExemplo de resposta:\n\n``` json\n{\n    \"id\": UUID,\n    \"name\": \"Festa Universitária\",\n    \"photoUrl\": \"https://cdn.vibester.com/events/photo01.jpg\",\n    \"category\": \"Festa\",\n    \"organizer\": \"Atlética Engenharia\",\n    \"location\": \"Maringá - PR\",\n    \"startDate\": \"2026-06-13T20:00:00.000Z\",\n    \"endDate\": \"2026-06-14T04:00:00.000Z\",\n    \"ticketLink\": \"https://exemplo.com/ingresso\",\n    \"totalConfirmed\": 0,\n    \"latitude\": -23.420999,\n    \"longitude\": -51.933056,\n    \"createdAt\": \"2026-06-13T14:56:20.236Z\",\n    \"updatedAt\": \"2026-06-13T14:56:20.236Z\"\n}\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nCreates a new event on the platform.\n\n**Method:** `POST`\n\n**Endpoint:** `/api/events`\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| name | string | Yes | Event name. |\n| photoUrl | string | No | Event image/photo URL. |\n| category | string | Yes | Event category. |\n| organizer | string | Yes | Event organizer or responsible organization. |\n| location | string | Yes | Location where the event will take place. |\n| startDate | datetime | Yes | Event start date and time. |\n| endDate | datetime | Yes | Event end date and time. |\n| ticketLink | string | No | Ticket purchase link. |\n| latitude | number | Yes | Event location latitude. |\n| longitude | number | Yes | Event location longitude. |\n\nRequest example:\n\n``` json\n{\n  \"name\": \"Festa Universitária\",\n  \"photoUrl\": \"https://cdn.vibester.com/events/photo01.jpg\",\n  \"category\": \"Festa\",\n  \"organizer\": \"Atlética Engenharia\",\n  \"location\": \"Maringá - PR\",\n  \"startDate\": \"2026-06-10T22:00:00.000Z\",\n  \"endDate\": \"2026-06-11T04:00:00.000Z\",\n  \"ticketLink\": \"https://exemplo.com/ingresso\",\n  \"latitude\": -23.420999,\n  \"longitude\": -51.933056\n}\n\n ```\n\nResponse example:\n\n``` json\n{\n    \"id\": UUID,\n    \"name\": \"Festa Universitária\",\n    \"photoUrl\": \"https://cdn.vibester.com/events/photo01.jpg\",\n    \"category\": \"Festa\",\n    \"organizer\": \"Atlética Engenharia\",\n    \"location\": \"Maringá - PR\",\n    \"startDate\": \"2026-06-13T20:00:00.000Z\",\n    \"endDate\": \"2026-06-14T04:00:00.000Z\",\n    \"ticketLink\": \"https://exemplo.com/ingresso\",\n    \"totalConfirmed\": 0,\n    \"latitude\": -23.420999,\n    \"longitude\": -51.933056,\n    \"createdAt\": \"2026-06-13T14:56:20.236Z\",\n    \"updatedAt\": \"2026-06-13T14:56:20.236Z\"\n}\n\n ```"
+          },
+          "response": []
+        },
+        {
+          "name": "List nearby Events",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3334/api/events/nearby?latitude=-23.411566686376247&longitude=-51.98551235552537",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3334",
+              "path": [
+                "api",
+                "events",
+                "nearby"
+              ],
+              "query": [
+                {
+                  "key": "radiusKm",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "latitude",
+                  "value": "-23.411566686376247"
+                },
+                {
+                  "key": "longitude",
+                  "value": "-51.98551235552537"
+                }
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nRetorna uma lista de eventos próximos à localização do usuário.\n\n**Método:** `GET`\n\n**Endpoint:** `/api/events/nearby`\n\n#### Query Parameters\n\n| Parâmetro | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| latitude | number | Sim | Latitude da localização atual do usuário. |\n| longitude | number | Sim | Longitude da localização atual do usuário. |\n| radiusKm | number | Não | Raio de busca em quilômetros. |\n\n### Observação\n\n- `radiusKm` padrão é 10 (km)\n    \n\nExemplo de resposta: `Lista de eventos` ordenados pela menor distância\n\n---\n\n### 🇺🇸 EN-US\n\nReturns a list of events near the user's location.\n\n**Method:** `GET`\n\n**Endpoint:** `/api/events/nearby`\n\n#### Query Parameters\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| latitude | number | Yes | User's current latitude. |\n| longitude | number | Yes | User's current longitude. |\n| radiusKm | number | No | Search radius in kilometers. |\n\n### Note\n\n- `radiusKm` default it's 10 (km)\n    \n\nResponse example: `Events lists` sorted by the distance."
+          },
+          "response": []
+        },
+        {
+          "name": "Get event details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3334/api/events/dc1b5ee3-b914-4400-ad13-ef3a3d7bee92",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3334",
+              "path": [
+                "api",
+                "events",
+                "dc1b5ee3-b914-4400-ad13-ef3a3d7bee92"
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nRetorna os detalhes de um evento específico.\n\n**Método:** `GET`\n\n**Endpoint:** `/api/events/{eventId}`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| eventId | UUID | Identificador único do evento. |\n\nExemplo de resposta:\n\n``` json\n{\n    \"name\": \"Festa Universitária\",\n    \"organizer\": \"Atlética Computação\",\n    \"location\": \"Maringá - PR\",\n    \"totalConfirmed\": 0,\n    \"ticketLink\": \"https://exemplo.com/ingresso\"\n}\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nReturns the details of a specific event.\n\n**Method:** `GET`\n\n**Endpoint:** `/api/events/{eventId}`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| eventId | UUID | Unique identifier of the event. |\n\nResponse example:\n\n``` json\n{\n    \"name\": \"Festa Universitária\",\n    \"organizer\": \"Atlética Computação\",\n    \"location\": \"Maringá - PR\",\n    \"totalConfirmed\": 0,\n    \"ticketLink\": \"https://exemplo.com/ingresso\"\n}\n\n ```"
+          },
+          "response": []
+        }
+      ],
+      "description": "**🇧🇷 PT-BR**\n\nResponsável pelas operações relacionadas a eventos, permitindo o cadastro, consulta de detalhes e descoberta de eventos próximos com base na localização do usuário.\n\n---\n\n**🇺🇸 EN-US**\n\nResponsible for event-related operations, allowing event creation, event detail retrieval, and discovery of nearby events based on the user's location."
+    },
+    {
+      "name": "Post-Service",
+      "item": [
+        {
+          "name": "Posts",
+          "item": [
+            {
+              "name": "Create Post",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440000\",\r\n    \"establishmentId\": \"a320429a-3c6f-4527-ba45-f905f30a7c85\",\r\n    \"imageUrls\": [\r\n        \"https://cdn.vibester.com/posts/foto01.jpg\"\r\n    ],\r\n    \"caption\": \"Jogo 4 no Firula Bar\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/posts",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "posts"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nCria uma nova publicação associada a um usuário e, opcionalmente, a um estabelecimento.\n\n**Método:** `POST`\n\n**Endpoint:** `/posts`\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| userId | UUID | Sim | Identificador único do usuário responsável pela publicação. |\n| establishmentId | UUID | Não | Identificador do estabelecimento relacionado ao post. |\n| imageUrls | String\\[\\] | Sim | Lista de URLs das imagens da publicação. |\n| caption | String | Sim | Texto ou legenda da publicação. |\n\nExemplo de body:\n\n``` json\n{\n    \"userId\": UUID,\n    \"establishmentId\": UUID,\n    \"imageUrls\": [\n        \"https://cdn.vibester.com/posts/foto01.jpg\",\n        \"https://cdn.vibester.com/posts/foto02.jpg\"\n    ],\n    \"caption\": \"Olá, Vibester!\"\n}\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nCreates a new post associated with a user and, optionally, an establishment.\n\n**Method:** `POST`\n\n**Endpoint:** `/posts`\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| userId | UUID | Yes | Unique identifier of the user who created the post. |\n| establishmentId | UUID | No | Identifier of the establishment related to the post. |\n| imageUrls | String\\[\\] | Yes | List of image URLs attached to the post. |\n| caption | String | Yes | Post caption or description. |\n\nBody example:\n\n``` json\n{\n    \"userId\": UUID,\n    \"establishmentId\": UUID,\n    \"imageUrls\": [\n        \"https://cdn.vibester.com/posts/foto01.jpg\",\n        \"https://cdn.vibester.com/posts/foto02.jpg\"\n    ],\n    \"caption\": \"Hello, Vibester!\"\n}\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Post By Id",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\",\r\n    \"imageUrls\": [\r\n        \"https://cdn.vibester.com/posts/foto7.jpg\"\r\n    ],\r\n    \"caption\": \"Tropicadelia 2026\"\r\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:3000/posts/f864762b-6e76-4568-a63d-51059d0ca944",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "posts",
+                    "f864762b-6e76-4568-a63d-51059d0ca944"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRetorna os detalhes de uma publicação específica.\n\n**Método:** `GET`\n\n**Endpoint:** `/posts/{postId}`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| postId | UUID | Identificador único da publicação. |\n\nExemplo de resposta:\n\n``` json\n{\n    \"postId\": UUID,\n    \"userId\": UUID,\n    \"establishmentId\": UUID,\n    \"caption\": \"Olá, Vibester!\",\n    \"totalLikes\": 0,\n    \"totalComments\": 0,\n    \"isDeleted\": false,\n    \"createdAt\": \"2026-01-01T10:00:00.000Z\",\n    \"updatedAt\": null\n}\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nReturns the details of a specific post.\n\n**Method:** `GET`\n\n**Endpoint:** `/posts/{postId}`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| postId | UUID | Unique identifier of the post. |\n\nResponse example:\n\n``` json\n{\n    \"postId\": UUID,\n    \"userId\": UUID,\n    \"establishmentId\": UUID,\n    \"caption\": \"Hello, Vibester!\",\n    \"totalLikes\": 0,\n    \"totalComments\": 0,\n    \"isDeleted\": false,\n    \"createdAt\": \"2026-01-01T10:00:00.000Z\",\n    \"updatedAt\": null\n}\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Posts By User",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\",\r\n    \"imageUrls\": [\r\n        \"https://cdn.vibester.com/posts/foto7.jpg\"\r\n    ],\r\n    \"caption\": \"Tropicadelia 2026\"\r\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:3000/users/550e8400-e29b-41d4-a716-446655440000/posts",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users",
+                    "550e8400-e29b-41d4-a716-446655440000",
+                    "posts"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRetorna todas as publicações criadas por um usuário.\n\n**Método:** `GET`\n\n**Endpoint:** `/users/{userId}/posts`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| userId | UUID | Identificador único do usuário. |\n\nExemplo de resposta:\n\n``` json\n[\n    {\n        \"user_id\": UUID,\n        \"created_at\": \"2026-01-01T10:00:00.000Z\",\n        \"post_id\": UUID,\n        \"caption\": \"Olá, Vibester!\",\n        \"establishment_id\": UUID,\n        \"image_urls\": [\n            \"https://cdn.vibester.com/posts/foto01.jpg\",\n            \"https://cdn.vibester.com/posts/foto02.jpg\"\n        ],\n        \"is_deleted\": false,\n        \"total_comments\": 0,\n        \"total_likes\": 0,\n        \"updated_at\": null\n    }\n]\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nReturns all posts created by a specific user.\n\n**Method:** `GET`\n\n**Endpoint:** `/users/{userId}/posts`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| userId | UUID | Unique identifier of the user. |\n\nResponse example:\n\n``` json\n[\n    {\n        \"user_id\": UUID,\n        \"created_at\": \"2026-01-01T10:00:00.000Z\",\n        \"post_id\": UUID,\n        \"caption\": \"Hello, Vibester!\",\n        \"establishment_id\": UUID,\n        \"image_urls\": [\n            \"https://cdn.vibester.com/posts/foto01.jpg\",\n            \"https://cdn.vibester.com/posts/foto02.jpg\"\n        ],\n        \"is_deleted\": false,\n        \"total_comments\": 0,\n        \"total_likes\": 0,\n        \"updated_at\": null\n    }\n]\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Posts By Establishment",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\",\r\n    \"imageUrls\": [\r\n        \"https://cdn.vibester.com/posts/foto7.jpg\"\r\n    ],\r\n    \"caption\": \"Tropicadelia 2026\"\r\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:3000/establishments/a320429a-3c6f-4527-ba45-f905f30a7c85/posts",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "establishments",
+                    "a320429a-3c6f-4527-ba45-f905f30a7c85",
+                    "posts"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRetorna todas as publicações vinculadas a um estabelecimento.\n\n**Método:** `GET`\n\n**Endpoint:** `/establishments/{establishmentId}/posts`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| establishmentId | UUID | Identificador único do estabelecimento. |\n\nExemplo de resposta:\n\n``` json\n[\n    {\n        \"establishment_id\": UUID,\n        \"created_at\": \"2026-01-01T10:00:00.000Z\",\n        \"post_id\": UUID,\n        \"caption\": \"Olá, Vibester\",\n        \"image_urls\": [\n            \"https://cdn.vibester.com/posts/foto01.jpg\",\n            \"https://cdn.vibester.com/posts/foto02.jpg\"\n        ],\n        \"is_deleted\": false,\n        \"total_comments\": 0,\n        \"total_likes\": 0,\n        \"updated_at\": null,\n        \"user_id\": UUID\n    }\n]\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nReturns all posts associated with a specific establishment.\n\n**Method:** `GET`\n\n**Endpoint:** `/establishments/{establishmentId}/posts`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| establishmentId | UUID | Unique identifier of the establishment. |\n\nResponse example:\n\n``` json\n[\n    {\n        \"establishment_id\": UUID,\n        \"created_at\": \"2026-01-01T10:00:00.000Z\",\n        \"post_id\": UUID,\n        \"caption\": \"Hello, Vibester\",\n        \"image_urls\": [\n            \"https://cdn.vibester.com/posts/foto01.jpg\",\n            \"https://cdn.vibester.com/posts/foto02.jpg\"\n        ],\n        \"is_deleted\": false,\n        \"total_comments\": 0,\n        \"total_likes\": 0,\n        \"updated_at\": null,\n        \"user_id\": UUID\n    }\n]\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Update Post Caption",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"caption\": \"Legenda editada!\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/posts/f864762b-6e76-4568-a63d-51059d0ca944",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "posts",
+                    "f864762b-6e76-4568-a63d-51059d0ca944"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nAtualiza a legenda de uma publicação existente.\n\n**Método:** `PATCH`\n\n**Endpoint:** `/posts/{postId}`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| postId | UUID | Identificador único da publicação. |\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| caption | String | Sim | Nova legenda da publicação. |\n\nExemplo de resposta:\n\n``` json\n{\n    \"postId\": UUID,\n    \"userId\": UUID,\n    \"establishmentId\": UUID,\n    \"caption\": \"Legenda editada!\",\n    \"totalLikes\": 0,\n    \"totalComments\": 0,\n    \"isDeleted\": false,\n    \"createdAt\": \"2026-01-01T10:00:00.000Z\",\n    \"updatedAt\": \"2026-01-01T10:01:00.000Z\"\n}\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nUpdates the caption of an existing post.\n\n**Method:** `PATCH`\n\n**Endpoint:** `/posts/{postId}`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| postId | UUID | Unique identifier of the post. |\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| caption | String | Yes | New post caption. |\n\nResponse example:\n\n``` json\n{\n    \"postId\": UUID,\n    \"userId\": UUID,\n    \"establishmentId\": UUID,\n    \"caption\": \"Updated caption!\",\n    \"totalLikes\": 0,\n    \"totalComments\": 0,\n    \"isDeleted\": false,\n    \"createdAt\": \"2026-01-01T10:00:00.000Z\",\n    \"updatedAt\": \"2026-01-01T10:01:00.000Z\"\n}\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Post",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "http://localhost:3000/posts/10d04e98-a04b-419d-b032-623c07dae77d",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "posts",
+                    "10d04e98-a04b-419d-b032-623c07dae77d"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRemove uma publicação existente do sistema.\n\n**Método:** `DELETE`\n\n**Endpoint:** `/posts/{postId}`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| postId | UUID | Identificador único da publicação. |\n\n#### Observações\n\n- A remoção é realizada por exclusão lógica (soft delete).\n    \n\nExemplo de resposta: `204 No Content`  \n\n---\n\n### 🇺🇸 EN-US\n\nRemoves an existing post from the system.\n\n**Method:** `DELETE`\n\n**Endpoint:** `/posts/{postId}`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| postId | UUID | Unique identifier of the post. |\n\n#### Notes\n\n- The operation will perform a soft delete.\n    \n\nResponse example: `204 No Content`"
+              },
+              "response": []
+            }
+          ],
+          "description": "**🇧🇷 PT-BR**  \n  \nResponsável pelas operações relacionadas aos posts, incluindo criação, consulta, atualização e exclusão de publicações.\n\n**🇺🇸 EN-US**  \n  \nResponsible for post-related operations, including creating, retrieving, updating, and deleting posts."
+        },
+        {
+          "name": "Likes",
+          "item": [
+            {
+              "name": "Create Like At Post",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/posts/609bf8c0-fe2f-4c83-8e76-cce85484a1da/likes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "posts",
+                    "609bf8c0-fe2f-4c83-8e76-cce85484a1da",
+                    "likes"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRegistra uma curtida de um usuário em uma publicação.\n\n**Método:** `POST`\n\n**Endpoint:** `/posts/{postId}/likes`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| postId | UUID | Identificador único da publicação. |\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| userId | UUID | Sim | Identificador único do usuário que está curtindo a publicação. |\n\n#### Observações\n\n- Um usuário pode curtir uma publicação apenas uma vez.\n    \n- A ação incrementa o contador de curtidas da publicação.\n    \n\nExemplo de resposta:\n\n``` json\n{\n    \"postId\": UUID,\n    \"userId\": UUID,\n    \"likedAt\": \"2026-01-01T11:00:00.000Z\"\n}\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nRegisters a like from a user on a post.\n\n**Method:** `POST`\n\n**Endpoint:** `/posts/{postId}/likes`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| postId | UUID | Unique identifier of the post. |\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| userId | UUID | Yes | Unique identifier of the user liking the post. |\n\n#### Notes\n\n- A user can like a post only once.\n    \n- This operation increments the post's total like count.\n    \n\nResponse example:\n\n``` json\n{\n    \"postId\": UUID,\n    \"userId\": UUID,\n    \"likedAt\": \"2026-01-01T11:00:00.000Z\"\n}\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Find Likes By Post",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\",\r\n    \"imageUrls\": [\r\n        \"https://cdn.vibester.com/posts/foto7.jpg\"\r\n    ],\r\n    \"caption\": \"Tropicadelia 2026\"\r\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:3000/posts/f864762b-6e76-4568-a63d-51059d0ca944/likes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "posts",
+                    "f864762b-6e76-4568-a63d-51059d0ca944",
+                    "likes"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRetorna todas as curtidas registradas em uma publicação específica.\n\n**Método:** `GET`\n\n**Endpoint:** `/posts/{postId}/likes`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| postId | UUID | Identificador único da publicação. |\n\nExemplo de resposta:\n\n``` json\n[\n    {\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"likedAt\": \"2026-01-01T11:00:00.000Z\"\n    }\n]\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nReturns all likes registered for a specific post.\n\n**Method:** `GET`\n\n**Endpoint:** `/posts/{postId}/likes`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| postId | UUID | Unique identifier of the post. |\n\nResponse example:\n\n``` json\n[\n    {\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"likedAt\": \"2026-01-01T11:00:00.000Z\"\n    }\n]\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Get Likes By User",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\",\r\n    \"imageUrls\": [\r\n        \"https://cdn.vibester.com/posts/foto7.jpg\"\r\n    ],\r\n    \"caption\": \"Tropicadelia 2026\"\r\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:3000/users/550e8400-e29b-41d4-a716-446655440001/likes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users",
+                    "550e8400-e29b-41d4-a716-446655440001",
+                    "likes"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRetorna todas as curtidas realizadas por um usuário.\n\n**Método:** `GET`\n\n**Endpoint:** `/users/{userId}/likes`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| userId | UUID | Identificador único do usuário. |\n\n#### Observações\n\n- Permite consultar o histórico de curtidas realizadas pelo usuário.\n    \n\nExemplo de resposta:\n\n``` json\n[\n    {\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"likedAt\": \"2026-01-01T12:00:00.000Z\"\n    },\n    {\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"likedAt\": \"2026-01-01T11:00:00.000Z\"\n    }\n]\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nReturns all likes made by a specific user.\n\n**Method:** `GET`\n\n**Endpoint:** `/users/{userId}/likes`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| userId | UUID | Unique identifier of the user. |\n\n#### Notes\n\n- Allows retrieval of the user's like history.\n    \n\nResponse example:\n\n``` json\n[\n    {\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"likedAt\": \"2026-01-01T12:00:00.000Z\"\n    },\n    {\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"likedAt\": \"2026-01-01T11:00:00.000Z\"\n    }\n]\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Like At Post",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/posts/f864762b-6e76-4568-a63d-51059d0ca944/likes",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "posts",
+                    "f864762b-6e76-4568-a63d-51059d0ca944",
+                    "likes"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRemove a curtida de um usuário em uma publicação.\n\n**Método:** `DELETE`\n\n**Endpoint:** `/posts/{postId}/likes`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| postId | UUID | Identificador único da publicação. |\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| userId | UUID | Sim | Identificador único do usuário que deseja remover a curtida. |\n\n#### Observações\n\n- A ação decrementa o contador de curtidas da publicação.\n    \n- A curtida deve existir para ser removida.\n    \n\nExemplo de resposta: `204 No Content`\n\n---\n\n### 🇺🇸 EN-US\n\nRemoves a user's like from a post.\n\n**Method:** `DELETE`\n\n**Endpoint:** `/posts/{postId}/likes`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| postId | UUID | Unique identifier of the post. |\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| userId | UUID | Yes | Unique identifier of the user removing the like. |\n\n#### Notes\n\n- This operation decrements the post's total like count.\n    \n- The like must exist before it can be removed.\n    \n\nResponse example: `204 No Content`"
+              },
+              "response": []
+            }
+          ],
+          "description": "**🇧🇷 PT-BR**  \n  \nResponsável pelas operações de curtidas em posts, permitindo adicionar, remover e consultar interações de likes.\n\n**🇺🇸 EN-US**  \n  \nResponsible for post like operations, allowing users to add, remove, and retrieve like interactions."
+        },
+        {
+          "name": "Comments",
+          "item": [
+            {
+              "name": "Create Comment",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"postId\": \"609bf8c0-fe2f-4c83-8e76-cce85484a1da\",\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\",\r\n    \"content\": \"Insano!\" \r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/comments",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "comments"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nCria um novo comentário em uma publicação.\n\n**Método:** `POST`\n\n**Endpoint:** `/comments`\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| postId | UUID | Sim | Identificador único da publicação onde o comentário será criado. |\n| userId | UUID | Sim | Identificador único do usuário responsável pelo comentário. |\n| content | String | Sim | Conteúdo do comentário. |\n\n### Observação\n\n- Content pode ter no máximo 250 caracteres.\n    \n\nExemplo de resposta:\n\n``` json\n{\n    \"commentId\": UUID,\n    \"postId\": UUID,\n    \"userId\": UUID,\n    \"content\": \"Que vibe!\",\n    \"isDeleted\": false,\n    \"createdAt\": \"2026-01-01T12:00:00.000Z\",\n    \"updatedAt\": null\n}\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nCreates a new comment on a post.\n\n**Method:** `POST`\n\n**Endpoint:** `/comments`\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| postId | UUID | Yes | Unique identifier of the post where the comment will be created. |\n| userId | UUID | Yes | Unique identifier of the user creating the comment. |\n| content | String | Yes | Comment content. |\n\n###   \nNote\n\n- The content can have a maximum of 250 characters.  \n    \n\nResponse example:\n\n``` json\n{\n    \"commentId\": UUID,\n    \"postId\": UUID,\n    \"userId\": UUID,\n    \"content\": \"What a vibe!\",\n    \"isDeleted\": false,\n    \"createdAt\": \"2026-01-01T12:00:00.000Z\",\n    \"updatedAt\": null\n}\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Find Comments By Post",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\",\r\n    \"imageUrls\": [\r\n        \"https://cdn.vibester.com/posts/foto7.jpg\"\r\n    ],\r\n    \"caption\": \"Tropicadelia 2026\"\r\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:3000/posts/609bf8c0-fe2f-4c83-8e76-cce85484a1da/comments",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "posts",
+                    "609bf8c0-fe2f-4c83-8e76-cce85484a1da",
+                    "comments"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRetorna todos os comentários de uma publicação específica.\n\n**Método:** `GET`\n\n**Endpoint:** `/posts/{postId}/comments`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| postId | UUID | Identificador único da publicação. |\n\nExemplo de resposta:\n\n``` json\n[\n    {\n        \"commentId\": UUID,\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"content\": \"Insano!\",\n        \"isDeleted\": false,\n        \"createdAt\": \"2026-01-01T12:05:00.000Z\",\n        \"updatedAt\": null\n    },\n    {\n        \"commentId\": UUID,\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"content\": \"Que vibe!\",\n        \"isDeleted\": false,\n        \"createdAt\": \"2026-06-13T12:00:00.000Z\",\n        \"updatedAt\": null\n    }\n]\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nReturns all comments from a specific post.\n\n**Method:** `GET`\n\n**Endpoint:** `/posts/{postId}/comments`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| postId | UUID | Unique identifier of the post. |\n\nResponse example:\n\n``` json\n[\n    {\n        \"commentId\": UUID,\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"content\": \"Insane!\",\n        \"isDeleted\": false,\n        \"createdAt\": \"2026-01-01T12:05:00.000Z\",\n        \"updatedAt\": null\n    },\n    {\n        \"commentId\": UUID,\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"content\": \"What a vibe!\",\n        \"isDeleted\": false,\n        \"createdAt\": \"2026-06-13T12:00:00.000Z\",\n        \"updatedAt\": null\n    }\n]\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Find Comments By User",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\",\r\n    \"imageUrls\": [\r\n        \"https://cdn.vibester.com/posts/foto7.jpg\"\r\n    ],\r\n    \"caption\": \"Tropicadelia 2026\"\r\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:3000/users/550e8400-e29b-41d4-a716-446655440001/comments",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "users",
+                    "550e8400-e29b-41d4-a716-446655440001",
+                    "comments"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRetorna todos os comentários realizados por um usuário.\n\n**Método:** `GET`\n\n**Endpoint:** `/users/{userId}/comments`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| userId | UUID | Identificador único do usuário. |\n\nExemplo de resposta:\n\n``` json\n[\n    {\n        \"commentId\": UUID,\n        \"postId\": \"UUID,\n        \"userId\": UUID,\n        \"content\": \"Insano!\",\n        \"isDeleted\": false,\n        \"createdAt\": \"2026-01-01T12:05:00.000Z\",\n        \"updatedAt\": null\n    },\n    {\n        \"commentId\": UUID,\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"content\": \"Que vibe!\",\n        \"isDeleted\": false,\n        \"createdAt\": \"2026-01-01T12:00:00.000Z\",\n        \"updatedAt\": null\n    }\n]\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nReturns all comments made by a specific user.\n\n**Method:** `GET`\n\n**Endpoint:** `/users/{userId}/comments`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| userId | UUID | Unique identifier of the user. |\n\nResponse example:\n\n``` json\n[\n    {\n        \"commentId\": UUID,\n        \"postId\": \"UUID,\n        \"userId\": UUID,\n        \"content\": \"Insane!\",\n        \"isDeleted\": false,\n        \"createdAt\": \"2026-01-01T12:05:00.000Z\",\n        \"updatedAt\": null\n    },\n    {\n        \"commentId\": UUID,\n        \"postId\": UUID,\n        \"userId\": UUID,\n        \"content\": \"What a vibe!\",\n        \"isDeleted\": false,\n        \"createdAt\": \"2026-01-01T12:00:00.000Z\",\n        \"updatedAt\": null\n    }\n]\n\n ```"
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Comment",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/comments/1c0b1dca-89bd-42b0-9f15-9dfe16983394",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "comments",
+                    "1c0b1dca-89bd-42b0-9f15-9dfe16983394"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nRemove um comentário existente de uma publicação.\n\n**Método:** `DELETE`\n\n**Endpoint:** `/comments/{commentId}`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| commentId | UUID | Identificador único do comentário. |\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| userId | UUID | Sim | Identificador único do usuário solicitando a remoção do comentário. |\n\n#### Observações\n\n- O `userId` será utilizado para validar se o usuário tem permissão para excluir o comentário\n    \n- A remoção será lógica (Soft delete).\n    \n\nExemplo de resposta: `204 No Content`  \n\n---\n\n### 🇺🇸 EN-US\n\nRemoves an existing comment from a post.\n\n**Method:** `DELETE`\n\n**Endpoint:** `/comments/{commentId}`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| commentId | UUID | Unique identifier of the comment. |\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| userId | UUID | Yes | Unique identifier of the user requesting the comment removal. |\n\n#### Notes\n\n- The `userId` will be used to validate whether the user has permission to delete the comment.\n    \n- The removal will be logical (Soft delete).\n    \n\nResponse example: `204 No Content`"
+              },
+              "response": []
+            },
+            {
+              "name": "Update Comment",
+              "request": {
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"userId\": \"550e8400-e29b-41d4-a716-446655440001\",\r\n    \"content\": \"Comentário editado.\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:3000/comments/33e205d8-1de2-45bd-b528-d82945b0ecbf",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "3000",
+                  "path": [
+                    "comments",
+                    "33e205d8-1de2-45bd-b528-d82945b0ecbf"
+                  ]
+                },
+                "description": "### 🇧🇷 PT-BR\n\nAtualiza o conteúdo de um comentário existente.\n\n**Método:** `PATCH`\n\n**Endpoint:** `/comments/{commentId}`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| commentId | UUID | Identificador único do comentário. |\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| userId | UUID | Sim | Identificador único do usuário solicitando a atualização do comentário. |\n| content | String | Sim | Novo conteúdo do comentário. |\n\n#### Observações\n\n- O `userId` será utilizado para validar se o usuário tem permissão para editar o comentário.\n    \n\nExemplo de resposta:\n\n``` json\n{\n    \"commentId\": UUID,\n    \"postId\": UUID,\n    \"userId\": UUID,\n    \"content\": \"Comentário editado.\",\n    \"isDeleted\": false,\n    \"createdAt\": \"2026-01-01T12:00:00.000Z\",\n    \"updatedAt\": \"2026-01-01T12:05:00.000Z\"\n}\n\n ```\n\n---\n\n### 🇺🇸 EN-US\n\nUpdates the content of an existing comment.\n\n**Method:** `PATCH`\n\n**Endpoint:** `/comments/{commentId}`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| commentId | UUID | Unique identifier of the comment. |\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| userId | UUID | Yes | Unique identifier of the user requesting the comment update. |\n| content | String | Yes | New comment content. |\n\n#### Notes\n\n- The `userId` will be used to validate whether the user has permission to edit the comment.\n    \n\nResponse example:\n\n``` json\n{\n    \"commentId\": UUID,\n    \"postId\": UUID,\n    \"userId\": UUID,\n    \"content\": \"Updated comment.\",\n    \"isDeleted\": false,\n    \"createdAt\": \"2026-01-01T12:00:00.000Z\",\n    \"updatedAt\": \"2026-01-01T12:05:00.000Z\"\n}\n\n ```"
+              },
+              "response": []
+            }
+          ],
+          "description": "**🇧🇷 PT-BR**  \n  \nResponsável pelas operações de comentários em posts, incluindo criação, consulta, atualização e exclusão de comentários.\n\n**🇺🇸 EN-US**  \n  \nResponsible for post comment operations, including creating, retrieving, updating, and deleting comments."
+        }
+      ],
+      "description": "### 🇧🇷 Português (Brasil)\n\n**Post Service**\n\nResponsável pelo gerenciamento de conteúdo social do Vibester. Este serviço centraliza as operações relacionadas a posts, curtidas e comentários, permitindo a criação, edição e exclusão de publicações, além das interações entre usuários por meio de likes e comentários. O objetivo é garantir uma experiência social escalável, performática e consistente dentro do ecossistema da aplicação.\n\n---\n\n### 🇺🇸 English (US)\n\n**Post Service**\n\nResponsible for managing social content within the Vibester. This service centralizes all operations related to posts, likes, and comments, allowing users to create, update, and delete posts, as well as interact through likes and comments. Its goal is to provide a scalable, high-performance, and consistent social experience across the platform."
+    },
+    {
+      "name": "Scrapping-Service",
+      "item": [
+        {
+          "name": "Google Maps Search By Serp Api",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://serpapi.com/search.json?engine=google_maps&q=Domitilla&ll=@-23.425663118552215, -51.93645374555381,15.1z&type=search&api_key=bc29319fcfce153ff753d83dccdb4a6a552912a80da02ecb83eb4108e75db576",
+              "protocol": "https",
+              "host": [
+                "serpapi",
+                "com"
+              ],
+              "path": [
+                "search.json"
+              ],
+              "query": [
+                {
+                  "key": "radiusKm",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "engine",
+                  "value": "google_maps"
+                },
+                {
+                  "key": "q",
+                  "value": "Domitilla"
+                },
+                {
+                  "key": "ll",
+                  "value": "@-23.425663118552215, -51.93645374555381,15.1z"
+                },
+                {
+                  "key": "type",
+                  "value": "search"
+                },
+                {
+                  "key": "api_key",
+                  "value": "bc29319fcfce153ff753d83dccdb4a6a552912a80da02ecb83eb4108e75db576"
+                }
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nRealiza uma busca no Google Maps por nome ou termo utilizando a Serp API.\n\n**Método:** `GET`\n\n**Endpoint:** `https://serpapi.com/search.json`\n\n#### Query Parameters\n\n| Parâmetro | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| engine | string | Sim | Define o mecanismo de busca utilizado. Para esta rota, usar `google_maps`. |\n| q | string | Sim | Termo pesquisado no Google Maps. |\n| ll | string | Sim | Coordenadas da busca no formato `@latitude,longitude,zoom`. |\n| type | string | Sim | Tipo da busca. Para esta rota, usar `search`. |\n| api_key | string | Sim | Chave de autenticação da Serp API. |\n\n---\n\n### 🇺🇸 EN-US\n\nPerforms a Google Maps search by name or term using Serp API.\n\n**Method:** `GET`\n\n**Endpoint:** `https://serpapi.com/search.json`\n\n#### Query Parameters\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| engine | string | Yes | Defines the search engine used. For this route, use `google_maps`. |\n| q | string | Yes | Search term used on Google Maps. |\n| ll | string | Yes | Search coordinates in the format `@latitude,longitude,zoom`. |\n| type | string | Yes | Search type. For this route, use `search`. |\n| api_key | string | Yes | Serp API authentication key. |"
+          },
+          "response": []
+        },
+        {
+          "name": "Scrapping Serp Api",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://serpapi.com/search.json?engine=google_maps&type=place&place_id=ChIJG2izxGfR7JQRYZyqrCzJKnc&api_key=bc29319fcfce153ff753d83dccdb4a6a552912a80da02ecb83eb4108e75db576&hl=pt-br",
+              "protocol": "https",
+              "host": [
+                "serpapi",
+                "com"
+              ],
+              "path": [
+                "search.json"
+              ],
+              "query": [
+                {
+                  "key": "engine",
+                  "value": "google_maps"
+                },
+                {
+                  "key": "type",
+                  "value": "place"
+                },
+                {
+                  "key": "place_id",
+                  "value": "ChIJG2izxGfR7JQRYZyqrCzJKnc"
+                },
+                {
+                  "key": "api_key",
+                  "value": "bc29319fcfce153ff753d83dccdb4a6a552912a80da02ecb83eb4108e75db576"
+                },
+                {
+                  "key": "hl",
+                  "value": "pt-br"
+                }
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nConsulta os detalhes de um local específico no Google Maps utilizando o `place_id` da Serp API.\n\n**Método:** `GET`\n\n**Endpoint:** `https://serpapi.com/search.json`\n\n#### Query Parameters\n\n| Parâmetro | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| engine | string | Sim | Define o mecanismo de busca utilizado. Para esta rota, usar `google_maps`. |\n| type | string | Sim | Tipo da consulta. Para esta rota, usar `place`. |\n| place_id | string | Sim | Identificador único do local no Google Maps. |\n| api_key | string | Sim | Chave de autenticação da Serp API. |\n| hl | string | Não | Define o idioma dos dados retornados. Exemplo: `pt-br`. |\n\n---\n\n### 🇺🇸 EN-US\n\nRetrieves details of a specific place on Google Maps using the Serp API `place_id`.\n\n**Method:** `GET`\n\n**Endpoint:** `https://serpapi.com/search.json`\n\n#### Query Parameters\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| engine | string | Yes | Defines the search engine used. For this route, use `google_maps`. |\n| type | string | Yes | Query type. For this route, use `place`. |\n| place_id | string | Yes | Unique identifier of the place on Google Maps. |\n| api_key | string | Yes | Serp API authentication key. |\n| hl | string | No | Defines the language of the returned data. Example: `pt-br`. |"
+          },
+          "response": []
+        },
+        {
+          "name": "Google Maps Nearby",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3335/places/nearby?types=bar&types=night_club&types=restaurant&types=cafe&lat=-23.425669534822923&lng=-51.936470702277404&radius=20000",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3335",
+              "path": [
+                "places",
+                "nearby"
+              ],
+              "query": [
+                {
+                  "key": "types",
+                  "value": "bar"
+                },
+                {
+                  "key": "types",
+                  "value": "night_club"
+                },
+                {
+                  "key": "types",
+                  "value": "restaurant"
+                },
+                {
+                  "key": "types",
+                  "value": "cafe"
+                },
+                {
+                  "key": "lat",
+                  "value": "-23.425669534822923"
+                },
+                {
+                  "key": "lng",
+                  "value": "-51.936470702277404"
+                },
+                {
+                  "key": "radius",
+                  "value": "20000"
+                }
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nBusca estabelecimentos próximos a uma localização informada, filtrando por tipos de locais.\n\n**Método:** `GET`\n\n**Endpoint:** `/places/nearby`\n\n#### Query Parameters\n\n| Parâmetro | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| types | string\\[\\] | Sim | Lista de tipos de estabelecimentos buscados. Pode incluir `bar`, `night_club`, `restaurant` e `cafe`. |\n| lat | number | Sim | Latitude utilizada como ponto central da busca. |\n| lng | number | Sim | Longitude utilizada como ponto central da busca. |\n| radius | number | Sim | Raio da busca em metros. |\n\n---\n\n### 🇺🇸 EN-US\n\nSearches for nearby establishments from a given location, filtering by place types.\n\n**Method:** `GET`\n\n**Endpoint:** `/places/nearby`\n\n#### Query Parameters\n\n| Parameter | Type | Required | Description |\n| --- | --- | --- | --- |\n| types | string\\[\\] | Yes | List of establishment types to search for. Can include `bar`, `night_club`, `restaurant`, and `cafe`. |\n| lat | number | Yes | Latitude used as the center point of the search. |\n| lng | number | Yes | Longitude used as the center point of the search. |\n| radius | number | Yes | Search radius in meters. |"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Movement from Db",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3335/movements/316eb596-3425-4c8c-804b-940e2b55af47",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3335",
+              "path": [
+                "movements",
+                "316eb596-3425-4c8c-804b-940e2b55af47"
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nRetorna o nível de movimento salvo no banco de dados para um estabelecimento específico.\n\n**Método:** `GET`\n\n**Endpoint:** `/movements/{establishmentId}`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| establishmentId | UUID | Identificador único do estabelecimento. |\n\n---\n\n### 🇺🇸 EN-US\n\nReturns the movement level stored in the database for a specific establishment.\n\n**Method:** `GET`\n\n**Endpoint:** `/movements/{establishmentId}`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| establishmentId | UUID | Unique identifier of the establishment. |"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Popularity",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3335/places/ChIJEXspf83Q7JQRcAufiznFNSY/popularity",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3335",
+              "path": [
+                "places",
+                "ChIJEXspf83Q7JQRcAufiznFNSY",
+                "popularity"
+              ]
+            },
+            "description": "### 🇧🇷 PT-BR\n\nConsulta o nível de popularidade/movimento atual de um local com base no `googlePlaceId`.\n\n**Método:** `GET`\n\n**Endpoint:** `/places/{googlePlaceId}/popularity`\n\n#### Path Parameters\n\n| Campo | Tipo | Descrição |\n| --- | --- | --- |\n| googlePlaceId | string | Identificador do local no Google Maps. |\n\n---\n\n### 🇺🇸 EN-US\n\nRetrieves the current popularity/movement level of a place based on its `googlePlaceId`.\n\n**Method:** `GET`\n\n**Endpoint:** `/places/{googlePlaceId}/popularity`\n\n#### Path Parameters\n\n| Field | Type | Description |\n| --- | --- | --- |\n| googlePlaceId | string | Place identifier from Google Maps. |"
+          },
+          "response": []
+        }
+      ],
+      "description": "**🇧🇷 PT-BR**\n\nResponsável pela integração com fontes externas de dados, realizando consultas ao Google Maps e Serp API para obtenção de estabelecimentos, detalhes de locais e informações de movimentação e popularidade.\n\n---\n\n**🇺🇸 EN-US**\n\nResponsible for integrating with external data sources, performing queries to Google Maps and Serp API to retrieve establishments, place details, and movement and popularity information."
+    },
+    {
+      "name": "User-Service",
+      "item": [
+        {
+          "name": "Create Profile",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/api/users/profile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3002",
+              "path": [
+                "api",
+                "users",
+                "profile"
+              ]
+            },
+            "description": "## Create Profile\n\n### 🇧🇷 PT-BR\n\nCria um novo perfil de usuário.\n\n**Método:** `POST`\n\n**Endpoint:** `/api/users/profile`\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| userID | string | Sim | Identificador único do usuário. |\n\n---\n\n### 🇺🇸 EN-US\n\nCreates a new user profile.\n\n**Method:** `POST`\n\n**Endpoint:** `/api/users/profile`\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| userID | string | Yes | Unique identifier of the user. |"
+          },
+          "response": []
+        },
+        {
+          "name": "Decrease Followers",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/api/users/profile/followers/decrease",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3002",
+              "path": [
+                "api",
+                "users",
+                "profile",
+                "followers",
+                "decrease"
+              ]
+            },
+            "description": "## Decrease Followers\n\n### 🇧🇷 PT-BR\n\nDecrementa em 1 a quantidade de seguidores do perfil de um usuário.\n\n**Método:** `POST`\n\n**Endpoint:** `/api/users/profile/followers/decrease`\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| userID | string | Sim | Identificador único do usuário que terá a contagem de seguidores reduzida. |\n\n---\n\n### 🇺🇸 EN-US\n\nDecreases a user's follower count by 1.\n\n**Method:** `POST`\n\n**Endpoint:** `/api/users/profile/followers/decrease`\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| userID | string | Yes | Unique identifier of the user whose follower count will be decreased. |"
+          },
+          "response": []
+        },
+        {
+          "name": "Increase Followers",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/api/users/profile/followers/increase",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3002",
+              "path": [
+                "api",
+                "users",
+                "profile",
+                "followers",
+                "increase"
+              ]
+            },
+            "description": "## Increase Followers\n\n### 🇧🇷 PT-BR\n\nIncrementa em 1 a quantidade de seguidores do perfil de um usuário.\n\n**Método:** `POST`\n\n**Endpoint:** `/api/users/profile/followers/increase`\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| userID | string | Sim | Identificador único do usuário que receberá o novo seguidor. |\n\n---\n\n### 🇺🇸 EN-US\n\nIncreases a user's follower count by 1.\n\n**Method:** `POST`\n\n**Endpoint:** `/api/users/profile/followers/increase`\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| userID | string | Yes | Unique identifier of the user receiving a new follower. |"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Bio",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/api/users/profile/bio",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3002",
+              "path": [
+                "api",
+                "users",
+                "profile",
+                "bio"
+              ]
+            },
+            "description": "## Update Bio\n\n### 🇧🇷 PT-BR\n\nAtualiza a bio do perfil de um usuário.\n\n**Método:** `PUT`\n\n**Endpoint:** `/api/users/profile/bio`\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| userID | string | Sim | Identificador único do usuário. |\n| bio | string | Sim | Nova descrição da bio do usuário. |\n\n---\n\n### 🇺🇸 EN-US\n\nUpdates a user's profile bio.\n\n**Method:** `PUT`\n\n**Endpoint:** `/api/users/profile/bio`\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| userID | string | Yes | Unique identifier of the user. |\n| bio | string | Yes | New user profile bio. |"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Avatar",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/api/users/profile/avatar",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "3002",
+              "path": [
+                "api",
+                "users",
+                "profile",
+                "avatar"
+              ]
+            },
+            "description": "## Update Avatar\n\n### 🇧🇷 PT-BR\n\nAtualiza a imagem de avatar do perfil de um usuário.\n\n**Método:** `PUT`\n\n**Endpoint:** `/api/users/profile/avatar`\n\n#### Body Parameters\n\n| Campo | Tipo | Obrigatório | Descrição |\n| --- | --- | --- | --- |\n| userID | string | Sim | Identificador único do usuário. |\n| avatarUrl | string | Sim | URL da nova imagem de avatar do usuário. |\n\n---\n\n### 🇺🇸 EN-US\n\nUpdates a user's profile avatar image.\n\n**Method:** `PUT`\n\n**Endpoint:** `/api/users/profile/avatar`\n\n#### Body Parameters\n\n| Field | Type | Required | Description |\n| --- | --- | --- | --- |\n| userID | string | Yes | Unique identifier of the user. |\n| avatarUrl | string | Yes | URL of the new user avatar image. |"
+          },
+          "response": []
+        }
+      ],
+      "description": "## 📂 User-Service\n\n### 🇧🇷 PT-BR\n\nResponsável pelas operações de perfil do usuário, permitindo criar perfil, editar bio, atualizar avatar e controlar a contagem de seguidores.\n\n---\n\n### 🇺🇸 EN-US\n\nResponsible for user profile operations, allowing profile creation, bio editing, avatar updates, and follower count management."
+    }
+  ]
+}
