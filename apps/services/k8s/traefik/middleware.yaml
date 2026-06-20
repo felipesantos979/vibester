@@ -2,7 +2,7 @@
 # Exemplo: /auth/login → /login
 
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: strip-auth-prefix
@@ -13,7 +13,7 @@ spec:
       - /auth
 
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: strip-user-prefix
@@ -24,7 +24,7 @@ spec:
       - /user
 
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: strip-establishment-prefix
@@ -35,7 +35,7 @@ spec:
       - /establishment
 
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: strip-event-prefix
@@ -47,7 +47,7 @@ spec:
 
 ---
 # Middleware para redirecionar HTTP → HTTPS
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: redirect-to-https
