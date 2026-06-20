@@ -32,7 +32,7 @@ class CustomNavbar extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(left: 16, right: 16, bottom: 12, top: 8),
       child: Container(
-        height: (Platform.isIOS ? 70 : 80),
+        height: (Platform.isIOS ? 70 : 65),
         decoration: BoxDecoration(
           color: const Color(colorNavy),
           borderRadius: const BorderRadius.all(Radius.circular(70)),
@@ -47,8 +47,8 @@ class CustomNavbar extends StatelessWidget {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 1000),
                 curve: Curves.easeOutBack,
-                width: isActive ? 52 : 48,
-                height: isActive ? 52 : 48,
+                width: isActive ? (Platform.isIOS ? 52 : 45) : 48,
+                height: isActive ? (Platform.isIOS ? 52 : 45) : 48,
                 decoration: isActive
                     ? BoxDecoration(
                         color: Color(colorAmbar),
