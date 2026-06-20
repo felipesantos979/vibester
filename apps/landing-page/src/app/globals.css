@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- Base Styles --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: clip;
+}
+
+body {
+  background: #050505;
+  color: #ededed;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-x: clip;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: #FF6B00;
+  color: white;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1A1A1A;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FF6B00;
+}
+
+/* --- Glassmorphism --- */
+.glass {
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* --- Phone Mockup --- */
+.phone-mockup {
+  position: relative;
+  width: 280px;
+  height: 560px;
+  background: #000;
+  border-radius: 40px;
+  border: 3px solid #333;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 2px #1a1a1a,
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(255, 107, 0, 0.1);
+}
+
+.phone-mockup::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 28px;
+  background: #000;
+  border-radius: 0 0 16px 16px;
+  z-index: 10;
+}
+
+@media (min-width: 768px) {
+  .phone-mockup {
+    width: 320px;
+    height: 640px;
+  }
+}
+
+/* --- Grid Pattern --- */
+.grid-pattern {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* --- Grain Overlay --- */
+.grain-overlay::after {
+  content: '';
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200%;
+  background: transparent url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E") repeat;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.3;
+}
+
+/* --- Button Styles --- */
+@layer components {
+  .btn-fire {
+    @apply relative overflow-hidden font-bold uppercase tracking-wide text-sm text-white cursor-pointer;
+    background: linear-gradient(90deg, #FFB800, #FF4500);
+    padding: 16px 36px;
+    border-radius: 9999px; /* Pill shape */
+    border: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-fire::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, #FFC933, #FF5A00);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .btn-fire:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255, 69, 0, 0.4);
+  }
+
+  .btn-fire:hover::before {
+    opacity: 1;
+  }
+
+  .btn-outline-fire {
+    @apply relative overflow-hidden font-semibold text-sm cursor-pointer;
+    color: #FF6B00;
+    background: transparent;
+    padding: 14px 32px;
+    border-radius: 9999px; /* Pill shape */
+    border: 1.5px solid #FF6B00;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-outline-fire:hover {
+    background: rgba(255, 107, 0, 0.1);
+    box-shadow: 0 0 20px rgba(255, 107, 0, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+/* --- Gradients & Backgrounds --- */
+.text-gradient-fire {
+  background: linear-gradient(135deg, #FFB800, #FF6B00, #FF4500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-vibe {
+  background: linear-gradient(to bottom, #FFB800, #FF4500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.radar-bg {
+  background-image: 
+    radial-gradient(circle at center, transparent 30%, rgba(255, 69, 0, 0.03) 31%, transparent 32%),
+    radial-gradient(circle at center, transparent 45%, rgba(255, 69, 0, 0.05) 46%, transparent 47%),
+    radial-gradient(circle at center, transparent 65%, rgba(255, 69, 0, 0.03) 66%, transparent 67%);
+  background-size: 100% 100%;
+}
