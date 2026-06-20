@@ -16,4 +16,4 @@ RUN npm prune --omit=dev
 
 EXPOSE 3001
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]
