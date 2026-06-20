@@ -12,7 +12,7 @@ const start = async () => {
     await setupRoutes(app);
 
     try {
-        await app.listen({port: 3334});
+        await app.listen({ port: 3334, host: '0.0.0.0' });
     } catch (error) {
         process.exit(1);
     }

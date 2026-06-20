@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "apps/services/scrapping - services/**"
+      - "apps/services/scrapping-service/**"
 
 env:
   IMAGE: ghcr.io/${{ github.repository_owner }}/vibester-scrapping-service
@@ -32,7 +32,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: "apps/services/scrapping - services"
+          context: "apps/services/scrapping-service"
           push: true
           tags: |
             ${{ env.IMAGE }}:latest
