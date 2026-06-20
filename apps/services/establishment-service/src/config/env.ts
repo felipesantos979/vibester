@@ -4,7 +4,6 @@ import "dotenv/config";
 const envSchema = z.object({
   PORT: z.coerce.number().default(3003),
   DATABASE_URL: z.string().url(),
-  SERP_API_KEY: z.string()
 });
 
 const _env = envSchema.safeParse(process.env);
