@@ -12,6 +12,8 @@ RUN npx prisma generate
 
 RUN npm run build
 
+RUN mkdir -p dist/src/generated && cp -r generated/prisma dist/src/generated/prisma
+
 RUN npm prune --omit=dev
 
 EXPOSE 3000
