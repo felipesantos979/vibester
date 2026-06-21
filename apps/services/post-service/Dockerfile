@@ -14,4 +14,4 @@ RUN npm prune --omit=dev
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["sh", "-c", "node dist/scripts/migrate.js && npm start"]

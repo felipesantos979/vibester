@@ -46,6 +46,15 @@ spec:
         - name: event-service
           port: 3334
 
+    - match: Host(`api.vibester.com.br`) && PathPrefix(`/post`)
+      kind: Rule
+      middlewares:
+        - name: strip-post-prefix
+          namespace: default
+      services:
+        - name: post-service
+          port: 3000
+
   tls:
     certResolver: letsencrypt
 
