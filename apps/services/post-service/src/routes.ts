@@ -11,6 +11,7 @@ import { CommentService } from "./services/comment.service";
 import { CommentController } from "./controller/comment.controller";
 
 export async function routes(app: FastifyInstance) {
+    app.get("/health", async (_request, reply) => reply.status(200).send({ status: "ok" }));
 
     const postRepository = new PostRepository();
     const postService = new PostService(postRepository);
