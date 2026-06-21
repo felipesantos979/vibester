@@ -1,10 +1,14 @@
 package utils
 
 import (
-	"log/slog"
 	"os"
+
+	"github.com/charmbracelet/log"
 )
 
-var Logger = slog.New(
-	slog.NewJSONHandler(os.Stdout, nil),
-)
+var Logger = log.NewWithOptions(os.Stdout, log.Options{
+	ReportCaller:    false,
+	ReportTimestamp: true,
+	TimeFormat:      "15:04:05",
+	Prefix:          "notification-service",
+})
