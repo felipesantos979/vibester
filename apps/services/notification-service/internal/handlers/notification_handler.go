@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 	"notification-service/internal/models"
-	"notification-service/internal/services"
+	"notification-service/internal/workers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,11 +18,7 @@ func SendEmailHandler(c *gin.Context) {
 		return
 	}
 
-	go services.SendEmail(
-		notification.To,
-		notification.Subject,
-		notification.Message,
-	)
+	workers.EmailQueue <- notification
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Email enviado para processamento",
