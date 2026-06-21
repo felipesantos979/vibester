@@ -11,13 +11,18 @@ import (
 func main() {
 	config.LoadEnv()
 
-	workers.StartEmailWorker()
+	workers.StartEmailWorkers(5)
 
 	router := gin.Default()
 
 	router.POST(
 		"/notifications/email",
 		handlers.SendEmailHandler,
+	)
+
+	router.POST(
+		"/notifications/reset-password",
+		handlers.SendRequestPasswordHandler,
 	)
 
 	router.Run(":" + config.GetEnv("APP_PORT"))
