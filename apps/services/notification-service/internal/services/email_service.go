@@ -2,11 +2,18 @@ package services
 
 import (
 	"notification-service/internal/config"
+	"notification-service/internal/utils"
 
 	"gopkg.in/gomail.v2"
 )
 
 func SendEmail(to, subject, message string) error {
+	utils.Logger.Info(
+		"Enviando email",
+		"to", to,
+		"subject", subject,
+	)
+
 	m := gomail.NewMessage()
 
 	m.SetHeader("From", config.GetEnv("SMTP_EMAIl"))
@@ -21,5 +28,20 @@ func SendEmail(to, subject, message string) error {
 		config.GetEnv("SMTP_PASSWORD"),
 	)
 
-	return d.DialAndSend(m)
+	err := d.DialAndSend(m)
+
+	if err != nil {
+		utils.Logger.Error(
+			"Erro ao enviar email",
+			"error", err,
+		)
+		return err
+	}
+
+	utils.Logger.Info(
+		"Email enviado com sucesso",
+		"to", to,
+	)
+
+	return nil
 }
