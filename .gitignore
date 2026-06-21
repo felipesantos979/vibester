@@ -15,3 +15,5 @@ npm-debug.log*
 *.tsbuildinfo
 
 /generated/prisma
+.DS_Store
+apps/.DS_Store
