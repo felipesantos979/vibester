@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
+import 'package:mobile/utils/app_progress_indicator.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/event/event_card.dart';
 import 'package:provider/provider.dart';
@@ -15,8 +15,55 @@ class EventListScreen extends StatefulWidget {
 
 class _EventListScreenState extends State<EventListScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EventsListProvider>().fetchEvents();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<EventModel> event = context.watch<EventsListProvider>().events;
+    final provider = context.watch<EventsListProvider>();
+
+    if (provider.isLoading) {
+      return Scaffold(
+        backgroundColor: Color(colorNoturno),
+        body: const Center(child: AppProgressIndicator()),
+      );
+    }
+
+    if (provider.error != null) {
+      return Scaffold(
+        backgroundColor: Color(colorNoturno),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+              child: SizedBox(
+                height: 200,
+                width: 200,
+                child: Opacity(
+                  opacity: 0.8,
+                  child: Image.asset('assets/img/mascote/lupa.png'),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              provider.error!,
+              style: TextStyle(
+                color: Colors.white38,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final event = provider.events;
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       body: ListView.builder(

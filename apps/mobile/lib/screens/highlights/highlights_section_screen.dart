@@ -31,9 +31,15 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.95);
-    List<EventModel> event = context.read<EventsListProvider>().events;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EventsListProvider>().fetchEvents();
+    });
+
     _timer = Timer.periodic(const Duration(seconds: 4), (_) {
-      _currentPage = (_currentPage + 1) % event.length;
+      final atual = context.read<EventsListProvider>().events;
+      if (atual.isEmpty) return;
+      _currentPage = (_currentPage + 1) % atual.length;
       _pageController.animateToPage(
         _currentPage,
         duration: const Duration(milliseconds: 700),
