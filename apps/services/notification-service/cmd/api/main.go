@@ -25,5 +25,15 @@ func main() {
 		handlers.SendRequestPasswordHandler,
 	)
 
+	router.POST(
+		"/notifications/welcome",
+		handlers.SendWelcomeHandler,
+	)
+
+	router.POST(
+		"/notifications/2fa",
+		handlers.SendTwoFactorHandler,
+	)
+
 	router.Run(":" + config.GetEnv("APP_PORT"))
 }

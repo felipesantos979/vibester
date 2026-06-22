@@ -2,8 +2,10 @@ package handlers
 
 import (
 	"net/http"
+	"notification-service/internal/helpers"
 	"notification-service/internal/models"
 	"notification-service/internal/render"
+	"notification-service/internal/security"
 	"notification-service/internal/workers"
 
 	"github.com/gin-gonic/gin"
@@ -38,7 +40,7 @@ func SendRequestPasswordHandler(c *gin.Context) {
 	}
 
 	htmlBody, err := render.ParseTemplate(
-		"../../internal/templates/reset_password.html",
+		helpers.GetTemplatePath("reset_password.html"),
 		models.ResetPasswordData{
 			Name:      notification.Name,
 			ResetLink: notification.ResetLink,
@@ -61,5 +63,82 @@ func SendRequestPasswordHandler(c *gin.Context) {
 
 	c.JSON(http.StatusAccepted, gin.H{
 		"message": "Email de recuperação enviado para fila",
+	})
+}
+
+func SendWelcomeHandler(c *gin.Context) {
+	var notification models.Notification
+
+	if err := c.ShouldBindJSON(&notification); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "JSON inválido",
+		})
+
+		return
+	}
+
+	htmlBody, err := render.ParseTemplate(
+		helpers.GetTemplatePath("welcome.html"),
+		models.WelcomeEmailData{
+			Name:         notification.Name,
+			PlatformLink: "https://vibester.com.br",
+		},
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+
+		return
+	}
+
+	workers.EmailQueue <- models.Notification{
+		To:      notification.To,
+		Subject: "Seja bem vindo ao Vibester!",
+		Message: htmlBody,
+	}
+
+	c.JSON(http.StatusAccepted, gin.H{
+		"message": "Email de boas-vindas enviado",
+	})
+}
+
+func SendTwoFactorHandler(c *gin.Context) {
+	var notification models.Notification
+
+	if err := c.ShouldBindJSON(&notification); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "JSON Inválido",
+		})
+		return
+	}
+
+	code := security.GenerateTwoFactorCode()
+
+	htmlBody, err := render.ParseTemplate(
+		helpers.GetTemplatePath("two_factor_code.html"),
+		models.TwoFactorData{
+			Name: notification.Name,
+			Code: code,
+		},
+	)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	workers.EmailQueue <- models.Notification{
+		To:      notification.To,
+		Subject: "Aqui está o seu código de autenticação",
+		Message: htmlBody,
+	}
+
+	c.JSON(http.StatusAccepted, gin.H{
+		"messge": "Código 2FA enviado",
+		"code":   code,
 	})
 }

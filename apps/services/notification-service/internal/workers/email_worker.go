@@ -1,10 +1,10 @@
 package workers
 
 import (
-	"fmt"
 	"notification-service/internal/models"
 	"notification-service/internal/services"
 	"notification-service/internal/utils"
+	"time"
 )
 
 var EmailQueue = make(chan models.Notification, 100)
@@ -21,6 +21,8 @@ func startWorker(id int) {
 		"Worker iniciado",
 		"worker_id", id,
 	)
+
+	start := time.Now()
 
 	for notification := range EmailQueue {
 		utils.Logger.Infof(
@@ -41,8 +43,10 @@ func startWorker(id int) {
 			continue
 		}
 
-		utils.Logger.Info(
-			fmt.Sprintf("Worker %d finalizou processamento", id),
+		utils.Logger.Infof(
+			"[WORKER %d] finalizou o processamento em %.2f segundos",
+			id,
+			time.Since(start).Seconds(),
 		)
 	}
 }
