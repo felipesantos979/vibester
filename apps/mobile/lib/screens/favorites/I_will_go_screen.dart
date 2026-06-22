@@ -15,6 +15,14 @@ class IWillGoScreen extends StatefulWidget {
 
 class _IWillGoScreenState extends State<IWillGoScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EventsListProvider>().fetchEvents();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final List<EventModel> favorites = context
         .watch<EventsListProvider>()

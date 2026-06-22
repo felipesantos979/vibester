@@ -1,4 +1,5 @@
 class PlaceModel {
+  final String? id;
   final String nome;
   final int nivelMovimento;
   final String categoria;
@@ -13,6 +14,7 @@ class PlaceModel {
   bool isFavorite;
 
   PlaceModel({
+    this.id,
     required this.nome,
     required this.nivelMovimento,
     required this.categoria,
@@ -26,4 +28,37 @@ class PlaceModel {
     this.distancia,
     this.isFavorite = false,
   });
+
+  //Json pra dart, é pra quando os dados virem da API, pra q eles possam ser usados pelo dart
+  factory PlaceModel.fromJson(Map<String, dynamic> json) {
+    return PlaceModel(
+      id: json['id'],
+      nome: json['name'],
+      nivelMovimento: json['movementLevel'],
+      categoria: json['category'],
+      avaliacao: (json['rating'] as num).toDouble(),
+      nivelPrecoMedio: json['priceLevel'],
+      bio: json['bio'],
+      endereco: json['address'],
+      qtdAvaliacoes: json['reviewCount'],
+      distribuicao: List<double>.from(json['ratingDistribution']),
+      profileImage: json['profileImage'] ?? '',
+    );
+  }
+
+  //Dart pra json, é o contrario do de cima, pra quando for mandar pra API
+  Map<String, dynamic> toJson() {
+  return {
+    'name': nome,
+    'movementLevel': nivelMovimento,
+    'category': categoria,
+    'rating': avaliacao,
+    'priceLevel': nivelPrecoMedio,
+    'bio': bio,
+    'address': endereco,
+    'reviewCount': qtdAvaliacoes,
+    'ratingDistribution': distribuicao,
+    'profileImage': profileImage,
+  };
+}
 }

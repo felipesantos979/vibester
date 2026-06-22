@@ -19,6 +19,14 @@ class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
   int _currentIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EventsListProvider>().fetchEvents();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final List<Widget> tabs = [FavoritesScreen(), IWillGoScreen()];
     final event = Provider.of<EventsListProvider>(context);
