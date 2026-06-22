@@ -1,11 +1,10 @@
 import Fastify from "fastify";
 import { cassandraClient } from "./config/cassandra";
 import { routes } from "./routes";
+import { registerSwagger } from "./config/swagger";
 import { ZodError } from "zod";
 
-const app = Fastify();
-
-app.register(routes);
+const app = Fastify({ ajv: { customOptions: { keywords: ["example"] } } });
 
 app.setErrorHandler((error, request, reply) => {
   if (error instanceof ZodError) {
@@ -32,6 +31,9 @@ app.setErrorHandler((error, request, reply) => {
 async function start() {
   try {
     await cassandraClient.connect();
+
+    await registerSwagger(app);
+    await app.register(routes);
 
     await app.listen({
       port: 3000,

@@ -11,6 +11,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SendEmailHandler godoc
+//
+//	@Summary		Enviar email genérico
+//	@Description	Enfileira um email genérico para processamento assíncrono.
+//	@Tags			Notifications
+//	@Accept			json
+//	@Produce		json
+//	@Param			notification	body		models.Notification	true	"Dados do email (to, subject, message)"
+//	@Success		200				{object}	map[string]string	"Email enviado para processamento"
+//	@Failure		400				{object}	map[string]string	"JSON inválido"
+//	@Router			/notifications/email [post]
 func SendEmailHandler(c *gin.Context) {
 	var notification models.Notification
 
@@ -28,6 +39,18 @@ func SendEmailHandler(c *gin.Context) {
 	})
 }
 
+// SendRequestPasswordHandler godoc
+//
+//	@Summary		Enviar email de recuperação de senha
+//	@Description	Renderiza o template de recuperação de senha e enfileira o email.
+//	@Tags			Notifications
+//	@Accept			json
+//	@Produce		json
+//	@Param			notification	body		models.Notification	true	"Dados (to, name, reset_link)"
+//	@Success		202				{object}	map[string]string	"Email de recuperação enviado para fila"
+//	@Failure		400				{object}	map[string]string	"JSON inválido"
+//	@Failure		500				{object}	map[string]string	"Erro ao renderizar template"
+//	@Router			/notifications/reset-password [post]
 func SendRequestPasswordHandler(c *gin.Context) {
 	var notification models.Notification
 
@@ -66,6 +89,18 @@ func SendRequestPasswordHandler(c *gin.Context) {
 	})
 }
 
+// SendWelcomeHandler godoc
+//
+//	@Summary		Enviar email de boas-vindas
+//	@Description	Renderiza o template de boas-vindas e enfileira o email.
+//	@Tags			Notifications
+//	@Accept			json
+//	@Produce		json
+//	@Param			notification	body		models.Notification	true	"Dados (to, name)"
+//	@Success		202				{object}	map[string]string	"Email de boas-vindas enviado"
+//	@Failure		400				{object}	map[string]string	"JSON inválido"
+//	@Failure		500				{object}	map[string]string	"Erro ao renderizar template"
+//	@Router			/notifications/welcome [post]
 func SendWelcomeHandler(c *gin.Context) {
 	var notification models.Notification
 
@@ -104,6 +139,18 @@ func SendWelcomeHandler(c *gin.Context) {
 	})
 }
 
+// SendTwoFactorHandler godoc
+//
+//	@Summary		Enviar código 2FA
+//	@Description	Gera um código de autenticação de dois fatores, renderiza o template e enfileira o email.
+//	@Tags			Notifications
+//	@Accept			json
+//	@Produce		json
+//	@Param			notification	body		models.Notification	true	"Dados (to, name)"
+//	@Success		202				{object}	map[string]string	"Código 2FA enviado"
+//	@Failure		400				{object}	map[string]string	"JSON inválido"
+//	@Failure		500				{object}	map[string]string	"Erro ao renderizar template"
+//	@Router			/notifications/2fa [post]
 func SendTwoFactorHandler(c *gin.Context) {
 	var notification models.Notification
 
