@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
@@ -12,7 +13,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:push": "prisma db push",
     "prisma:studio": "prisma studio",
-     "prisma:seed": "prisma db seed"
+    "prisma:seed": "prisma db seed"
   },
   "keywords": [],
   "author": "",
@@ -33,7 +34,9 @@
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/node": "^25.5.0",
+    "@vitest/coverage-v8": "^4.1.9",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.9"
   }
 }
