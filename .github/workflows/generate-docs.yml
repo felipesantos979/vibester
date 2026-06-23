@@ -32,10 +32,13 @@ jobs:
 
       - name: Generate Prisma clients
         working-directory: apps/services
+        env:
+          DATABASE_URL: postgresql://u:p@localhost:5432/db
         run: |
+          set -e
           for s in auth-service establishment-service event-service scrapping-service user-service; do
             echo "Prisma generate: $s..."
-            (cd "$s" && npx prisma generate)
+            cd "$s" && npx prisma generate && cd ..
           done
 
       - name: Generate combined OpenAPI spec
