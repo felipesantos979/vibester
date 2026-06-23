@@ -1,0 +1,42 @@
+name: Generate API Docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/services/**/src/**"
+      - "apps/services/scripts/merge-docs.ts"
+
+jobs:
+  generate:
+    name: Generate openapi.json
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies (all services)
+        working-directory: apps/services
+        run: |
+          for s in auth-service establishment-service event-service post-service scrapping-service user-service; do
+            echo "Installing $s..."
+            (cd "$s" && npm install --prefer-offline 2>/dev/null || npm install)
+          done
+
+      - name: Generate combined OpenAPI spec
+        working-directory: apps/services
+        run: npx tsx scripts/merge-docs.ts
+
+      - name: Upload openapi.json as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-${{ github.sha }}
+          path: apps/services/openapi.json
+          retention-days: 90
