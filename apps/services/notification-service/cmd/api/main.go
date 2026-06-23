@@ -2,6 +2,7 @@ package main
 
 import (
 	"notification-service/internal/config"
+	"notification-service/internal/database"
 	"notification-service/internal/handlers"
 	"notification-service/internal/workers"
 
@@ -18,6 +19,12 @@ import (
 // @BasePath		/
 func main() {
 	config.LoadEnv()
+
+	err := database.Connect()
+
+	if err != nil {
+		panic(err)
+	}
 
 	workers.StartEmailWorkers(5)
 
@@ -43,6 +50,11 @@ func main() {
 	router.POST(
 		"/notifications/2fa",
 		handlers.SendTwoFactorHandler,
+	)
+
+	router.POST(
+		"/notifications/2fa/validate",
+		handlers.ValidateTwoFactorHandler,
 	)
 
 	router.Run(":" + config.GetEnv("APP_PORT"))

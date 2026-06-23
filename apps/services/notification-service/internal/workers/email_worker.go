@@ -22,9 +22,10 @@ func startWorker(id int) {
 		"worker_id", id,
 	)
 
-	start := time.Now()
-
 	for notification := range EmailQueue {
+
+		start := time.Now()
+
 		utils.Logger.Infof(
 			"[WORKER %d] Processando email para %s",
 			id,
@@ -44,9 +45,9 @@ func startWorker(id int) {
 		}
 
 		utils.Logger.Infof(
-			"[WORKER %d] finalizou o processamento em %.2f segundos",
+			"[WORKER %d] finalizou o processamento em %d ms",
 			id,
-			time.Since(start).Seconds(),
+			time.Since(start).Milliseconds(),
 		)
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"notification-service/internal/helpers"
 	"notification-service/internal/models"
 	"notification-service/internal/render"
+	"notification-service/internal/repository"
 	"notification-service/internal/security"
 	"notification-service/internal/workers"
 
@@ -152,16 +153,33 @@ func SendWelcomeHandler(c *gin.Context) {
 //	@Failure		500				{object}	map[string]string	"Erro ao renderizar template"
 //	@Router			/notifications/2fa [post]
 func SendTwoFactorHandler(c *gin.Context) {
+
 	var notification models.Notification
 
 	if err := c.ShouldBindJSON(&notification); err != nil {
+
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "JSON Inválido",
 		})
+
 		return
 	}
 
 	code := security.GenerateTwoFactorCode()
+
+	err := repository.SaveTwoFactorCode(
+		notification.To,
+		code,
+	)
+
+	if err != nil {
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Erro ao salvar código",
+		})
+
+		return
+	}
 
 	htmlBody, err := render.ParseTemplate(
 		helpers.GetTemplatePath("two_factor_code.html"),
@@ -172,9 +190,11 @@ func SendTwoFactorHandler(c *gin.Context) {
 	)
 
 	if err != nil {
+
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
+
 		return
 	}
 
@@ -185,7 +205,64 @@ func SendTwoFactorHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusAccepted, gin.H{
-		"messge": "Código 2FA enviado",
-		"code":   code,
+		"message": "Código 2FA enviado",
+	})
+}
+
+func ValidateTwoFactorHandler(c *gin.Context) {
+
+	var request struct {
+		Email string `json:"email"`
+		Code  string `json:"code"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "JSON inválido",
+		})
+
+		return
+	}
+
+	valid, err := repository.ValidateTwoFactorCode(
+		request.Email,
+		request.Code,
+	)
+
+	if err != nil {
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Erro ao validar código",
+		})
+
+		return
+	}
+
+	if !valid {
+
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"valid": false,
+		})
+
+		return
+	}
+
+	err = repository.MarkTwoFactorCodeAsUsed(
+		request.Email,
+		request.Code,
+	)
+
+	if err != nil {
+
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Erro ao invalidar código",
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"valid": true,
 	})
 }
