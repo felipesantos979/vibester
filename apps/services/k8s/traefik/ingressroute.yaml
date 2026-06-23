@@ -55,6 +55,15 @@ spec:
         - name: post-service
           port: 3000
 
+    - match: Host(`api.vibester.com.br`) && PathPrefix(`/scrapping`)
+      kind: Rule
+      middlewares:
+        - name: strip-scrapping-prefix
+          namespace: default
+      services:
+        - name: scrapping-service
+          port: 3000
+
   tls:
     certResolver: letsencrypt
 
