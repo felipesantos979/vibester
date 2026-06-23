@@ -24,26 +24,18 @@ jobs:
 
       - name: Install dependencies (all services)
         working-directory: apps/services
-        run: |
-          for s in auth-service establishment-service event-service post-service scrapping-service user-service; do
-            echo "Installing $s..."
-            (cd "$s" && npm install --prefer-offline 2>/dev/null || npm install)
-          done
-
-      - name: Generate Prisma clients
-        working-directory: apps/services
         env:
           DATABASE_URL: postgresql://u:p@localhost:5432/db
         run: |
           set -e
-          for s in auth-service establishment-service event-service scrapping-service user-service; do
-            echo "Prisma generate: $s..."
-            cd "$s" && npx prisma generate && cd ..
+          for s in auth-service establishment-service event-service post-service scrapping-service user-service; do
+            echo "Installing $s..."
+            (cd "$s" && npm install)
           done
 
       - name: Generate combined OpenAPI spec
         working-directory: apps/services
-        run: npx tsx scripts/merge-docs.ts
+        run: node auth-service/node_modules/.bin/tsx scripts/merge-docs.ts
 
       - name: Upload openapi.json as artifact
         uses: actions/upload-artifact@v4
