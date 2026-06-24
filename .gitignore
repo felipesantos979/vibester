@@ -20,3 +20,5 @@ apps/services/openapi.json
 .DS_Store
 apps/.DS_Store
 .DS_Store
+secrets/
+apps/services/monitoring/secrets/
