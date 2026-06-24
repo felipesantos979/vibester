@@ -2,27 +2,51 @@ import 'package:flutter/material.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:intl/intl.dart';
 
-class DatePickerField extends StatefulWidget {
-  final String labelText;
-  final double height;
-
-  const DatePickerField({
+class DatePickerField extends FormField<DateTime> {
+  DatePickerField({
     super.key,
-    required this.labelText,
-    required this.height,
-  });
-
-  @override
-  State<DatePickerField> createState() => _DatePickerFieldState();
+    required String labelText,
+    required double height,
+    DateTime? initialDate,
+    void Function(DateTime)? onDateSelected,
+    super.validator,
+    super.autovalidateMode,
+  }) : super(
+         initialValue: initialDate,
+         builder: (FormFieldState<DateTime> field) {
+           return _DatePickerFieldView(
+             labelText: labelText,
+             height: height,
+             selectedDate: field.value,
+             errorText: field.errorText,
+             onDateSelected: (picked) {
+               field.didChange(picked);
+               onDateSelected?.call(picked);
+             },
+           );
+         },
+       );
 }
 
-class _DatePickerFieldState extends State<DatePickerField> {
-  DateTime? selectedDate;
+class _DatePickerFieldView extends StatelessWidget {
+  final String labelText;
+  final double height;
+  final DateTime? selectedDate;
+  final String? errorText;
+  final ValueChanged<DateTime> onDateSelected;
 
-  Future<void> _pickDate() async {
+  const _DatePickerFieldView({
+    required this.labelText,
+    required this.height,
+    required this.selectedDate,
+    required this.errorText,
+    required this.onDateSelected,
+  });
+
+  Future<void> _pickDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: selectedDate ?? DateTime.now(),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       builder: (context, child) {
@@ -39,38 +63,66 @@ class _DatePickerFieldState extends State<DatePickerField> {
     );
 
     if (picked != null) {
-      setState(() => selectedDate = picked);
+      onDateSelected(picked);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _pickDate,
-      child: Container(
-        width: 350,
-        height: widget.height,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF141414),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white24),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              selectedDate != null
-                  ? DateFormat('dd/MM/yyyy', 'pt_BR').format(selectedDate!)
-                  : widget.labelText,
-              style: TextStyle(
-                color: selectedDate != null ? Colors.white : Colors.white54,
+    final bool hasError = errorText != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () => _pickDate(context),
+          child: Container(
+            width: 350,
+            height: height,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF141414),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: hasError
+                    ? Colors.redAccent
+                    : (selectedDate != null
+                        ? Color(colorAmbar)
+                        : Colors.white10),
+                width: 1.3,
               ),
             ),
-            Icon(Icons.calendar_today, color: Color(colorAmbar), size: 18),
-          ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  selectedDate != null
+                      ? DateFormat('dd/MM/yyyy', 'pt_BR').format(selectedDate!)
+                      : labelText,
+                  style: TextStyle(
+                    color: selectedDate != null
+                        ? Colors.white
+                        : Colors.white54,
+                  ),
+                ),
+                Icon(
+                  Icons.calendar_today,
+                  color: hasError ? Colors.redAccent : Color(colorAmbar),
+                  size: 18,
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+        if (hasError)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 4),
+            child: Text(
+              errorText!,
+              style: const TextStyle(color: Colors.redAccent, fontSize: 12),
+            ),
+          ),
+      ],
     );
   }
 }
