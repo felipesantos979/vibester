@@ -1,24 +1,29 @@
 class ApiEndpoints {
-  // Auth-Service
-  static const String authBase = 'http://localhost:3000';
-  static String register() => '$authBase/register';
-  static String login() => '$authBase/login';
+  static const String baseUrl = 'api.vibester.com.br';
 
-  // User-Service
-  static const String userBase = 'http://localhost:3002';
-  static String createProfile() => '$userBase/api/users/profile';
-  static String updateBio() => '$userBase/api/users/profile/bio';
-  static String updateAvatar() => '$userBase/api/users/profile/avatar';
-  static String increaseFollowers() => '$userBase/api/users/profile/followers/increase';
-  static String decreaseFollowers() => '$userBase/api/users/profile/followers/decrease';
+  // Auth
+  static String register() => '$baseUrl/register';
+  static String login() => '$baseUrl/login';
 
-  // Event-Service
-  static const String eventBase = 'http://localhost:3334';
-  static String events() => '$eventBase/api/events';
-  static String eventNearby() => '$eventBase/api/events/nearby';
-  static String eventDetail(String id) => '$eventBase/api/events/$id';
+  // User
+  static String createProfile() => '$baseUrl/api/users/profile';
+  static String updateBio() => '$baseUrl/api/users/profile/bio';
+  static String updateAvatar() => '$baseUrl/api/users/profile/avatar';
+  static String increaseFollowers() =>
+      '$baseUrl/api/users/profile/followers/increase';
+  static String decreaseFollowers() =>
+      '$baseUrl/api/users/profile/followers/decrease';
 
-  // Establishment-Service
-  static const String establishmentBase = 'http://localhost:3002';
-  static String establishments() => '$establishmentBase/establishments';
+  // Events
+  static String events() => '$baseUrl/api/events';
+  static String eventNearby() => '$baseUrl/api/events/nearby';
+  static String eventDetail(String eventId) => '$baseUrl/api/events/$eventId';
+
+  // Establishments
+  static String establishments() => '$baseUrl/establishments';
+  static String establishmentDetail(String establishmentId) =>
+      '$baseUrl/establishments/$establishmentId';
+  static String openEstablishments() => '$baseUrl/establishments/open';
+  static String rateEstablishment(String establishmentId) =>
+      '$baseUrl/establishments/$establishmentId/rating';
 }

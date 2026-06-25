@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
+import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
+import 'package:mobile/utils/date_picker_field.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -12,7 +17,63 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController _nomeController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _senhaController = TextEditingController();
+  DateTime? _dataNascimento;
+
   final _formKey = GlobalKey<FormState>();
+  final _userService = UserService();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _nomeController.dispose();
+    _emailController.dispose();
+    _senhaController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _criarConta() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    final nomeDigitado = _nomeController.text.trim();
+    final usernameFormatado = '@${nomeDigitado.replaceAll(' ', '')}';
+    final email = _emailController.text.trim();
+    final senha = _senhaController.text;
+    final bornAtIso = _dataNascimento!.toUtc().toIso8601String();
+
+    try {
+      final novoUsuario = await _userService.register(
+        name: nomeDigitado,
+        username: usernameFormatado,
+        email: email,
+        password: senha,
+        bornAt: bornAtIso,
+      );
+
+      final token = await _userService.login(email: email, password: senha);
+
+      //tem q fazer a parte de guardar token de login, deixa pra depois por enquanto kkkk
+
+      if (!mounted) return;
+      context.read<UserProvider>().setUser(novoUsuario);
+
+      Navigator.pushNamed(context, AppRoutes.emailConfirm);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível criar a conta. Tente novamente.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,12 +99,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
               Text(
                 'Preencha seus dados para começar',
                 style: GoogleFonts.inter(color: Color(colorGrey)),
               ),
 
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
 
               Column(
                 children: [
@@ -58,16 +120,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
+
                   SizedBox(
                     width: 350,
                     child: TextFormField(
+                      controller: _nomeController,
+
                       textInputAction: TextInputAction.next,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       cursorColor: Color(colorAmbar),
+
+                      inputFormatters: [LengthLimitingTextInputFormatter(50)],
+
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF141414),
-                        prefixIcon: Icon(Icons.person),
+                        fillColor: const Color(0xFF141414),
+                        prefixIcon: const Icon(Icons.person),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -104,7 +172,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
-                      keyboardType: TextInputType.emailAddress,
+
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Informe seu nome de usuário!';
@@ -116,7 +184,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
 
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               Column(
                 children: [
@@ -131,16 +199,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
+
                   SizedBox(
                     width: 350,
                     child: TextFormField(
+                      controller: _emailController,
+
                       textInputAction: TextInputAction.next,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       cursorColor: Color(colorAmbar),
+
+                      inputFormatters: [LengthLimitingTextInputFormatter(320)],
+
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF141414),
-                        prefixIcon: Icon(Icons.email_outlined),
+                        fillColor: const Color(0xFF141414),
+                        prefixIcon: const Icon(Icons.email_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -177,7 +251,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
-                      keyboardType: TextInputType.emailAddress,
+
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Informe seu email!';
@@ -189,7 +263,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
 
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.only(right: 211, bottom: 10),
+                child: Column(
+                  children: [
+                    Text(
+                      'DATA DE NASCIMENTO',
+                      style: GoogleFonts.inter(
+                        color: Color(colorGrey),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              DatePickerField(
+                labelText: 'Data de Nascimento',
+                height: 60,
+
+                onDateSelected: (data) {
+                  _dataNascimento = data;
+                },
+
+                validator: (value) {
+                  if (value == null) {
+                    return 'Informe sua data de nascimento!';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 12),
 
               Column(
                 children: [
@@ -204,17 +310,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
+
                   SizedBox(
                     width: 350,
                     child: TextFormField(
-                      textInputAction: TextInputAction.done,
+                      controller: _senhaController,
+
                       obscureText: true,
-                      style: TextStyle(color: Colors.white),
+                      textInputAction: TextInputAction.done,
+                      style: const TextStyle(color: Colors.white),
                       cursorColor: Color(colorAmbar),
+
+                      inputFormatters: [LengthLimitingTextInputFormatter(20)],
+
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF141414),
-                        prefixIcon: Icon(Icons.email_outlined),
+                        fillColor: const Color(0xFF141414),
+                        prefixIcon: const Icon(Icons.lock_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -251,9 +363,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                       ),
+
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Informe uma senha!';
+                        }
+                        if (value.length < 8) {
+                          return 'A senha deve ter pelo menos 8 caracteres!';
                         }
                         return null;
                       },
@@ -262,23 +378,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ],
               ),
 
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 50),
-                    child: SizedBox(
-                      width: 350,
-                      height: 50,
-                      child: PrimaryButton(
-                        label: 'Entrar',
-                        onPressed: () {
-                          if (!_formKey.currentState!.validate()) return;
-                          Navigator.pushNamed(context, AppRoutes.emailConfirm);
-                        },
-                      ),
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 50),
+
+              SizedBox(
+                width: 350,
+                height: 50,
+                child: PrimaryButton(
+                  label: _isLoading ? 'Criando conta...' : 'Entrar',
+                  onPressed: _isLoading ? () {} : _criarConta,
+                ),
               ),
             ],
           ),
