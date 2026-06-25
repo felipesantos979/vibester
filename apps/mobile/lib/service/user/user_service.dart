@@ -1,17 +1,24 @@
+import 'dart:convert';
 import 'package:mobile/models/user/user_model.dart';
 import 'package:mobile/service/api_client.dart';
 import 'package:mobile/service/api_endpoints.dart';
 
 class UserService {
-  //cria a conta e devolve o UserModel já com o id gerado pela API, em teoria ksksk
-  Future<UserModel> register({
+  UserModel decodeToken(String token) {
+    final payload = token.split('.')[1];
+    final decoded = utf8.decode(base64Url.decode(base64Url.normalize(payload)));
+    final json = jsonDecode(decoded);
+    return UserModel.fromJson(json);
+  }
+
+  Future<void> register({
     required String name,
     required String username,
     required String email,
     required String password,
     required String bornAt,
   }) async {
-    final response = await ApiClient.dio.post(
+    await ApiClient.dio.post(
       ApiEndpoints.register(),
       data: {
         'name': name,
@@ -21,8 +28,6 @@ class UserService {
         'bornAt': bornAt,
       },
     );
-
-    return UserModel.fromJson(response.data);
   }
 
   Future<String> login({
@@ -37,7 +42,6 @@ class UserService {
       },
     );
 
-    //confirmar o nome do campo do token na api dps
     return response.data['token'];
   }
 }

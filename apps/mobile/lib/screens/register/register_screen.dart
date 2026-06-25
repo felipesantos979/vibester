@@ -1,3 +1,4 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -46,20 +47,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final bornAtIso = _dataNascimento!.toUtc().toIso8601String();
 
     try {
-      final novoUsuario = await _userService.register(
-        name: nomeDigitado,
-        username: usernameFormatado,
-        email: email,
-        password: senha,
-        bornAt: bornAtIso,
-      );
-
-      final token = await _userService.login(email: email, password: senha);
-
-      //tem q fazer a parte de guardar token de login, deixa pra depois por enquanto kkkk
+      // comentado pra testes
+      // final token = await _userService.login(email: emailOuUsuario, password: senha);
+      // final usuario = _userService.decodeToken(token);
+      // context.read<UserProvider>().setUser(usuario);
 
       if (!mounted) return;
-      context.read<UserProvider>().setUser(novoUsuario);
+      //context.read<UserProvider>().setUser(usuarioLogado);
 
       Navigator.pushNamed(context, AppRoutes.emailConfirm);
     } catch (e) {
@@ -255,6 +249,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Informe seu email!';
+                        }
+                        if (!EmailValidator.validate(value)) {
+                          return 'Informe um email válido!';
                         }
                         return null;
                       },
