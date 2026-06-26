@@ -64,6 +64,12 @@ spec:
         - name: scrapping-service
           port: 3000
 
+    - match: Host(`api.vibester.com.br`) && PathPrefix(`/docs`)
+      kind: Rule
+      services:
+        - name: swagger-ui
+          port: 8080
+
   tls:
     certResolver: letsencrypt
 
