@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
+import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,6 +17,52 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _userService = UserService();
+
+  final TextEditingController _emailOuUsuarioController =
+      TextEditingController();
+  final TextEditingController _senhaController = TextEditingController();
+
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailOuUsuarioController.dispose();
+    _senhaController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _entrar() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    final emailOuUsuario = _emailOuUsuarioController.text.trim();
+    final senha = _senhaController.text;
+
+    try {
+      //comentado pra testes
+      /*final token = await _userService.login(
+        email: emailOuUsuario,
+        password: senha,
+      );
+      final usuario = _userService.decodeToken(token);
+      if (!mounted) return;
+      context.read<UserProvider>().setUser(usuario);*/ 
+      
+      Navigator.pushNamed(context, AppRoutes.home);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível entrar. Verifique seus dados.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,13 +111,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     width: 350,
                     child: TextFormField(
+                      controller: _emailOuUsuarioController,
                       textInputAction: TextInputAction.next,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                       cursorColor: Color(colorAmbar),
+                      inputFormatters: [LengthLimitingTextInputFormatter(320)],
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF141414),
-                        prefixIcon: Icon(Icons.email_outlined),
+                        fillColor: const Color(0xFF141414),
+                        prefixIcon: const Icon(Icons.email_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -134,13 +186,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     width: 350,
                     child: TextFormField(
+                      controller: _senhaController,
                       obscureText: true,
-                      style: TextStyle(color: Colors.white),
+                      textInputAction: TextInputAction.done,
+                      style: const TextStyle(color: Colors.white),
                       cursorColor: Color(colorAmbar),
+                      inputFormatters: [LengthLimitingTextInputFormatter(20)],
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF141414),
-                        prefixIcon: Icon(Icons.lock_outline),
+                        fillColor: const Color(0xFF141414),
+                        prefixIcon: const Icon(Icons.lock_outline),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -156,14 +211,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(18),
                           borderSide: const BorderSide(
                             color: Color(colorAmbar),
                             width: 1.3,
                           ),
                         ),
                         errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(18),
                           borderSide: const BorderSide(
                             color: Colors.redAccent,
                             width: 1.3,
@@ -181,6 +236,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (value == null || value.isEmpty) {
                           return 'Informe sua senha!';
                         }
+                        if (value.length < 8) {
+                          return 'A senha deve ter pelo menos 8 caracteres!';
+                        }
                         return null;
                       },
                     ),
@@ -196,11 +254,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: 350,
                       height: 50,
                       child: PrimaryButton(
-                        label: 'Entrar',
-                        onPressed: () {
-                          if (!_formKey.currentState!.validate()) return;
-                          Navigator.pushNamed(context, AppRoutes.home);
-                        },
+                        label: _isLoading ? 'Entrando...' : 'Entrar',
+                        onPressed: _isLoading ? () {} : _entrar,
                       ),
                     ),
                   ),
