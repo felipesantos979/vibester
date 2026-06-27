@@ -22,14 +22,15 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
   @override
   void initState() {
     super.initState();
-    final places = context.read<PlaceListProvider>().places;
-    listaFiltrada = List.from(places);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PlaceListProvider>().fetchPlaces();
+    });
   }
 
-  void pesquisaPlaces() {
-    final places = context.read<PlaceListProvider>().places;
+  List<PlaceModel> filtrarPlaces(List<PlaceModel> places) {
     final query = removeDiacritics(pesquisaController.text.toUpperCase());
-    listaFiltrada = places
+    if (query.isEmpty) return places;
+    return places
         .where(
           (place) =>
               removeDiacritics(place.nome.toUpperCase()).contains(query) ||
@@ -40,6 +41,19 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<PlaceListProvider>();
+    final places = context.watch<PlaceListProvider>().places;
+    final listaFiltrada = filtrarPlaces(places);
+
+    if (provider.isLoading && places.isEmpty) {
+      return Scaffold(
+        backgroundColor: Color(colorNoturno),
+        body: const Center(
+          child: CircularProgressIndicator(color: Color(colorAmbar)),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       body: ListView.builder(
@@ -80,7 +94,6 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
                   CustomSearchBar(
                     controller: pesquisaController,
                     onChanged: () {
-                      pesquisaPlaces();
                       setState(() {});
                     },
                   ),
@@ -98,7 +111,7 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
                   SizedBox(
                     height: 200,
                     width: 200,
-                    child: Image.asset('assets/img/lupa.png'),
+                    child: Image.asset('assets/img/mascote/lupa.png'),
                   ),
                   const SizedBox(height: 12),
                   Text(

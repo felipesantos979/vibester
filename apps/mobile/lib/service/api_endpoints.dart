@@ -1,5 +1,5 @@
 class ApiEndpoints {
-  static const String baseUrl = 'api.vibester.com.br';
+  static const String baseUrl = 'https://api.vibester.com.br';
 
   // Auth
   static String register() => '$baseUrl/register';
@@ -20,7 +20,7 @@ class ApiEndpoints {
   static String eventDetail(String eventId) => '$baseUrl/api/events/$eventId';
 
   // Establishments
-  static String establishments() => '$baseUrl/establishments';
+  static String establishments() => '$baseUrl/establishment/establishments';
   static String establishmentDetail(String establishmentId) =>
       '$baseUrl/establishments/$establishmentId';
   static String openEstablishments() => '$baseUrl/establishments/open';
