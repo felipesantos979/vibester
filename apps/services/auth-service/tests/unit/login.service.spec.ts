@@ -36,7 +36,7 @@ describe('LoginService', () => {
     expect(mockAccess.findFirst).toHaveBeenCalled();
     expect(bcrypt.compare).toHaveBeenCalledWith('plain', 'hashed');
     expect(result).toHaveProperty('token');
-    expect(result.id).toBe(user.id);
+    expect(result.authId).toBe(user.id);
   });
 
   it('should throw when user not found', async () => {

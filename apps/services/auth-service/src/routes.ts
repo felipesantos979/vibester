@@ -42,8 +42,8 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
                     description: "Conta criada com sucesso",
                     type: "object",
                     properties: {
-                        id: { type: "string", format: "uuid" },
-                        token: { type: "string" },
+                        authId: { type: "string", format: "uuid" },
+                        profileId: { type: "string", format: "uuid" },
                         username: { type: "string" },
                         name: { type: "string" },
                         email: { type: "string", format: "email" },
@@ -85,7 +85,7 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
                     description: "Autenticado com sucesso",
                     type: "object",
                     properties: {
-                        id: { type: "string", format: "uuid" },
+                        authId: { type: "string", format: "uuid" },
                         token: { type: "string" },
                         accountId: { type: "string", format: "uuid" },
                     },
