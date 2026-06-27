@@ -14,7 +14,6 @@ export interface LoginInputInterface {
 
 export interface RegisterOutputInterface {
     id: string;
-    token: string;
     username: string;
     name: string;
     email: string;
