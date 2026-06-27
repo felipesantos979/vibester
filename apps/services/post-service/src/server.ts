@@ -2,8 +2,16 @@ import Fastify from "fastify";
 import { cassandraClient } from "./config/cassandra";
 import { routes } from "./routes";
 import { ZodError } from "zod";
+import multipart from "@fastify/multipart";
 
 const app = Fastify();
+
+app.register(multipart, {
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+    files: 20,
+  },
+});
 
 app.register(routes);
 

@@ -9,11 +9,13 @@ import { LikeService } from "./services/like.service";
 import { CommentRepository } from "./repository/comment.repository";
 import { CommentService } from "./services/comment.service";
 import { CommentController } from "./controller/comment.controller";
+import { UploadService } from "./services/upload.service";
 
 export async function routes(app: FastifyInstance) {
 
+    const uploadService = new UploadService();
     const postRepository = new PostRepository();
-    const postService = new PostService(postRepository);
+    const postService = new PostService(postRepository, uploadService);
     const postController = new PostController(postService);
 
     const likeRepository = new LikeRepository();
