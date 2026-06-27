@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/models/user/user_model.dart';
 import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/service/user/user_service.dart';
@@ -41,17 +42,24 @@ class _LoginScreenState extends State<LoginScreen> {
     final senha = _senhaController.text;
 
     try {
-      //comentado pra testes
-      /*final token = await _userService.login(
-        email: emailOuUsuario,
+      final loginResponse = await _userService.login(
+        emailOuUsername: emailOuUsuario,
         password: senha,
       );
-      final usuario = _userService.decodeToken(token);
+
+      //tem q fazer a parte de guardar token de login, deixa pra depois por enquanto kkkk
+      final token = loginResponse['token'];
+      final accountId = loginResponse['accountId'];
+
+      final usuarioLogado = UserModel.fromLoginJson(loginResponse);
+
       if (!mounted) return;
-      context.read<UserProvider>().setUser(usuario);*/ 
-      
+      context.read<UserProvider>().setUser(usuarioLogado);
+
       Navigator.pushNamed(context, AppRoutes.home);
     } catch (e) {
+      debugPrint(e.toString());
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

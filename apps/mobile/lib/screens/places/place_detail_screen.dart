@@ -111,7 +111,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                             child: SizedBox(
                               height: 80,
                               width: 80,
-                              child: Image.asset(widget.place.profileImage),
+                              child: Image.network(widget.place.profileImage),
                             ),
                           ),
                         ),

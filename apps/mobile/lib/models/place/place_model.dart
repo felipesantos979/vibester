@@ -33,32 +33,34 @@ class PlaceModel {
   factory PlaceModel.fromJson(Map<String, dynamic> json) {
     return PlaceModel(
       id: json['id'],
-      nome: json['name'],
-      nivelMovimento: json['movementLevel'],
-      categoria: json['category'],
-      avaliacao: (json['rating'] as num).toDouble(),
-      nivelPrecoMedio: json['priceLevel'],
-      bio: json['bio'],
-      endereco: json['address'],
-      qtdAvaliacoes: json['reviewCount'],
-      distribuicao: List<double>.from(json['ratingDistribution']),
-      profileImage: json['profileImage'] ?? '',
+      nome: json['name'] ?? '',
+      nivelMovimento: json['movementLevel'] ?? 0,
+      categoria: json['category'] ?? '',
+      avaliacao: (json['averageRating'] as num?)?.toDouble() ?? 0,
+      nivelPrecoMedio: json['priceIndicator'] ?? '',
+      bio: json['bio'] ?? '',
+      endereco: json['address'] ?? '',
+      qtdAvaliacoes: json['reviewCount'] ?? 0,
+      distribuicao: json['ratingDistribution'] != null
+          ? List<double>.from(json['ratingDistribution'])
+          : [],
+      profileImage: json['photoUrl'] ?? json['profileImage'] ?? '',
     );
   }
 
   //Dart pra json, é o contrario do de cima, pra quando for mandar pra API
   Map<String, dynamic> toJson() {
-  return {
-    'name': nome,
-    'movementLevel': nivelMovimento,
-    'category': categoria,
-    'rating': avaliacao,
-    'priceLevel': nivelPrecoMedio,
-    'bio': bio,
-    'address': endereco,
-    'reviewCount': qtdAvaliacoes,
-    'ratingDistribution': distribuicao,
-    'profileImage': profileImage,
-  };
-}
+    return {
+      'name': nome,
+      'movementLevel': nivelMovimento,
+      'category': categoria,
+      'rating': avaliacao,
+      'priceLevel': nivelPrecoMedio,
+      'bio': bio,
+      'address': endereco,
+      'reviewCount': qtdAvaliacoes,
+      'ratingDistribution': distribuicao,
+      'profileImage': profileImage,
+    };
+  }
 }
