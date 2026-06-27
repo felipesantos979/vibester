@@ -4,6 +4,7 @@ import (
 	"notification-service/internal/config"
 	"notification-service/internal/database"
 	"notification-service/internal/handlers"
+	internalKafka "notification-service/internal/kafka"
 	"notification-service/internal/workers"
 
 	_ "notification-service/docs"
@@ -26,7 +27,13 @@ func main() {
 		panic(err)
 	}
 
+	if err := database.Migrate(); err != nil {
+		panic(err)
+	}
+
 	workers.StartEmailWorkers(5)
+
+	internalKafka.StartConsumers(config.GetKafkaBrokers())
 
 	router := gin.Default()
 

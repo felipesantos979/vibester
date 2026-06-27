@@ -3,6 +3,7 @@ import { cassandraClient } from "./config/cassandra";
 import { routes } from "./routes";
 import { registerSwagger } from "./config/swagger";
 import { ZodError } from "zod";
+import { producer } from "./kafka/producer";
 
 const app = Fastify({ ajv: { customOptions: { keywords: ["example"] } } });
 
@@ -30,10 +31,13 @@ app.setErrorHandler((error, request, reply) => {
 
 async function start() {
   try {
+    await producer.connect();
     await cassandraClient.connect();
 
     await registerSwagger(app);
     await app.register(routes);
+
+    process.on('SIGTERM', async () => { await producer.disconnect(); });
 
     await app.listen({
       port: 3000,

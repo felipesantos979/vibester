@@ -2,8 +2,7 @@ import prismaClient from "../prisma/index";
 import { RegisterInputInterface, RegisterOutputInterface } from "../types/register.types";
 import { hash } from "bcryptjs";
 import { randomUUID } from "node:crypto";
-import jwt from "jsonwebtoken";
-import { env } from "../config/env";
+import { producer } from "../kafka/producer";
 
 export class RegisterService {
     async register(input: RegisterInputInterface): Promise<RegisterOutputInterface> {
@@ -20,25 +19,21 @@ export class RegisterService {
             }
         });
 
-        try {
-            await fetch(`${env.profileServiceUrl}/api/users/profile`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userID: account.accountId }),
-            });
-        } catch (err) {
-            console.error('Failed to create profile in user-service', err);
-        }
-
-        const token = jwt.sign(
-            { userId: account.id },
-            env.jwtSecret,
-            { expiresIn: env.jwtExpiresIn as jwt.SignOptions["expiresIn"] }
-        );
+        await producer.send({
+            topic: 'user.registered',
+            messages: [{
+                key: account.accountId,
+                value: JSON.stringify({
+                    accountId: account.accountId,
+                    email: account.email,
+                    username: account.username,
+                    name: input.name,
+                }),
+            }],
+        });
 
         return {
             id: account.id,
-            token,
             username: account.username,
             name: input.name,
             email: account.email,

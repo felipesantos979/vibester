@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -16,4 +17,8 @@ func LoadEnv() {
 
 func GetEnv(key string) string {
 	return os.Getenv(key)
+}
+
+func GetKafkaBrokers() []string {
+	return strings.Split(GetEnv("KAFKA_BROKERS"), ",")
 }
