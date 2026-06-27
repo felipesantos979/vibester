@@ -1,0 +1,224 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { EditProfileService } from "../editProfile.service";
+
+const {
+  mockUpdate,
+  mockUserFollowCreate,
+  mockUserFollowDelete,
+  mockFindUniqueOrThrow,
+  mockProducerSend,
+} = vi.hoisted(() => ({
+  mockUpdate: vi.fn(),
+  mockUserFollowCreate: vi.fn(),
+  mockUserFollowDelete: vi.fn(),
+  mockFindUniqueOrThrow: vi.fn(),
+  mockProducerSend: vi.fn(),
+}));
+
+vi.mock("../../prisma/index", () => ({
+  default: {
+    userProfile: {
+      update: mockUpdate,
+      findUniqueOrThrow: mockFindUniqueOrThrow,
+    },
+    userFollow: {
+      create: mockUserFollowCreate,
+      delete: mockUserFollowDelete,
+    },
+  },
+}));
+
+vi.mock("../../kafka/producer", () => ({
+  producer: {
+    send: mockProducerSend,
+  },
+}));
+
+const FOLLOWER_ID = "follower-uuid-1";
+const FOLLOWING_ID = "following-uuid-2";
+
+function makeProfile(overrides: Partial<{
+  id: string;
+  userID: string;
+  name: string | null;
+  username: string | null;
+  avatarUrl: string | null;
+  bio: string | null;
+  followers: number;
+  following: number;
+  totalPosts: number;
+  createdAt: Date;
+  updatedAt: Date;
+}> = {}) {
+  return {
+    id: "profile-id-1",
+    userID: FOLLOWING_ID,
+    name: null,
+    username: null,
+    avatarUrl: null,
+    bio: null,
+    followers: 0,
+    following: 0,
+    totalPosts: 0,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    ...overrides,
+  };
+}
+
+describe("EditProfileService", () => {
+  let service: EditProfileService;
+
+  beforeEach(() => {
+    service = new EditProfileService();
+    vi.clearAllMocks();
+  });
+
+  // ======= updateBio =======
+
+  describe("updateBio", () => {
+    it("should update the bio of a user profile", async () => {
+      const updatedProfile = makeProfile({ bio: "Minha nova bio" });
+      mockUpdate.mockResolvedValue(updatedProfile);
+
+      const result = await service.updateBio({ userID: FOLLOWING_ID, bio: "Minha nova bio" });
+
+      expect(mockUpdate).toHaveBeenCalledWith({
+        where: { userID: FOLLOWING_ID },
+        data: { bio: "Minha nova bio" },
+      });
+      expect(result.bio).toBe("Minha nova bio");
+    });
+
+    it("should throw when user profile is not found", async () => {
+      mockUpdate.mockRejectedValue(new Error("Record to update not found."));
+
+      await expect(
+        service.updateBio({ userID: "non-existent", bio: "bio" })
+      ).rejects.toThrow("Record to update not found.");
+    });
+  });
+
+  // ======= updateAvatar =======
+
+  describe("updateAvatar", () => {
+    it("should update the avatarUrl of a user profile", async () => {
+      const url = "https://example.com/avatar.jpg";
+      const updatedProfile = makeProfile({ avatarUrl: url });
+      mockUpdate.mockResolvedValue(updatedProfile);
+
+      const result = await service.updateAvatar({ userID: FOLLOWING_ID, avatarUrl: url });
+
+      expect(mockUpdate).toHaveBeenCalledWith({
+        where: { userID: FOLLOWING_ID },
+        data: { avatarUrl: url },
+      });
+      expect(result.avatarUrl).toBe(url);
+    });
+
+    it("should throw when user profile is not found", async () => {
+      mockUpdate.mockRejectedValue(new Error("Record to update not found."));
+
+      await expect(
+        service.updateAvatar({ userID: "non-existent", avatarUrl: "https://example.com/a.jpg" })
+      ).rejects.toThrow("Record to update not found.");
+    });
+  });
+
+  // ======= increaseFollower =======
+
+  describe("increaseFollower", () => {
+    it("should create a follow record, increment counters on both profiles, send Kafka event and return the followed profile", async () => {
+      const updatedProfile = makeProfile({ followers: 1 });
+      mockUserFollowCreate.mockResolvedValue({});
+      mockUpdate.mockResolvedValue({});
+      mockFindUniqueOrThrow.mockResolvedValue(updatedProfile);
+      mockProducerSend.mockResolvedValue({});
+
+      const result = await service.increaseFollower(FOLLOWER_ID, FOLLOWING_ID);
+
+      expect(mockUserFollowCreate).toHaveBeenCalledWith({
+        data: { followerId: FOLLOWER_ID, followingId: FOLLOWING_ID },
+      });
+      expect(mockUpdate).toHaveBeenCalledWith({
+        where: { userID: FOLLOWING_ID },
+        data: { followers: { increment: 1 } },
+      });
+      expect(mockUpdate).toHaveBeenCalledWith({
+        where: { userID: FOLLOWER_ID },
+        data: { following: { increment: 1 } },
+      });
+      expect(mockProducerSend).toHaveBeenCalledWith({
+        topic: "user.followed",
+        messages: [{ value: JSON.stringify({ followerId: FOLLOWER_ID, followingId: FOLLOWING_ID }) }],
+      });
+      expect(mockFindUniqueOrThrow).toHaveBeenCalledWith({
+        where: { userID: FOLLOWING_ID },
+      });
+      expect(result.followers).toBe(1);
+    });
+
+    it("should throw when creating the follow record fails", async () => {
+      mockUserFollowCreate.mockRejectedValue(new Error("Unique constraint failed."));
+
+      await expect(
+        service.increaseFollower(FOLLOWER_ID, FOLLOWING_ID)
+      ).rejects.toThrow("Unique constraint failed.");
+    });
+
+    it("should throw when updating profiles fails", async () => {
+      mockUserFollowCreate.mockResolvedValue({});
+      mockUpdate.mockRejectedValue(new Error("Record to update not found."));
+
+      await expect(
+        service.increaseFollower(FOLLOWER_ID, "non-existent")
+      ).rejects.toThrow("Record to update not found.");
+    });
+  });
+
+  // ======= decreaseFollower =======
+
+  describe("decreaseFollower", () => {
+    it("should delete the follow record, decrement counters on both profiles and return the unfollowed profile", async () => {
+      const updatedProfile = makeProfile({ followers: 0 });
+      mockUserFollowDelete.mockResolvedValue({});
+      mockUpdate.mockResolvedValue({});
+      mockFindUniqueOrThrow.mockResolvedValue(updatedProfile);
+
+      const result = await service.decreaseFollower(FOLLOWER_ID, FOLLOWING_ID);
+
+      expect(mockUserFollowDelete).toHaveBeenCalledWith({
+        where: { followerId_followingId: { followerId: FOLLOWER_ID, followingId: FOLLOWING_ID } },
+      });
+      expect(mockUpdate).toHaveBeenCalledWith({
+        where: { userID: FOLLOWING_ID },
+        data: { followers: { decrement: 1 } },
+      });
+      expect(mockUpdate).toHaveBeenCalledWith({
+        where: { userID: FOLLOWER_ID },
+        data: { following: { decrement: 1 } },
+      });
+      expect(mockFindUniqueOrThrow).toHaveBeenCalledWith({
+        where: { userID: FOLLOWING_ID },
+      });
+      expect(result.followers).toBe(0);
+    });
+
+    it("should throw when the follow record does not exist", async () => {
+      mockUserFollowDelete.mockRejectedValue(new Error("Record to delete does not exist."));
+
+      await expect(
+        service.decreaseFollower(FOLLOWER_ID, FOLLOWING_ID)
+      ).rejects.toThrow("Record to delete does not exist.");
+    });
+
+    it("should throw when updating profiles fails", async () => {
+      mockUserFollowDelete.mockResolvedValue({});
+      mockUpdate.mockRejectedValue(new Error("Record to update not found."));
+
+      await expect(
+        service.decreaseFollower(FOLLOWER_ID, "non-existent")
+      ).rejects.toThrow("Record to update not found.");
+    });
+  });
+});
