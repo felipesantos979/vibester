@@ -4,6 +4,7 @@ import { CommentRepository } from "../repository/comment.repository";
 import { PostRepository } from "../repository/post.repository";
 import { Comment, CreateCommentInput, UpdateCommentInput } from "../types/comment.type";
 import el from "zod/v4/locales/el.js";
+import { producer } from "../kafka/producer";
 
 export class CommentService {
     constructor(private readonly commentRepository: CommentRepository,
@@ -38,9 +39,22 @@ export class CommentService {
         ]);
 
         if (post.establishmentId){
-           await this.postRepository.updateTotalCommentsByEstablishment(post.establishmentId, post.createdAt, 
+           await this.postRepository.updateTotalCommentsByEstablishment(post.establishmentId, post.createdAt,
             totalComments, post.postId);
         }
+
+        await producer.send({
+            topic: 'post.commented',
+            messages: [{
+                key: comment.postId,
+                value: JSON.stringify({
+                    postId: comment.postId,
+                    postOwnerId: post.userId,
+                    commentedByUserId: comment.userId,
+                    content: comment.content,
+                }),
+            }],
+        });
 
         return comment;
     }
