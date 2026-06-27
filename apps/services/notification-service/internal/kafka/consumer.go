@@ -33,9 +33,15 @@ type postCommentedEvent struct {
 	Content             string `json:"content"`
 }
 
+type userFollowedEvent struct {
+	FollowerId  string `json:"followerId"`
+	FollowingId string `json:"followingId"`
+}
+
 func StartConsumers(brokers []string) {
 	go consumeUserRegistered(brokers)
 	go consumePostEvents(brokers)
+	go consumeUserFollowed(brokers)
 }
 
 func consumeUserRegistered(brokers []string) {
@@ -78,6 +84,35 @@ func consumeUserRegistered(brokers []string) {
 		}
 
 		utils.Logger.Infof("[KAFKA] Welcome email enfileirado para %s", event.Email)
+	}
+}
+
+func consumeUserFollowed(brokers []string) {
+	r := kafkaGo.NewReader(kafkaGo.ReaderConfig{
+		Brokers: brokers,
+		Topic:   "user.followed",
+		GroupID: "notification-service-follow-group",
+	})
+	defer r.Close()
+
+	for {
+		msg, err := r.ReadMessage(context.Background())
+		if err != nil {
+			utils.Logger.Errorf("[KAFKA] Erro ao ler user.followed: %v", err)
+			continue
+		}
+
+		var event userFollowedEvent
+		if err := json.Unmarshal(msg.Value, &event); err != nil {
+			utils.Logger.Errorf("[KAFKA] Erro ao parsear user.followed: %v", err)
+			continue
+		}
+
+		if err := repository.CreateNotification("follow", event.FollowingId, event.FollowerId, "", ""); err != nil {
+			utils.Logger.Errorf("[KAFKA] Erro ao salvar notificação de follow: %v", err)
+		}
+
+		utils.Logger.Infof("[KAFKA] Notificação de follow salva: %s -> %s", event.FollowerId, event.FollowingId)
 	}
 }
 

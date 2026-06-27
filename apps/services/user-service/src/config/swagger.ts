@@ -9,7 +9,7 @@ export async function registerSwagger(app: FastifyInstance) {
       info: {
         title: "User Service API",
         description:
-          "Documentação da API do serviço de usuários do Vibester (perfis, bio, avatar e seguidores).",
+          "Documentação da API do serviço de usuários do Vibester (perfis, bio, avatar, seguidores, listagem de seguidores e seguidos).",
         version: "1.0.0",
       },
       tags: [

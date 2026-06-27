@@ -12,5 +12,5 @@ export async function setupRoutes(app: FastifyInstance) {
     },
   }, async (_request, reply) => reply.status(200).send({ status: "ok" }));
 
-  app.register(profileRoutes, { prefix: "/api/users" });
+  app.register(profileRoutes, { prefix: "/users" });
 }

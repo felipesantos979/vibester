@@ -1,44 +1,60 @@
 import prismaClient from "../prisma/index.js";
 import { UpdateAvatarInput, UpdateBioInput } from "../types/profile.types.js";
+import { producer } from "../kafka/producer.js";
 
 export class EditProfileService {
     async updateBio(input: UpdateBioInput) {
-        console.log("Atualizando bio do usuário", input.userID);
-
-        const profile = await prismaClient.userProfile.update({
+        return prismaClient.userProfile.update({
             where: { userID: input.userID },
             data: { bio: input.bio }
         });
-
-        return profile;
     }
 
     async updateAvatar(input: UpdateAvatarInput) {
-        console.log("Atualizando avatar do usuário", input.userID);
-
-        const profile = await prismaClient.userProfile.update({
+        return prismaClient.userProfile.update({
             where: { userID: input.userID },
             data: { avatarUrl: input.avatarUrl }
         });
-
-        return profile;
     }
 
-    async increaseFollower(userID: string) {
-        const profile = await prismaClient.userProfile.update({
-            where: { userID: userID },
-            data: { followers: { increment: 1 } }
+    async increaseFollower(followerId: string, followingId: string) {
+        await prismaClient.userFollow.create({ data: { followerId, followingId } });
+
+        await Promise.all([
+            prismaClient.userProfile.update({
+                where: { userID: followingId },
+                data: { followers: { increment: 1 } },
+            }),
+            prismaClient.userProfile.update({
+                where: { userID: followerId },
+                data: { following: { increment: 1 } },
+            }),
+        ]);
+
+        await producer.send({
+            topic: 'user.followed',
+            messages: [{ value: JSON.stringify({ followerId, followingId }) }],
         });
 
-        return profile;
+        return prismaClient.userProfile.findUniqueOrThrow({ where: { userID: followingId } });
     }
 
-    async decreaseFollower(userID: string) {
-        const profile = await prismaClient.userProfile.update({
-            where: { userID: userID },
-            data: { followers: { decrement: 1 } }
+    async decreaseFollower(followerId: string, followingId: string) {
+        await prismaClient.userFollow.delete({
+            where: { followerId_followingId: { followerId, followingId } },
         });
 
-        return profile;
+        await Promise.all([
+            prismaClient.userProfile.update({
+                where: { userID: followingId },
+                data: { followers: { decrement: 1 } },
+            }),
+            prismaClient.userProfile.update({
+                where: { userID: followerId },
+                data: { following: { decrement: 1 } },
+            }),
+        ]);
+
+        return prismaClient.userProfile.findUniqueOrThrow({ where: { userID: followingId } });
     }
 }
