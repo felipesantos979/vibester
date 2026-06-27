@@ -1,0 +1,4 @@
+node_modules
+.env
+scripts/simulate_kafka_events
+secure-connect*.zip
