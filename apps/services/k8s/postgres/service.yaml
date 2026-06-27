@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: event-service
+  name: postgres-shared
   namespace: default
   labels:
-    app: event-service
+    app: postgres-shared
 spec:
   type: ClusterIP
   selector:
-    app: event-service
+    app: postgres-shared
   ports:
     - protocol: TCP
-      port: 3334
-      targetPort: 3334
+      port: 5432
+      targetPort: 5432
