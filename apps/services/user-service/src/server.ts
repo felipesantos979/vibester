@@ -5,6 +5,7 @@ import { env } from './config/env.js';
 import { setupRoutes } from './routes.js';
 import { registerSwagger } from './config/swagger.js';
 import { startConsumer } from './kafka/consumer.js';
+import { producer } from './kafka/producer.js';
 
 const app = Fastify();
 app.setValidatorCompiler(validatorCompiler);
@@ -13,6 +14,7 @@ app.setSerializerCompiler(serializerCompiler);
 const port = Number(env.port) || 3003;
 
 const start = async () => {
+    await producer.connect();
     await startConsumer();
 
     await app.register(cors);
