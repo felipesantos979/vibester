@@ -1,3 +1,5 @@
-export const compare = jest.fn(() => true);
-export const hash = jest.fn((p) => `hashed-${p}`);
+import { vi } from 'vitest';
+
+export const compare = vi.fn(() => true);
+export const hash = vi.fn((p) => `hashed-${p}`);
 export default { compare, hash };

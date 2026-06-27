@@ -1,35 +1,35 @@
-const prismaMockRequire = require('../mocks/prisma.client') as any;
-jest.mock('../../src/prisma', () => ({
-  __esModule: true,
-  default: prismaMockRequire.default,
+import { vi } from 'vitest';
+
+vi.mock('../../src/prisma', async () => ({
+  default: (await import('../mocks/prisma.client')).default,
 }));
 
-jest.mock('bcryptjs', () => ({
-  compare: jest.fn(),
-}));
+vi.mock('bcryptjs', () => {
+  const compare = vi.fn();
+  return { default: { compare }, compare };
+});
 
-jest.mock('jsonwebtoken', () => ({
-  sign: jest.fn(() => 'token'),
+vi.mock('jsonwebtoken', () => ({
+  default: { sign: vi.fn(() => 'token') },
 }));
 
 import { LoginService } from '../../src/services/login.service';
-const { default: prismaMock, mockAccess } = prismaMockRequire;
+import { mockAccess } from '../mocks/prisma.client';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { makeUser } from '../factories/user.factory';
 
 describe('LoginService', () => {
   let service: LoginService;
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     service = new LoginService();
   });
 
   it('should login successfully with email', async () => {
     const user = makeUser({ passwordHash: 'hashed' });
     mockAccess.findFirst.mockResolvedValueOnce(user);
-    (bcrypt.compare as jest.Mock).mockResolvedValueOnce(true);
+    vi.mocked(bcrypt.compare).mockResolvedValueOnce(true as never);
 
     const result = await service.login({ email: user.email, password: 'plain' });
 
@@ -48,7 +48,7 @@ describe('LoginService', () => {
   it('should throw when password invalid', async () => {
     const user = makeUser({ passwordHash: 'hashed' });
     mockAccess.findFirst.mockResolvedValueOnce(user);
-    (bcrypt.compare as jest.Mock).mockResolvedValueOnce(false);
+    vi.mocked(bcrypt.compare).mockResolvedValueOnce(false as never);
 
     await expect(service.login({ email: user.email, password: 'wrong' })).rejects.toThrow('Usuário ou senha inválidos');
   });

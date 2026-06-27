@@ -1,7 +1,8 @@
-// Mock minimal Prisma client methods used in services
+import { vi } from 'vitest';
+
 const mockAccess = {
-  findFirst: jest.fn(),
-  create: jest.fn(),
+  findFirst: vi.fn(),
+  create: vi.fn(),
 };
 
 const prisma = {

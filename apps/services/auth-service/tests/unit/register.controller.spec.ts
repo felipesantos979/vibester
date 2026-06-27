@@ -1,20 +1,20 @@
+import { vi } from 'vitest';
 import { RegisterController } from '../../src/controllers/register.controller';
 import { RegisterService } from '../../src/services/register.service';
 
-jest.mock('../../src/services/register.service');
+vi.mock('../../src/services/register.service');
 
 const mockReply = () => {
-  const status = jest.fn().mockReturnThis();
-  const send = jest.fn().mockReturnThis();
+  const status = vi.fn().mockReturnThis();
+  const send = vi.fn().mockReturnThis();
   return { status, send } as any;
 };
 
 describe('RegisterController', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => vi.clearAllMocks());
 
   it('should call register service and return 201', async () => {
-    const mocked = (RegisterService as jest.MockedClass<typeof RegisterService>);
-    mocked.prototype.register = jest.fn().mockResolvedValue({ id: '1', username: 'u' });
+    vi.mocked(RegisterService).prototype.register = vi.fn().mockResolvedValue({ id: '1', username: 'u' });
 
     const controller = new RegisterController();
     const req: any = { body: { username: 'u', email: 'e', password: 'p', name: 'n', bornAt: new Date().toISOString() } };

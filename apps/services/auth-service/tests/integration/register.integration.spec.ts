@@ -1,8 +1,12 @@
+import { vi } from 'vitest';
 import prismaMock, { mockAccess } from '../mocks/prisma.client';
-jest.mock('../../src/prisma', () => ({
-  __esModule: true,
-  default: prismaMock,
+
+vi.mock('../../src/prisma', () => ({ default: prismaMock }));
+
+vi.mock('jsonwebtoken', () => ({
+  default: { sign: vi.fn(() => 'signed-token') },
 }));
+
 import { buildServer } from '../helpers/fastify.test.helper';
 
 describe('Register integration', () => {
@@ -10,6 +14,7 @@ describe('Register integration', () => {
 
   beforeAll(async () => {
     app = await buildServer();
+    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve({ ok: true })));
   });
 
   afterAll(async () => app.close());
@@ -22,5 +27,6 @@ describe('Register integration', () => {
     expect(res.statusCode).toBe(201);
     const body = JSON.parse(res.payload);
     expect(body).toHaveProperty('id');
+    expect(body).toHaveProperty('token');
   });
 });

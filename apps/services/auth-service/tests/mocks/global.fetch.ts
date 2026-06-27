@@ -1,5 +1,5 @@
-// Simple fetch mock for tests
+import { vi } from 'vitest';
+
 export default function setupFetchMock() {
-  // @ts-ignore
-  global.fetch = jest.fn(() => Promise.resolve({ ok: true }));
+  vi.stubGlobal('fetch', vi.fn(() => Promise.resolve({ ok: true })));
 }

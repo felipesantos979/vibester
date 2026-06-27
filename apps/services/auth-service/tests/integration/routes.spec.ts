@@ -13,6 +13,7 @@ describe('Auth Routes (integration)', () => {
 
   it('GET /health returns ok', async () => {
     const res = await app.inject({ method: 'GET', url: '/health' });
+
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload);
     expect(body).toEqual({ status: 'ok' });
