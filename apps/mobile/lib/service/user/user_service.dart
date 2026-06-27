@@ -1,16 +1,9 @@
-import 'dart:convert';
-import 'package:mobile/models/user/user_model.dart';
+import 'package:dio/dio.dart';
+import 'package:email_validator/email_validator.dart';
 import 'package:mobile/service/api_client.dart';
 import 'package:mobile/service/api_endpoints.dart';
 
 class UserService {
-  UserModel decodeToken(String token) {
-    final payload = token.split('.')[1];
-    final decoded = utf8.decode(base64Url.decode(base64Url.normalize(payload)));
-    final json = jsonDecode(decoded);
-    return UserModel.fromJson(json);
-  }
-
   Future<void> register({
     required String name,
     required String username,
@@ -18,30 +11,44 @@ class UserService {
     required String password,
     required String bornAt,
   }) async {
-    await ApiClient.dio.post(
-      ApiEndpoints.register(),
-      data: {
-        'name': name,
-        'username': username,
-        'email': email,
-        'password': password,
-        'bornAt': bornAt,
-      },
-    );
+    try {
+      await ApiClient.dio.post(
+        ApiEndpoints.register(),
+        data: {
+          'name': name,
+          'username': username,
+          'email': email,
+          'password': password,
+          'bornAt': bornAt,
+        },
+      );
+    } on DioException catch (e) {
+      final mensagem = e.response?.data?['message'] ?? 'Erro ao criar conta';
+      throw Exception(mensagem);
+    }
   }
 
-  Future<String> login({
-    required String email,
+  Future<Map<String, dynamic>> login({
+    required String emailOuUsername,
     required String password,
   }) async {
-    final response = await ApiClient.dio.post(
-      ApiEndpoints.login(),
-      data: {
-        'email': email,
-        'password': password,
-      },
-    );
+    final ehEmail = EmailValidator.validate(emailOuUsername);
 
-    return response.data['token'];
+    try {
+      final response = await ApiClient.dio.post(
+        ApiEndpoints.login(),
+        data: {
+          if (ehEmail) 'email': emailOuUsername else 'username': emailOuUsername,
+          'password': password,
+        },
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      final mensagem = e.response?.data?['message'] ?? 'Erro ao fazer login';
+      throw Exception(mensagem);
+    }
   }
+
+  //Get de user
 }

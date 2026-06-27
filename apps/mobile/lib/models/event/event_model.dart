@@ -12,6 +12,10 @@ class EventModel {
   final String artistas;
   final String imageUrl;
   bool isFavorite;
+  final int totalConfirmed;
+  final double latitude;
+  final double longitude;
+  final double distanceKm;
 
   EventModel({
     this.id,
@@ -25,6 +29,10 @@ class EventModel {
     required this.artistas,
     this.imageUrl = '',
     this.isFavorite = false,
+    this.totalConfirmed = 0,
+    this.latitude = 0,
+    this.longitude = 0,
+    this.distanceKm = 0,
   });
 
   //Json pra dart, é pra quando os dados virem da API, pra q eles possam ser usados pelo dart.
@@ -33,19 +41,25 @@ class EventModel {
     return EventModel(
       id: json['id'],
       placeId: json['placeId'],
-      dataDoEvento: json['eventDate'] != null
-          ? DateTime.parse(json['eventDate'])
-          : DateTime.now(),
-      titulo: json['title'] ?? 'Evento sem título',
+      dataDoEvento: json['startDate'] != null
+          ? DateTime.parse(json['startDate'])
+          : json['eventDate'] != null
+              ? DateTime.parse(json['eventDate'])
+              : DateTime.now(),
+      titulo: json['name'] ?? json['title'] ?? 'Evento sem título',
       categoria: json['category'] ?? 'Sem categoria',
       localizacao: json['location'] ?? 'Local não informado',
       informacoes: json['info'] ?? '',
       artistas: json['artists'] ?? '',
-      imageUrl: json['imageUrl'] ?? '',
+      imageUrl: json['photoUrl'] ?? json['imageUrl'] ?? '',
+      totalConfirmed: json['totalConfirmed'] ?? 0,
+      latitude: (json['latitude'] ?? 0).toDouble(),
+      longitude: (json['longitude'] ?? 0).toDouble(),
+      distanceKm: (json['distanceKm'] ?? 0).toDouble(),
     );
   }
 
-  //Dart pra json, é o contrario do de cima, pra quando for mandar pra API
+//Dart pra json, é o contrario do de cima, pra quando for mandar pra API
   Map<String, dynamic> toJson() {
     return {
       'title': titulo,

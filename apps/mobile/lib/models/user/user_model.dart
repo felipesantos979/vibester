@@ -29,6 +29,17 @@ class UserModel {
     this.cidade = '',
   });
 
+  //Esse aqui é só pra quando vem a resposta do login e como o token e o accountId não fazem parte do UserModel, então ficam de fora daqui,
+  factory UserModel.fromLoginJson(Map<String, dynamic> json) {
+    return UserModel(
+      id: json['id'],
+      nome: '',
+      nomeUsuario: '',
+      email: '',
+      dataNascimento: '',
+    );
+  }
+
   //Json pra dart, é pra quando os dados virem da API.
   //Não ha validação pra caso venha null, valores reserva apenas para testes. Mudar depois!
   factory UserModel.fromJson(Map<String, dynamic> json) {
