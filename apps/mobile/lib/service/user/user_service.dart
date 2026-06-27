@@ -50,5 +50,31 @@ class UserService {
     }
   }
 
-  //Get de user
+  // Busca o perfil completo do usuário pelo id
+  Future<Map<String, dynamic>> getProfile(String id) async {
+    try {
+      final response = await ApiClient.dio.get(ApiEndpoints.getProfileById(id));
+      return response.data;
+    } on DioException catch (e) {
+      final mensagem = e.response?.data?['message'] ?? 'Erro ao buscar perfil';
+      throw Exception(mensagem);
+    }
+  }
+
+  // Atualiza a bio do usuário
+  Future<Map<String, dynamic>> updateBio({
+    required String userID,
+    required String bio,
+  }) async {
+    try {
+      final response = await ApiClient.dio.put(
+        ApiEndpoints.updateBio(),
+        data: {'userID': userID, 'bio': bio},
+      );
+      return response.data;
+    } on DioException catch (e) {
+      final mensagem = e.response?.data?['message'] ?? 'Erro ao atualizar bio';
+      throw Exception(mensagem);
+    }
+  }
 }

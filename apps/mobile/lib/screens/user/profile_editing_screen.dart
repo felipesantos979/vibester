@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/models/user/user_model.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
+import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/users/editing_avatar.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
+import 'package:provider/provider.dart';
 
 class ProfileEditingScreen extends StatefulWidget {
   const ProfileEditingScreen({super.key});
@@ -18,12 +22,55 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
   final TextEditingController _bioController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
+  final _userService = UserService();
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _nomeUsuarioController.dispose();
     _bioController.dispose();
     super.dispose();
+  }
+
+  Future<void> _salvarPerfil() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final userAtual = context.read<UserProvider>().user;
+    final userID = userAtual?.userID ?? '';
+    final tokenAtual = userAtual?.token;
+    final bio = _bioController.text.trim();
+
+    setState(() => _isLoading = true);
+
+    try {
+      final profileResponse = await _userService.updateBio(
+        userID: userID,
+        bio: bio,
+      );
+
+      // Reaproveita o token que já estava no provider
+      final usuarioAtualizado = UserModel.fromProfileJson(
+        profileResponse,
+        accountId: userID,
+        token: tokenAtual,
+      );
+
+      if (!mounted) return;
+      context.read<UserProvider>().setUser(usuarioAtualizado);
+
+      Navigator.pushNamed(context, AppRoutes.userInterests);
+    } catch (e) {
+      debugPrint(e.toString());
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível atualizar a bio. Tente novamente.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -144,7 +191,7 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
                   style: const TextStyle(color: Colors.white),
                   cursorColor: Color(colorAmbar),
 
-                  inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                  inputFormatters: [LengthLimitingTextInputFormatter(150)],
 
                   decoration: InputDecoration(
                     filled: true,
@@ -193,12 +240,8 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 100),
                 child: PrimaryButton(
-                  label: 'Cadastrar',
-                  onPressed: () {
-                    if (!_formKey.currentState!.validate()) return;
-
-                    Navigator.pushNamed(context, AppRoutes.userInterests);
-                  },
+                  label: _isLoading ? 'Salvando...' : 'Cadastrar',
+                  onPressed: _isLoading ? () {} : _salvarPerfil,
                 ),
               ),
             ],

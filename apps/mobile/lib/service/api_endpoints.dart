@@ -7,7 +7,8 @@ class ApiEndpoints {
 
   // User
   static String createProfile() => '$baseUrl/api/users/profile';
-  static String updateBio() => '$baseUrl/api/users/profile/bio';
+  static String getProfileById(String id) => '$baseUrl/user/users/profile/$id';
+  static String updateBio() => '$baseUrl/user/users/profile/bio';
   static String updateAvatar() => '$baseUrl/api/users/profile/avatar';
   static String increaseFollowers() =>
       '$baseUrl/api/users/profile/followers/increase';
