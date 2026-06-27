@@ -1,0 +1,184 @@
+{
+  "info": {
+    "_postman_id": "0a44ca7d-fbb0-4655-90ea-1b277d5d8d28",
+    "name": "Vibester Payment Service",
+    "description": "Collection para testar o microsservico Go payment-service. O servico cria um checkout hospedado na AbacatePay e persiste a cobranca no Postgres com status PENDING.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string",
+      "description": "URL base do payment-service local."
+    },
+    {
+      "key": "productId",
+      "value": "prod_xxx",
+      "type": "string",
+      "description": "ID de um produto ja cadastrado na AbacatePay."
+    }
+  ],
+  "item": [
+    {
+      "name": "Checkout",
+      "description": "Endpoints expostos pelo payment-service para criar cobrancas.",
+      "item": [
+        {
+          "name": "Criar checkout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "description": "Formato do corpo enviado para a API."
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1,\n  \"methods\": [\"PIX\", \"CARD\"]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/checkout",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "checkout"
+              ]
+            },
+            "description": "Cria um checkout na AbacatePay usando um produto existente, salva a cobranca no Postgres e retorna a URL hospedada de pagamento.\n\nCampos do body:\n- productId: obrigatorio. ID do produto na AbacatePay.\n- quantity: obrigatorio. Quantidade maior que zero.\n- methods: opcional. Lista de metodos aceitos, como PIX e CARD."
+          },
+          "response": [
+            {
+              "name": "200 - Checkout criado",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"productId\": \"prod_xxx\",\n  \"quantity\": 1,\n  \"methods\": [\"PIX\", \"CARD\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/checkout",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "checkout"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"url\": \"https://pay.abacatepay.com/checkout/checkout_xxx\"\n}"
+            },
+            {
+              "name": "400 - Request invalido",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"productId\": \"prod_xxx\",\n  \"quantity\": 0\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/checkout",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "checkout"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"error\": \"invalid request\"\n}"
+            },
+            {
+              "name": "500 - Erro ao salvar pagamento",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"productId\": \"prod_xxx\",\n  \"quantity\": 1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/checkout",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "checkout"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"error\": \"failed to save payment\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

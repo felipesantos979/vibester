@@ -46,7 +46,7 @@ class PlaceCard extends StatelessWidget {
                       child: SizedBox(
                         height: 80,
                         width: 80,
-                        child: Image.asset(place.profileImage),
+                        child: Image.network(place.profileImage),
                       ),
                     ),
                   ),

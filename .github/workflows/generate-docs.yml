@@ -56,25 +56,24 @@ jobs:
           name: openapi-${{ github.sha }}
           path: apps/services
 
-      - name: Copy openapi.json to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: apps/services/openapi.json
-          target: /tmp/vibester-docs/
-          strip_components: 2
+      - name: Encode spec as base64
+        id: encode
+        run: echo "SPEC_B64=$(base64 -w 0 apps/services/openapi.json)" >> $GITHUB_OUTPUT
 
       - name: Update ConfigMap and restart Swagger UI
         uses: appleboy/ssh-action@v1
+        env:
+          SPEC_B64: ${{ steps.encode.outputs.SPEC_B64 }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          envs: SPEC_B64
           script: |
+            echo "$SPEC_B64" | base64 -d > /tmp/openapi.json
             kubectl create configmap swagger-ui-spec \
-              --from-file=openapi.json=/tmp/vibester-docs/openapi.json \
+              --from-file=openapi.json=/tmp/openapi.json \
               --dry-run=client -o yaml | kubectl apply -f -
+            rm /tmp/openapi.json
             kubectl rollout restart deployment/swagger-ui
             kubectl rollout status deployment/swagger-ui --timeout=120s

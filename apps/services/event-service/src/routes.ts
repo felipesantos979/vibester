@@ -12,5 +12,5 @@ export async function setupRoutes(app: FastifyInstance) {
         },
     }, async (_request, reply) => reply.status(200).send({ status: "ok" }));
 
-    app.register(eventRoutes, { prefix: "/api/events" });
+    app.register(eventRoutes, { prefix: "/events" });
 }

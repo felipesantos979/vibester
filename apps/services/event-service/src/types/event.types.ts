@@ -9,6 +9,7 @@ export interface CreateEventInput {
   ticketLink?: string;
   latitude: number;
   longitude: number;
+  establishmentId: string;
 }
 
 export interface UpdateEventInput {
