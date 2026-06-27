@@ -27,12 +27,11 @@ export class LoginController {
 
         const { email, username, password } = parseResult.data;
 
-        const account = await this.loginService.login({
-            email,
-            username,
-            password,
-        });
-
-        return reply.status(200).send(account);
+        try {
+            const account = await this.loginService.login({ email, username, password });
+            return reply.status(200).send(account);
+        } catch (error: any) {
+            return reply.status(400).send({ error: error.message });
+        }
     }
 }
