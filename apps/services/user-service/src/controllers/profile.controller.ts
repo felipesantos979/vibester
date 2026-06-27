@@ -5,6 +5,7 @@ import { CreateProfileService } from "../services/createProfile.service.js";
 import { EditProfileService } from "../services/editProfile.service.js";
 import { GetProfileService } from "../services/getProfile.service.js";
 import { GetFollowersService } from "../services/getFollowers.service.js";
+import type { UserProfileModel } from "../generated/prisma/models/UserProfile.js";
 
 const profileService = new CreateProfileService();
 const editProfileService = new EditProfileService();
@@ -27,9 +28,9 @@ const userProfileSchema = z.object({
   updatedAt: z.date(),
 });
 
-function toProfileResponse(profile: { id: string; [key: string]: unknown }) {
-  const { id, ...rest } = profile;
-  return { profileId: id, ...rest };
+function toProfileResponse(profile: UserProfileModel) {
+  const { id: profileId, ...rest } = profile;
+  return { profileId, ...rest };
 }
 
 const createProfileSchema = z.object({
