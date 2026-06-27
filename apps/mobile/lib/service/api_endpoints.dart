@@ -1,5 +1,5 @@
 class ApiEndpoints {
-  static const String baseUrl = 'api.vibester.com.br';
+  static const String baseUrl = 'https://api.vibester.com.br';
 
   // Auth
   static String register() => '$baseUrl/register';

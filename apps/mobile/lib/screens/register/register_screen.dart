@@ -2,6 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/models/user/user_model.dart';
 import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/service/user/user_service.dart';
@@ -35,6 +36,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  //Mensagem de erro vinda da API (campo 'message'), só pra debug no terminal.
+  String? _erroApi;
+
+  String _formatarBornAt(DateTime data) {
+    final ano = data.year.toString().padLeft(4, '0');
+    final mes = data.month.toString().padLeft(2, '0');
+    final dia = data.day.toString().padLeft(2, '0');
+    return '$ano-$mes-$dia';
+  }
+
   Future<void> _criarConta() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -44,19 +55,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final usernameFormatado = '@${nomeDigitado.replaceAll(' ', '')}';
     final email = _emailController.text.trim();
     final senha = _senhaController.text;
-    final bornAtIso = _dataNascimento!.toUtc().toIso8601String();
+    final bornAtFormatado = _formatarBornAt(_dataNascimento!);
 
     try {
-      // comentado pra testes
-      // final token = await _userService.login(email: emailOuUsuario, password: senha);
-      // final usuario = _userService.decodeToken(token);
-      // context.read<UserProvider>().setUser(usuario);
+      // Cria a conta. Se der erro, cai no catch e não chama o login.
+      await _userService.register(
+        name: nomeDigitado,
+        username: usernameFormatado,
+        email: email,
+        password: senha,
+        bornAt: bornAtFormatado,
+      );
+
+      // Loga com o mesmo email e senha que acabaram de ser usados pra criar a conta.
+      final loginResponse = await _userService.login(
+        emailOuUsername: email,
+        password: senha,
+      );
+
+      //tem q fazer a parte de guardar token de login, deixa pra depois por enquanto kkkk
+      final token = loginResponse['token'];
+      final accountId = loginResponse['accountId'];
+
+      final usuarioLogado = UserModel.fromLoginJson(loginResponse);
 
       if (!mounted) return;
-      //context.read<UserProvider>().setUser(usuarioLogado);
+      context.read<UserProvider>().setUser(usuarioLogado);
 
       Navigator.pushNamed(context, AppRoutes.emailConfirm);
     } catch (e) {
+      _erroApi = e.toString();
+      debugPrint(_erroApi);
+
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
