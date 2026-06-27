@@ -26,6 +26,8 @@ spec:
           envFrom:
             - secretRef:
                 name: establishment-service-secret
+            - configMapRef:
+                name: redis-env
           resources:
             requests:
               cpu: "100m"

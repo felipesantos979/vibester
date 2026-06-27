@@ -1,23 +1,24 @@
 import prismaClient from "../prisma";
+import { cacheAside } from "../config/redis";
 
 export class GetEventDetailsService{
     async get(eventId: string){
-        const event = await prismaClient.event.findUnique({
-            where: {
-                id: eventId
+        return cacheAside(`event:id:${eventId}`, 300, async () => {
+            const event = await prismaClient.event.findUnique({
+                where: { id: eventId }
+            });
+
+            if (!event) {
+                throw new Error("Evento não encontrado");
             }
+
+            return {
+                name: event.name,
+                organizer: event.organizer,
+                location: event.location,
+                totalConfirmed: event.totalConfirmed,
+                ticketLink: event.ticketLink
+            };
         });
-
-        if (!event) {
-            throw new Error("Evento não encontrado");
-        }
-
-        return {
-            name: event.name,
-            organizer: event.organizer,
-            location: event.location,
-            totalConfirmed: event.totalConfirmed,
-            ticketLink: event.ticketLink
-        }
     }
 }

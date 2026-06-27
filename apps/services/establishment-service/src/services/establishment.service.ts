@@ -5,6 +5,7 @@ import {
   ListEstablishmentsFilters,
   OpeningHour,
 } from "../types/establishment.types";
+import { redis, cacheAside } from "../config/redis";
 
 export function calculateDistance(
   lat1: number,
@@ -147,51 +148,59 @@ export class EstablishmentService {
       throw new Error("ESTABLISHMENT_NOT_FOUND");
     }
 
-    return prismaClient.establishment.update({
+    const updated = await prismaClient.establishment.update({
       where: { id },
       data: {
         averageRating: newRating,
       },
     });
+
+    await redis.del(`establishment:profile:${id}`).catch(() => {});
+
+    return updated;
   }
 
   static async getEstablishmentProfile(
     id: string
   ): Promise<EstablishmentProfileResponse> {
-    const establishment = await prismaClient.establishment.findUnique({
-      where: { id },
+    return cacheAside(`establishment:profile:${id}`, 300, async () => {
+      const establishment = await prismaClient.establishment.findUnique({
+        where: { id },
+      });
+
+      if (!establishment) {
+        throw new Error("Establishment not found");
+      }
+
+      return {
+        icon: establishment.photoUrl,
+        name: establishment.name,
+        banner: establishment.bannerUrl,
+        location: {
+          latitude: establishment.latitude,
+          longitude: establishment.longitude,
+        },
+        category: establishment.category,
+        priceIndicator: establishment.priceIndicator,
+        rating: establishment.averageRating,
+      };
     });
-
-    if (!establishment) {
-      throw new Error("Establishment not found");
-    }
-
-    return {
-      icon: establishment.photoUrl,
-      name: establishment.name,
-      banner: establishment.bannerUrl,
-      location: {
-        latitude: establishment.latitude,
-        longitude: establishment.longitude,
-      },
-      category: establishment.category,
-      priceIndicator: establishment.priceIndicator,
-      rating: establishment.averageRating,
-    };
   }
 
   static async listOpenEstablishments() {
-    const establishments = await prismaClient.establishment.findMany({
-      include: {
-        openingHours: true,
-      },
+    return cacheAside("establishment:open", 60, async () => {
+      const establishments = await prismaClient.establishment.findMany({
+        include: {
+          openingHours: true,
+        },
+      });
+
+      const now = new Date();
+
+      return establishments.filter((establishment) =>
+        this.isEstablishmentOpen(establishment.openingHours, now)
+      );
     });
-
-    const now = new Date();
-
-    return establishments.filter((establishment) =>
-      this.isEstablishmentOpen(establishment.openingHours, now)
-    );
   }
 
   private static isEstablishmentOpen(openingHours: OpeningHour[], now: Date) {

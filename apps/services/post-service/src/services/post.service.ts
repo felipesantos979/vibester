@@ -5,6 +5,7 @@ import {
     Post,
     UpdatePostInput
 } from "../types/post.types";
+import { redis, cacheAside } from "../config/redis";
 
 export class PostService {
 
@@ -33,19 +34,29 @@ export class PostService {
 
         if (post.establishmentId) { await this.postRepository.createPostByEstablishment(post) }
 
+        const keys = [`post:user:${post.userId}`];
+        if (post.establishmentId) keys.push(`post:establishment:${post.establishmentId}`);
+        await redis.del(...keys).catch(() => {});
+
         return post;
     }
 
     async findById(postId: string) {
-        return this.postRepository.findById(postId);
+        return cacheAside(`post:id:${postId}`, 300, () =>
+            this.postRepository.findById(postId)
+        );
     }
 
     async findByUser(userId: string) {
-        return this.postRepository.findByUser(userId);
+        return cacheAside(`post:user:${userId}`, 120, () =>
+            this.postRepository.findByUser(userId)
+        );
     }
 
-    async findByEstablishment(establishmentId: string){
-        return this.postRepository.findByEstablishment(establishmentId);
+    async findByEstablishment(establishmentId: string) {
+        return cacheAside(`post:establishment:${establishmentId}`, 120, () =>
+            this.postRepository.findByEstablishment(establishmentId)
+        );
     }
 
     async updateCaption(input: UpdatePostInput): Promise<Post> {
@@ -62,9 +73,16 @@ export class PostService {
             this.postRepository.updateCaptionByUser(post.userId, post.createdAt, input.postId, input.caption, updatedAt),
         ]);
 
-        if (post.establishmentId) { 
-            await this.postRepository.updateCaptionByEstablishment(post.establishmentId, post.createdAt, input.postId, input.caption, updatedAt); 
+        if (post.establishmentId) {
+            await this.postRepository.updateCaptionByEstablishment(post.establishmentId, post.createdAt, input.postId, input.caption, updatedAt);
         }
+
+        const keys = [
+            `post:id:${input.postId}`,
+            `post:user:${post.userId}`,
+        ];
+        if (post.establishmentId) keys.push(`post:establishment:${post.establishmentId}`);
+        await redis.del(...keys).catch(() => {});
 
         return {
             ...post,
@@ -86,5 +104,12 @@ export class PostService {
         if (post.establishmentId){
             await this.postRepository.softDeleteByEstablishment(post.establishmentId, post.createdAt, post.postId);
         }
+
+        const keys = [
+            `post:id:${postId}`,
+            `post:user:${post.userId}`,
+        ];
+        if (post.establishmentId) keys.push(`post:establishment:${post.establishmentId}`);
+        await redis.del(...keys).catch(() => {});
     }
 }

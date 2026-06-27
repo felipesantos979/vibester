@@ -1,20 +1,25 @@
 import prismaClient from "../prisma/index.js";
 import { UpdateAvatarInput, UpdateBioInput } from "../types/profile.types.js";
 import { producer } from "../kafka/producer.js";
+import { redis } from "../config/redis.js";
 
 export class EditProfileService {
     async updateBio(input: UpdateBioInput) {
-        return prismaClient.userProfile.update({
+        const profile = await prismaClient.userProfile.update({
             where: { userID: input.userID },
             data: { bio: input.bio }
         });
+        await redis.del(`user:profile:${profile.id}`).catch(() => {});
+        return profile;
     }
 
     async updateAvatar(input: UpdateAvatarInput) {
-        return prismaClient.userProfile.update({
+        const profile = await prismaClient.userProfile.update({
             where: { userID: input.userID },
             data: { avatarUrl: input.avatarUrl }
         });
+        await redis.del(`user:profile:${profile.id}`).catch(() => {});
+        return profile;
     }
 
     async increaseFollower(followerId: string, followingId: string) {
@@ -36,7 +41,15 @@ export class EditProfileService {
             messages: [{ value: JSON.stringify({ followerId, followingId }) }],
         });
 
-        return prismaClient.userProfile.findUniqueOrThrow({ where: { userID: followingId } });
+        const result = await prismaClient.userProfile.findUniqueOrThrow({ where: { userID: followingId } });
+
+        await redis.del(
+            `user:followers:${followingId}`,
+            `user:following:${followerId}`,
+            `user:profile:${result.id}`,
+        ).catch(() => {});
+
+        return result;
     }
 
     async decreaseFollower(followerId: string, followingId: string) {
@@ -55,6 +68,14 @@ export class EditProfileService {
             }),
         ]);
 
-        return prismaClient.userProfile.findUniqueOrThrow({ where: { userID: followingId } });
+        const result = await prismaClient.userProfile.findUniqueOrThrow({ where: { userID: followingId } });
+
+        await redis.del(
+            `user:followers:${followingId}`,
+            `user:following:${followerId}`,
+            `user:profile:${result.id}`,
+        ).catch(() => {});
+
+        return result;
     }
 }
