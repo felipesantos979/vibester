@@ -9,16 +9,10 @@ vi.mock('bcryptjs', () => {
   return { default: { hash }, hash };
 });
 
-vi.mock('jsonwebtoken', () => ({
-  default: { sign: vi.fn(() => 'signed-token') },
-}));
-
-vi.mock('../../src/kafka/producer', () => ({
-  producer: { send: vi.fn() },
-}));
+const mockFetch = vi.fn();
+vi.stubGlobal('fetch', mockFetch);
 
 import { RegisterService } from '../../src/services/register.service';
-import { producer } from '../../src/kafka/producer';
 import { mockAccess } from '../mocks/prisma.client';
 import bcrypt from 'bcryptjs';
 
@@ -27,11 +21,14 @@ describe('RegisterService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(producer.send).mockResolvedValue(undefined as any);
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ profileId: 'profile-uuid-1' }),
+    });
     service = new RegisterService();
   });
 
-  it('should register successfully', async () => {
+  it('should register successfully and return authId and profileId', async () => {
     const input = { username: 'newuser', email: 'new@example.com', password: 'secret', name: 'New', bornAt: new Date() };
     mockAccess.create.mockResolvedValueOnce({ id: '1', accountId: 'acc-1', username: input.username, email: input.email, createdAt: new Date(), updatedAt: new Date() });
 
@@ -39,18 +36,20 @@ describe('RegisterService', () => {
 
     expect(bcrypt.hash).toHaveBeenCalledWith('secret', 10);
     expect(mockAccess.create).toHaveBeenCalled();
-    expect(vi.mocked(producer.send)).toHaveBeenCalledWith(expect.objectContaining({ topic: 'user.registered' }));
-    expect(result).toHaveProperty('id');
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/users/profile'),
+      expect.objectContaining({ method: 'POST' }),
+    );
+    expect(result).toHaveProperty('authId', '1');
+    expect(result).toHaveProperty('profileId', 'profile-uuid-1');
     expect(result.username).toBe(input.username);
   });
 
-  it('should handle kafka failure gracefully', async () => {
+  it('should throw when user-service profile creation fails', async () => {
     const input = { username: 'newuser', email: 'new@example.com', password: 'secret', name: 'New', bornAt: new Date() };
     mockAccess.create.mockResolvedValueOnce({ id: '1', accountId: 'acc-1', username: input.username, email: input.email, createdAt: new Date(), updatedAt: new Date() });
-    vi.mocked(producer.send).mockRejectedValueOnce(new Error('kafka unavailable'));
+    mockFetch.mockResolvedValueOnce({ ok: false });
 
-    const result = await service.register(input as any);
-
-    expect(result).toHaveProperty('id');
+    await expect(service.register(input as any)).rejects.toThrow('Failed to create user profile');
   });
 });

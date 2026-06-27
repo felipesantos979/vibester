@@ -26,7 +26,7 @@ describe('LoginController', () => {
   });
 
   it('should call service and return 200', async () => {
-    vi.mocked(LoginService).prototype.login = vi.fn().mockResolvedValue({ id: '1', token: 't', accountId: 'acc' });
+    vi.mocked(LoginService).prototype.login = vi.fn().mockResolvedValue({ authId: '1', token: 't', accountId: 'acc' });
 
     const controller = new LoginController();
     const req: any = { body: { email: 'a@b.com', password: 'password' } };
@@ -35,6 +35,6 @@ describe('LoginController', () => {
     await controller.login(req, reply);
 
     expect(reply.status).toHaveBeenCalledWith(200);
-    expect(reply.send).toHaveBeenCalledWith({ id: '1', token: 't', accountId: 'acc' });
+    expect(reply.send).toHaveBeenCalledWith({ authId: '1', token: 't', accountId: 'acc' });
   });
 });

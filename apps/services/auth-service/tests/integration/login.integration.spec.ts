@@ -37,7 +37,7 @@ describe('Login integration', () => {
     expect(res.statusCode).toBe(200);
     const body = JSON.parse(res.payload);
     expect(body).toHaveProperty('token');
-    expect(body.id).toBe(user.id);
+    expect(body.authId).toBe(user.id);
   });
 
   it('POST /login invalid password returns 400', async () => {

@@ -7,9 +7,8 @@ vi.mock('jsonwebtoken', () => ({
   default: { sign: vi.fn(() => 'signed-token') },
 }));
 
-vi.mock('../../src/kafka/producer', () => ({
-  producer: { send: vi.fn().mockResolvedValue(undefined) },
-}));
+const mockFetch = vi.fn();
+vi.stubGlobal('fetch', mockFetch);
 
 import { buildServer } from '../helpers/fastify.test.helper';
 
@@ -22,14 +21,31 @@ describe('Register integration', () => {
 
   afterAll(async () => app.close());
 
-  it('POST /register returns 201 on success', async () => {
+  beforeEach(() => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue({ profileId: 'profile-uuid-1' }),
+    });
+  });
+
+  it('POST /register returns 201 with authId and profileId', async () => {
     mockAccess.create.mockResolvedValueOnce({ id: '1', accountId: 'acc-1', username: 'u', email: 'e', createdAt: new Date(), updatedAt: new Date() });
 
     const res = await app.inject({ method: 'POST', url: '/register', payload: { username: 'u', name: 'n', email: 'u@example.com', password: 'secret', bornAt: '1990-01-01' } });
 
     expect(res.statusCode).toBe(201);
     const body = JSON.parse(res.payload);
-    expect(body).toHaveProperty('id');
+    expect(body).toHaveProperty('authId');
+    expect(body).toHaveProperty('profileId');
     expect(body).toHaveProperty('username');
+  });
+
+  it('POST /register returns 400 when user-service fails', async () => {
+    mockAccess.create.mockResolvedValueOnce({ id: '1', accountId: 'acc-1', username: 'u', email: 'e', createdAt: new Date(), updatedAt: new Date() });
+    mockFetch.mockResolvedValueOnce({ ok: false });
+
+    const res = await app.inject({ method: 'POST', url: '/register', payload: { username: 'u', name: 'n', email: 'u@example.com', password: 'secret', bornAt: '1990-01-01' } });
+
+    expect(res.statusCode).toBe(400);
   });
 });

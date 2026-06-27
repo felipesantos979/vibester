@@ -13,7 +13,8 @@ export interface LoginInputInterface {
 }
 
 export interface RegisterOutputInterface {
-    id: string;
+    authId: string;
+    profileId: string;
     username: string;
     name: string;
     email: string;
@@ -23,7 +24,7 @@ export interface RegisterOutputInterface {
 }
 
 export interface LoginOutputInterface {
-    id: string;
+    authId: string;
     token: string;
     accountId: string;
 }

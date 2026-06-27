@@ -14,7 +14,7 @@ const getFollowersService = new GetFollowersService();
 const errorSchema = z.object({ message: z.string() });
 
 const userProfileSchema = z.object({
-  id: z.string().uuid(),
+  profileId: z.string().uuid(),
   userID: z.string().uuid(),
   name: z.string().nullable(),
   username: z.string().nullable(),
@@ -26,6 +26,11 @@ const userProfileSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
 });
+
+function toProfileResponse(profile: { id: string; [key: string]: unknown }) {
+  const { id, ...rest } = profile;
+  return { profileId: id, ...rest };
+}
 
 const createProfileSchema = z.object({
   userID: z.string().uuid(),
@@ -78,7 +83,7 @@ export async function profileRoutes(app: FastifyInstance) {
   }, async (request, reply) => {
     try {
       const profile = await profileService.createProfile(request.body);
-      return reply.status(201).send(profile);
+      return reply.status(201).send(toProfileResponse(profile));
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({ message: "Error creating profile" });
@@ -101,7 +106,7 @@ export async function profileRoutes(app: FastifyInstance) {
     try {
       const profile = await getProfileService.getProfileById(request.params.id);
       if (!profile) return reply.status(404).send({ message: "Profile not found" });
-      return reply.status(200).send(profile);
+      return reply.status(200).send(toProfileResponse(profile));
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({ message: "Error fetching profile" });
@@ -119,7 +124,7 @@ export async function profileRoutes(app: FastifyInstance) {
   }, async (request, reply) => {
     try {
       const profile = await editProfileService.updateBio(request.body);
-      return reply.status(200).send(profile);
+      return reply.status(200).send(toProfileResponse(profile));
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({ message: "Error updating bio" });
@@ -137,7 +142,7 @@ export async function profileRoutes(app: FastifyInstance) {
   }, async (request, reply) => {
     try {
       const profile = await editProfileService.updateAvatar(request.body);
-      return reply.status(200).send(profile);
+      return reply.status(200).send(toProfileResponse(profile));
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({ message: "Error updating avatar" });
@@ -156,7 +161,7 @@ export async function profileRoutes(app: FastifyInstance) {
     try {
       const { followerId, followingId } = request.body;
       const profile = await editProfileService.increaseFollower(followerId, followingId);
-      return reply.status(200).send(profile);
+      return reply.status(200).send(toProfileResponse(profile));
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({ message: "Error increasing followers" });
@@ -175,7 +180,7 @@ export async function profileRoutes(app: FastifyInstance) {
     try {
       const { followerId, followingId } = request.body;
       const profile = await editProfileService.decreaseFollower(followerId, followingId);
-      return reply.status(200).send(profile);
+      return reply.status(200).send(toProfileResponse(profile));
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({ message: "Error decreasing followers" });

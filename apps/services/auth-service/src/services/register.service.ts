@@ -2,7 +2,7 @@ import prismaClient from "../prisma/index";
 import { RegisterInputInterface, RegisterOutputInterface } from "../types/register.types";
 import { hash } from "bcryptjs";
 import { randomUUID } from "node:crypto";
-import { producer } from "../kafka/producer";
+import { env } from "../config/env";
 
 export class RegisterService {
     async register(input: RegisterInputInterface): Promise<RegisterOutputInterface> {
@@ -19,25 +19,21 @@ export class RegisterService {
             }
         });
 
-        try {
-            await producer.send({
-                topic: 'user.registered',
-                messages: [{
-                    key: account.accountId,
-                    value: JSON.stringify({
-                        accountId: account.accountId,
-                        email: account.email,
-                        username: account.username,
-                        name: input.name,
-                    }),
-                }],
-            });
-        } catch (err) {
-            console.error('Failed to publish user.registered event', err);
+        const profileResponse = await fetch(`${env.profileServiceUrl}/users/profile`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userID: account.accountId }),
+        });
+
+        if (!profileResponse.ok) {
+            throw new Error('Failed to create user profile');
         }
 
+        const profile = await profileResponse.json() as { profileId: string };
+
         return {
-            id: account.id,
+            authId: account.id,
+            profileId: profile.profileId,
             username: account.username,
             name: input.name,
             email: account.email,
