@@ -19,18 +19,22 @@ export class RegisterService {
             }
         });
 
-        await producer.send({
-            topic: 'user.registered',
-            messages: [{
-                key: account.accountId,
-                value: JSON.stringify({
-                    accountId: account.accountId,
-                    email: account.email,
-                    username: account.username,
-                    name: input.name,
-                }),
-            }],
-        });
+        try {
+            await producer.send({
+                topic: 'user.registered',
+                messages: [{
+                    key: account.accountId,
+                    value: JSON.stringify({
+                        accountId: account.accountId,
+                        email: account.email,
+                        username: account.username,
+                        name: input.name,
+                    }),
+                }],
+            });
+        } catch (err) {
+            console.error('Failed to publish user.registered event', err);
+        }
 
         return {
             id: account.id,

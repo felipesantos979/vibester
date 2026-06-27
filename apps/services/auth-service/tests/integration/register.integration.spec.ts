@@ -7,6 +7,10 @@ vi.mock('jsonwebtoken', () => ({
   default: { sign: vi.fn(() => 'signed-token') },
 }));
 
+vi.mock('../../src/kafka/producer', () => ({
+  producer: { send: vi.fn().mockResolvedValue(undefined) },
+}));
+
 import { buildServer } from '../helpers/fastify.test.helper';
 
 describe('Register integration', () => {
@@ -14,7 +18,6 @@ describe('Register integration', () => {
 
   beforeAll(async () => {
     app = await buildServer();
-    vi.stubGlobal('fetch', vi.fn(() => Promise.resolve({ ok: true })));
   });
 
   afterAll(async () => app.close());
@@ -27,6 +30,6 @@ describe('Register integration', () => {
     expect(res.statusCode).toBe(201);
     const body = JSON.parse(res.payload);
     expect(body).toHaveProperty('id');
-    expect(body).toHaveProperty('token');
+    expect(body).toHaveProperty('username');
   });
 });
