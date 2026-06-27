@@ -43,6 +43,7 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
                     type: "object",
                     properties: {
                         id: { type: "string", format: "uuid" },
+                        token: { type: "string" },
                         username: { type: "string" },
                         name: { type: "string" },
                         email: { type: "string", format: "email" },
@@ -50,6 +51,11 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
                         createdAt: { type: "string", format: "date-time" },
                         updatedAt: { type: "string", format: "date-time" },
                     },
+                },
+                400: {
+                    description: "Erro ao criar conta",
+                    type: "object",
+                    properties: { error: { type: "string" } },
                 },
             },
         },

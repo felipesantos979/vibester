@@ -2,50 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:mobile/models/user/user_model.dart';
 
 class UserProvider extends ChangeNotifier {
-  final _userMock = UserModel(
-    nome: 'Victor Marchi',
-    nomeUsuario: '@vitin',
-    bio: 'founder of vibester.',
-    seguidores: 1302,
-    seguindo: 32,
-    eventosVisitados: 123,
-    fotoPerfil: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCNBLmnNWfkgI83S1NuVF2k6dMjISlhRVMKQ&s',
-    interesses: 'O caba gosta de codar',
-    email: 'victor.marchi@gmail.com',
-    telefone: '+55 (44) 9 9999-9999',
-    dataNascimento: '07/03/2006',
-    cidade: 'Maringá, PR',
-  );
+  UserModel? _user;
 
-  UserModel get user => _userMock;
+  UserModel? get user => _user;
+
+  void setUser(UserModel user) {
+    _user = user;
+    notifyListeners();
+  }
 
   void atualizarCampo(String campo, String valor) {
+    if (_user == null) return;
+
     switch (campo) {
       case 'nome':
-        _userMock.nome = valor;
+        _user!.nome = valor;
         break;
       case 'nomeUsuario':
-        _userMock.nomeUsuario = valor;
+        _user!.nomeUsuario = valor;
         break;
       case 'bio':
-        _userMock.bio = valor;
+        _user!.bio = valor;
         break;
       case 'interesses':
-        _userMock.interesses = valor;
+        _user!.interesses = valor;
         break;
       case 'email':
-        _userMock.email = valor;
+        _user!.email = valor;
         break;
       case 'telefone':
-        _userMock.telefone = valor;
+        _user!.telefone = valor;
         break;
       case 'dataNascimento':
-        _userMock.dataNascimento = valor;
+        _user!.dataNascimento = valor;
         break;
       case 'cidade':
-        _userMock.cidade = valor;
+        _user!.cidade = valor;
         break;
     }
+    notifyListeners();
+  }
+
+  void limpar() {
+    _user = null;
     notifyListeners();
   }
 }

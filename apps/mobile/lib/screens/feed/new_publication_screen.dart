@@ -28,7 +28,7 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<PublicationListProvider>(context);
-    final UserModel user = context.read<UserProvider>().user;
+    final UserModel? user = context.read<UserProvider>().user;
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       appBar: AppBar(
@@ -41,6 +41,8 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
             ),
             onPressed: () {
               if (!_formKey.currentState!.validate()) return;
+              if (user == null) return;
+
               provider.addPublication(
                 PublicationModel(
                   autor: user.nomeUsuario,
