@@ -18,7 +18,7 @@ export class LoginController {
         }).refine((data) => data.email || data.username, {
             message: "Email ou username é obrigatório",
         });
-        
+
         const parseResult = schema.safeParse(request.body);
 
         if (!parseResult.success) {

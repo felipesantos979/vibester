@@ -8,5 +8,6 @@ vi.mock('../../src/config/env', () => ({
     jwtRefreshExpiresIn: '7d',
     databaseUrl: 'postgresql://user:pass@localhost:5432/db',
     profileServiceUrl: 'http://localhost:3002',
+    kafkaBrokers: 'localhost:9092',
   },
 }));
