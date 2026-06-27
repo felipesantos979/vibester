@@ -51,9 +51,6 @@ class _LoginScreenState extends State<LoginScreen> {
       final token = loginResponse['token'];
       final accountId = loginResponse['accountId'];
 
-      //Por enquanto o UserModel só vem com o que o login devolve (id).
-      //O resto fica com valor padrão até existir o método de GET do perfil
-      //completo, que vai substituir esses dados no provider (TODO no service).
       final usuarioLogado = UserModel.fromLoginJson(loginResponse);
 
       if (!mounted) return;
