@@ -5,6 +5,10 @@ import { PostRepository } from "../../repository/post.repository";
 import { Post } from "../../types/post.types";
 import { PostLike } from "../../types/like.types";
 
+vi.mock("../../kafka/producer", () => ({
+  producer: { send: vi.fn().mockResolvedValue(undefined) },
+}));
+
 function createMockLikeRepo() {
   return {
     createLikeByPost: vi.fn().mockResolvedValue(undefined),
