@@ -4,6 +4,7 @@ import { z } from "zod";
 import { CreateEventService } from "../services/createEvent.service.js";
 import { ListEventsService } from "../services/listEvents.service.js";
 import { GetEventDetailsService } from "../services/getEventDetails.service.js";
+import { GetEventsByEstablishmentService } from "../services/getEventsByEstablishment.service.js";
 import { ToggleFeaturedService } from "../services/toggleFeatured.service.js";
 
 const toggleFeaturedService = new ToggleFeaturedService();
