@@ -2,6 +2,8 @@ import 'package:mobile/providers/user/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/models/user/user_model.dart';
+import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/users/editing_avatar.dart';
 
@@ -15,6 +17,87 @@ class PersonalInformationSettingsScreen extends StatefulWidget {
 
 class _PersonalInformationSettingsScreenState
     extends State<PersonalInformationSettingsScreen> {
+  final _userService = UserService();
+
+  // Repopula o provider com o resultado da API, preservando o token (que
+  // não vem nesse retorno). Mesmo padrão já usado na ProfileEditingScreen.
+  void _atualizarProviderComResposta(Map<String, dynamic> response) {
+    final tokenAtual = context.read<UserProvider>().user?.token;
+    final accountId = context.read<UserProvider>().user?.accountId ?? '';
+
+    final usuarioAtualizado = UserModel.fromProfileJson(
+      response,
+      accountId: accountId,
+      token: tokenAtual,
+    );
+
+    context.read<UserProvider>().setUser(usuarioAtualizado);
+  }
+
+  void _mostrarErro(String mensagem) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
+  }
+
+  // Nome e username sempre vão juntos no body da API, então quem chama
+  // sempre manda o valor atual do campo que NÃO está sendo editado, pra
+  // ele permanecer igual ao que já está no provider.
+  Future<void> _salvarNome(String novoNome) async {
+    final user = context.read<UserProvider>().user;
+    final accountId = user?.accountId ?? '';
+
+    try {
+      final response = await _userService.updateName(
+        accountId: accountId,
+        name: novoNome,
+        username: user?.nomeUsuario ?? '',
+      );
+      if (!mounted) return;
+      _atualizarProviderComResposta(response);
+    } catch (e) {
+      _mostrarErro(e.toString().replaceFirst('Exception: ', ''));
+    }
+  }
+
+  Future<void> _salvarUsername(String novoUsername) async {
+    final user = context.read<UserProvider>().user;
+    final accountId = user?.accountId ?? '';
+
+    // Normaliza: sem espaços, e sempre começando com @.
+    var usernameFormatado = novoUsername.replaceAll(' ', '');
+    if (!usernameFormatado.startsWith('@')) {
+      usernameFormatado = '@$usernameFormatado';
+    }
+
+    try {
+      final response = await _userService.updateName(
+        accountId: accountId,
+        name: user?.nome ?? '',
+        username: usernameFormatado,
+      );
+      if (!mounted) return;
+      _atualizarProviderComResposta(response);
+    } catch (e) {
+      _mostrarErro(e.toString().replaceFirst('Exception: ', ''));
+    }
+  }
+
+  Future<void> _salvarBio(String novaBio) async {
+    final user = context.read<UserProvider>().user;
+    final accountId = user?.accountId ?? '';
+
+    try {
+      final response = await _userService.updateBio(
+        accountId: accountId,
+        bio: novaBio,
+      );
+      if (!mounted) return;
+      _atualizarProviderComResposta(response);
+    } catch (e) {
+      _mostrarErro(e.toString().replaceFirst('Exception: ', ''));
+    }
+  }
+
   void _editarCampo(
     String titulo,
     String valorAtual,
@@ -236,10 +319,7 @@ class _PersonalInformationSettingsScreenState
                 children: [
                   GestureDetector(
                     onTap: () => _editarCampo("Nome", user.nome, (valor) {
-                      context.read<UserProvider>().atualizarCampo(
-                        'nome',
-                        valor,
-                      );
+                      _salvarNome(valor);
                     }),
                     child: Row(
                       children: [
@@ -291,10 +371,7 @@ class _PersonalInformationSettingsScreenState
                       "Nome de Usuário",
                       user.nomeUsuario,
                       (valor) {
-                        context.read<UserProvider>().atualizarCampo(
-                          'nomeUsuario',
-                          valor,
-                        );
+                        _salvarUsername(valor);
                       },
                     ),
                     child: Row(
@@ -344,7 +421,7 @@ class _PersonalInformationSettingsScreenState
                   SizedBox(height: 12),
                   GestureDetector(
                     onTap: () => _editarCampo("Bio", user.bio, (valor) {
-                      context.read<UserProvider>().atualizarCampo('bio', valor);
+                      _salvarBio(valor);
                     }),
                     child: Row(
                       children: [

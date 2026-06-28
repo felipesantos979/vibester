@@ -18,7 +18,7 @@ class ProfileEditingScreen extends StatefulWidget {
 }
 
 class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
-  final TextEditingController _nomeUsuarioController = TextEditingController();
+  final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
@@ -27,7 +27,7 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
 
   @override
   void dispose() {
-    _nomeUsuarioController.dispose();
+    _nomeController.dispose();
     _bioController.dispose();
     super.dispose();
   }
@@ -38,19 +38,36 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
     final userAtual = context.read<UserProvider>().user;
     final accountId = userAtual?.accountId ?? '';
     final tokenAtual = userAtual?.token;
+    final nome = _nomeController.text.trim();
     final bio = _bioController.text.trim();
 
     setState(() => _isLoading = true);
 
     try {
-      final profileResponse = await _userService.updateBio(
+      // UpDate Nome
+      final nameResponse = await _userService.updateName(
+        accountId: accountId,
+        name: nome,
+        username: userAtual?.nomeUsuario ?? '',
+      );
+
+      var usuarioAtualizado = UserModel.fromProfileJson(
+        nameResponse,
+        accountId: accountId,
+        token: tokenAtual,
+      );
+
+      if (!mounted) return;
+      context.read<UserProvider>().setUser(usuarioAtualizado);
+
+      // UpDate bio
+      final bioResponse = await _userService.updateBio(
         accountId: accountId,
         bio: bio,
       );
 
-      // Reaproveita o token que já estava no provider
-      final usuarioAtualizado = UserModel.fromProfileJson(
-        profileResponse,
+      usuarioAtualizado = UserModel.fromProfileJson(
+        bioResponse,
         accountId: accountId,
         token: tokenAtual,
       );
@@ -65,7 +82,7 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Não foi possível atualizar a bio. Tente novamente.'),
+          content: Text('Não foi possível atualizar o perfil. Tente novamente.'),
         ),
       );
     } finally {
@@ -92,9 +109,9 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
               SizedBox(height: 25),
 
               Padding(
-                padding: const EdgeInsets.only(right: 250, bottom: 10),
+                padding: const EdgeInsets.only(right: 290, bottom: 10),
                 child: Text(
-                  'NOME DE USUÁRIO',
+                  'NOME',
                   style: GoogleFonts.inter(
                     color: Color(colorGrey),
                     fontWeight: FontWeight.bold,
@@ -107,7 +124,7 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
                 width: 350,
                 height: 60,
                 child: TextFormField(
-                  controller: _nomeUsuarioController,
+                  controller: _nomeController,
 
                   textInputAction: TextInputAction.next,
                   style: const TextStyle(color: Colors.white),
@@ -158,7 +175,7 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
 
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Informe seu nome de usuário!';
+                      return 'Informe seu nome!';
                     }
                     return null;
                   },
@@ -168,7 +185,7 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
               SizedBox(height: 30),
 
               Padding(
-                padding: const EdgeInsets.only(right: 310, bottom: 10),
+                padding: const EdgeInsets.only(right: 300, bottom: 10),
                 child: Text(
                   'BIO',
                   style: GoogleFonts.inter(

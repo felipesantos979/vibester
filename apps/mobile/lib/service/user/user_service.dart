@@ -64,6 +64,28 @@ class UserService {
     }
   }
 
+  // Atualiza nome e username
+  Future<Map<String, dynamic>> updateName({
+    required String accountId,
+    required String name,
+    required String username,
+  }) async {
+    try {
+      final response = await ApiClient.dio.put(
+        ApiEndpoints.updateInfo(),
+        data: {
+          'accountId': accountId,
+          'name': name,
+          'username': username,
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      final mensagem = e.response?.data?['message'] ?? 'Erro ao atualizar nome';
+      throw Exception(mensagem);
+    }
+  }
+
   // Atualiza a bio do usuário
   Future<Map<String, dynamic>> updateBio({
     required String accountId,
