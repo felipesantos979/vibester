@@ -1,10 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/models/feed/publication_model.dart';
 import 'package:mobile/models/user/user_model.dart';
-import 'package:mobile/providers/feed/publication_list_provider.dart';
 import 'package:mobile/providers/user/user_provider.dart';
+import 'package:mobile/service/posts/post_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/location_picker.dart';
 import 'package:mobile/utils/location_picker_tile.dart';
@@ -22,12 +21,34 @@ class NewPublicationScreen extends StatefulWidget {
 class _NewPublicationScreenState extends State<NewPublicationScreen> {
   final _formKey = GlobalKey<FormState>();
   final legendaController = TextEditingController();
+  final PostService _postService = PostService();
   String? selectedLocation;
   File? _publicationImage;
 
+  Future<void> _publicarPost(UserModel user) async {
+    if (_publicationImage == null) return;
+
+    try {
+      await _postService.createPost(
+        userVerified: false,
+        userProfilePicture: user.fotoPerfil,
+        userUsername: user.nomeUsuario,
+        userId: user.userID.toString(),
+        images: [_publicationImage!],
+        caption: legendaController.text,
+      );
+      if (mounted) Navigator.pop(context);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<PublicationListProvider>(context);
     final UserModel? user = context.read<UserProvider>().user;
     return Scaffold(
       backgroundColor: Color(colorNoturno),
@@ -39,21 +60,11 @@ class _NewPublicationScreenState extends State<NewPublicationScreen> {
               color: Color(colorAmbar),
               size: 30,
             ),
-            onPressed: () {
+            onPressed: () async {
               if (!_formKey.currentState!.validate()) return;
               if (user == null) return;
 
-              provider.addPublication(
-                PublicationModel(
-                  autor: user.nomeUsuario,
-                  autorProfileImage: user.fotoPerfil,
-                  publicationImage: _publicationImage!.path,
-                  description: legendaController.text,
-                  location: selectedLocation,
-                  publicatedAt: DateTime.now(),
-                ),
-              );
-              Navigator.pop(context);
+              await _publicarPost(user);
             },
           ),
         ],
