@@ -1,0 +1,123 @@
+import { vi, describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+
+const { mockExecute } = vi.hoisted(() => ({ mockExecute: vi.fn().mockResolvedValue({ rows: [] }) }));
+vi.mock('../../src/config/cassandra', () => ({
+  cassandraClient: { execute: mockExecute },
+}));
+
+import { buildServer } from '../helpers/fastify.test.helper';
+
+const USER_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
+const ITEM_ID = 'b1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
+
+const createdAt = new Date('2024-01-15T12:00:00.000Z');
+
+function makeFeedRow(overrides: Record<string, unknown> = {}) {
+  return {
+    user_id: USER_ID,
+    created_at: createdAt,
+    item_id: ITEM_ID,
+    item_type: 'USER_POST',
+    author_id: 'c1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5',
+    author_username: 'testuser',
+    author_profile_picture: null,
+    author_verified: false,
+    establishment_id: null,
+    establishment_name: null,
+    establishment_logo: null,
+    establishment_category: null,
+    event_id: null,
+    event_title: null,
+    event_banner: null,
+    event_lineup: null,
+    event_date: null,
+    event_location: null,
+    event_organizer_name: null,
+    event_organizer_logo: null,
+    total_confirmed: null,
+    title: null,
+    content: 'Ótimo lugar!',
+    image_urls: ['https://example.com/img.jpg'],
+    tags: [],
+    total_likes: 5,
+    total_comments: 2,
+    is_sponsored: false,
+    is_deleted: false,
+    updated_at: null,
+    ...overrides,
+  };
+}
+
+describe('feed-service — HTTP Integration', () => {
+  let app: Awaited<ReturnType<typeof buildServer>>;
+
+  beforeAll(async () => { app = await buildServer(); });
+  afterAll(async () => { await app.close(); });
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mockExecute.mockResolvedValue({ rows: [] });
+  });
+
+  describe('GET /feed/:userId', () => {
+    it('retorna feed com items quando há conteúdo', async () => {
+      const rows = [makeFeedRow()];
+      mockExecute.mockResolvedValueOnce({ rows });
+
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}` });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body).toHaveProperty('items');
+      expect(body.items).toHaveLength(1);
+      expect(body).toHaveProperty('nextCursor');
+    });
+
+    it('retorna feed vazio quando não há conteúdo', async () => {
+      mockExecute.mockResolvedValueOnce({ rows: [] });
+
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}` });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.items).toHaveLength(0);
+      expect(body.nextCursor).toBeNull();
+    });
+
+    it('suporta paginação com limit', async () => {
+      const rows = [makeFeedRow()];
+      mockExecute.mockResolvedValueOnce({ rows });
+
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}?limit=5` });
+
+      expect(res.statusCode).toBe(200);
+      expect(mockExecute).toHaveBeenCalledWith(
+        expect.stringContaining('LIMIT'),
+        expect.arrayContaining([USER_ID, 5]),
+        expect.anything()
+      );
+    });
+
+    it('retorna 400 para limit inválido', async () => {
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}?limit=0` });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('retorna 400 para limit acima do máximo', async () => {
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}?limit=100` });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('suporta cursor para paginação por data', async () => {
+      const cursorDate = '2024-01-15T12:00:00.000Z';
+      const rows = [makeFeedRow({ created_at: new Date('2024-01-14T00:00:00.000Z') })];
+      mockExecute.mockResolvedValueOnce({ rows });
+
+      const res = await app.inject({
+        method: 'GET',
+        url: `/feed/${USER_ID}?cursor=${encodeURIComponent(cursorDate)}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+    });
+  });
+});

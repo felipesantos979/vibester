@@ -1,3 +1,0 @@
-# O scrapping-service não expõe HTTP, portanto não possui Service.
-# Caso seja necessário expor métricas ou uma API futuramente,
-# adicione aqui um Service do tipo ClusterIP.

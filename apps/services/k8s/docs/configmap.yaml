@@ -1,0 +1,1016 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: swagger-ui-spec
+  namespace: default
+data:
+  openapi.json: |
+    {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Vibester API",
+        "description": "Documentação completa de todos os serviços da API do Vibester.",
+        "version": "1.0.0"
+      },
+      "tags": [
+        {
+          "name": "Health",
+          "description": "Verificação de saúde do serviço"
+        },
+        {
+          "name": "Auth",
+          "description": "Registro e autenticação de contas"
+        },
+        {
+          "name": "Establishments",
+          "description": "Estabelecimentos"
+        },
+        {
+          "name": "Events",
+          "description": "Eventos"
+        },
+        {
+          "name": "Posts",
+          "description": "Publicações"
+        },
+        {
+          "name": "Likes",
+          "description": "Curtidas"
+        },
+        {
+          "name": "Comments",
+          "description": "Comentários"
+        },
+        {
+          "name": "Places",
+          "description": "Lugares e popularidade"
+        },
+        {
+          "name": "Movements",
+          "description": "Nível de movimento de estabelecimentos"
+        },
+        {
+          "name": "Profile",
+          "description": "Perfis de usuário"
+        }
+      ],
+      "paths": {
+        "/auth/health": {
+          "get": {
+            "summary": "Health check",
+            "tags": ["Health"],
+            "description": "Verifica se o serviço está disponível.",
+            "responses": {
+              "200": {
+                "description": "Default Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "status": { "type": "string", "example": "ok" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/auth/register": {
+          "post": {
+            "summary": "Registrar conta",
+            "tags": ["Auth"],
+            "description": "Cria uma nova conta de usuário e o perfil correspondente. Retorna authId (ID do auth-service) e profileId (ID do user-service) para iniciar a personalização sem precisar fazer login.",
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["username", "name", "email", "password", "bornAt"],
+                    "properties": {
+                      "username": { "type": "string", "example": "joaosilva" },
+                      "name": { "type": "string", "example": "João Silva" },
+                      "email": { "type": "string", "format": "email", "example": "joao@email.com" },
+                      "password": { "type": "string", "minLength": 6, "example": "senha123" },
+                      "bornAt": { "type": "string", "format": "date", "example": "1998-05-20" }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "201": {
+                "description": "Conta criada com sucesso",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "authId": { "type": "string", "format": "uuid", "description": "ID da conta no auth-service" },
+                        "profileId": { "type": "string", "format": "uuid", "description": "ID do perfil no user-service" },
+                        "username": { "type": "string" },
+                        "name": { "type": "string" },
+                        "email": { "type": "string", "format": "email" },
+                        "bornAt": { "type": "string", "format": "date-time" },
+                        "createdAt": { "type": "string", "format": "date-time" },
+                        "updatedAt": { "type": "string", "format": "date-time" }
+                      }
+                    }
+                  }
+                }
+              },
+              "400": {
+                "description": "Erro ao criar conta ou perfil",
+                "content": {
+                  "application/json": {
+                    "schema": { "type": "object", "properties": { "error": { "type": "string" } } }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/auth/login": {
+          "post": {
+            "summary": "Login",
+            "tags": ["Auth"],
+            "description": "Autentica uma conta usando email ou username e retorna um token JWT.",
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["password"],
+                    "properties": {
+                      "email": { "type": "string", "format": "email", "example": "joao@email.com" },
+                      "username": { "type": "string", "example": "joaosilva" },
+                      "password": { "type": "string", "minLength": 6, "example": "senha123" }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Autenticado com sucesso",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "authId": { "type": "string", "format": "uuid", "description": "ID da conta no auth-service" },
+                        "token": { "type": "string" },
+                        "accountId": { "type": "string", "format": "uuid", "description": "ID da conta usado como userID no user-service" }
+                      }
+                    }
+                  }
+                }
+              },
+              "400": {
+                "description": "Dados inválidos",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": { "error": { "type": "string" } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/establishment/health": {
+          "get": {
+            "summary": "Health check",
+            "tags": ["Health"],
+            "responses": {
+              "200": {
+                "description": "Default Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": { "status": { "type": "string", "example": "ok" } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/establishment/establishments": {
+          "get": {
+            "summary": "Listar estabelecimentos",
+            "tags": ["Establishments"],
+            "description": "Lista estabelecimentos com filtros opcionais por localização, categoria, avaliação e busca textual.",
+            "parameters": [
+              { "schema": { "type": "string" }, "in": "query", "name": "latitude", "required": false, "description": "Latitude do usuário" },
+              { "schema": { "type": "string" }, "in": "query", "name": "longitude", "required": false, "description": "Longitude do usuário" },
+              { "schema": { "type": "string" }, "in": "query", "name": "category", "required": false, "description": "Filtra por categoria" },
+              { "schema": { "type": "string" }, "in": "query", "name": "minRating", "required": false, "description": "Avaliação mínima (0 a 5)" },
+              { "schema": { "type": "string" }, "in": "query", "name": "search", "required": false, "description": "Busca textual por nome" },
+              { "schema": { "type": "string", "enum": ["name", "rating", "distance"] }, "in": "query", "name": "sortBy", "required": false, "description": "Critério de ordenação" }
+            ],
+            "responses": {
+              "200": {
+                "description": "Default Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "format": "uuid" },
+                          "googlePlaceId": { "type": "string", "nullable": true },
+                          "name": { "type": "string" },
+                          "photoUrl": { "type": "string", "nullable": true },
+                          "bannerUrl": { "type": "string", "nullable": true },
+                          "category": { "type": "string" },
+                          "priceIndicator": { "type": "string", "nullable": true },
+                          "averageRating": { "type": "number" },
+                          "latitude": { "type": "number" },
+                          "longitude": { "type": "number" },
+                          "movementLevel": {
+                            "type": "object",
+                            "nullable": true,
+                            "properties": {
+                              "level": { "type": "string" },
+                              "source": { "type": "string" },
+                              "updatedAt": { "type": "string", "format": "date-time" }
+                            }
+                          },
+                          "distanceTo": { "type": "number" }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400": { "description": "Default Response" },
+              "500": { "description": "Default Response" }
+            }
+          }
+        },
+        "/establishment/establishments/open": {
+          "get": {
+            "summary": "Listar estabelecimentos abertos",
+            "tags": ["Establishments"],
+            "description": "Lista os estabelecimentos atualmente abertos com base no horário de funcionamento.",
+            "responses": {
+              "200": { "description": "Default Response" },
+              "500": { "description": "Default Response" }
+            }
+          }
+        },
+        "/establishment/establishments/{id}": {
+          "get": {
+            "summary": "Obter perfil de estabelecimento",
+            "tags": ["Establishments"],
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "id", "required": true }
+            ],
+            "responses": {
+              "200": {
+                "description": "Default Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "icon": { "type": "string", "nullable": true },
+                        "name": { "type": "string" },
+                        "banner": { "type": "string", "nullable": true },
+                        "location": {
+                          "type": "object",
+                          "properties": {
+                            "latitude": { "type": "number" },
+                            "longitude": { "type": "number" }
+                          }
+                        },
+                        "category": { "type": "string" },
+                        "priceIndicator": { "type": "string", "nullable": true },
+                        "rating": { "type": "number" },
+                        "movementLevel": {
+                          "type": "object",
+                          "nullable": true,
+                          "properties": {
+                            "level": { "type": "string" },
+                            "source": { "type": "string" },
+                            "updatedAt": { "type": "string", "format": "date-time" }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "400": { "description": "Default Response" },
+              "404": { "description": "Default Response" },
+              "500": { "description": "Default Response" }
+            }
+          }
+        },
+        "/establishment/establishments/{id}/rating": {
+          "patch": {
+            "summary": "Atualizar avaliação",
+            "tags": ["Establishments"],
+            "description": "Atualiza a avaliação média de um estabelecimento (valor entre 0 e 5).",
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["rating"],
+                    "properties": {
+                      "rating": { "type": "number", "minimum": 0, "maximum": 5, "example": 4.5 }
+                    }
+                  }
+                }
+              }
+            },
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "id", "required": true }
+            ],
+            "responses": {
+              "200": { "description": "Default Response" },
+              "400": { "description": "Default Response" },
+              "404": { "description": "Default Response" },
+              "500": { "description": "Default Response" }
+            }
+          }
+        },
+        "/event/health": {
+          "get": {
+            "summary": "Health check",
+            "tags": ["Health"],
+            "responses": {
+              "200": {
+                "description": "Default Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": { "status": { "type": "string" } },
+                      "required": ["status"],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/event/api/events/": {
+          "post": {
+            "summary": "Criar evento",
+            "tags": ["Events"],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["name", "photoUrl", "category", "organizer", "location", "startDate", "endDate", "latitude", "longitude"],
+                    "properties": {
+                      "name": { "type": "string" },
+                      "photoUrl": { "type": "string", "format": "uri" },
+                      "category": { "type": "string" },
+                      "organizer": { "type": "string" },
+                      "location": { "type": "string" },
+                      "startDate": { "type": "string", "format": "date-time" },
+                      "endDate": { "type": "string", "format": "date-time" },
+                      "ticketLink": { "type": "string", "format": "uri" },
+                      "latitude": { "type": "number" },
+                      "longitude": { "type": "number" }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": { "200": { "description": "Default Response" } }
+          }
+        },
+        "/event/api/events/nearby": {
+          "get": {
+            "summary": "Listar eventos próximos",
+            "tags": ["Events"],
+            "description": "Lista eventos dentro de um raio (km) a partir de uma coordenada.",
+            "parameters": [
+              { "schema": { "type": "string" }, "in": "query", "name": "latitude", "required": true },
+              { "schema": { "type": "string" }, "in": "query", "name": "longitude", "required": true },
+              { "schema": { "type": "string" }, "in": "query", "name": "radiusKm", "required": false }
+            ],
+            "responses": { "200": { "description": "Default Response" } }
+          }
+        },
+        "/event/api/events/{eventId}": {
+          "get": {
+            "summary": "Detalhes do evento",
+            "tags": ["Events"],
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "eventId", "required": true }
+            ],
+            "responses": { "200": { "description": "Default Response" } }
+          }
+        },
+        "/post/health": {
+          "get": {
+            "summary": "Health check",
+            "tags": ["Health"],
+            "responses": {
+              "200": {
+                "description": "Default Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": { "status": { "type": "string", "example": "ok" } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/post/posts": {
+          "post": {
+            "summary": "Criar post",
+            "tags": ["Posts"],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["userId", "imageUrls"],
+                    "properties": {
+                      "userId": { "type": "string", "format": "uuid" },
+                      "establishmentId": { "type": "string", "format": "uuid" },
+                      "imageUrls": { "type": "array", "items": { "type": "string", "format": "uri" }, "minItems": 1, "maxItems": 20 },
+                      "caption": { "type": "string", "maxLength": 250 }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "201": { "description": "Default Response" },
+              "400": { "description": "Default Response" }
+            }
+          }
+        },
+        "/post/posts/{postId}": {
+          "get": {
+            "summary": "Buscar post por ID",
+            "tags": ["Posts"],
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "postId", "required": true }
+            ],
+            "responses": {
+              "200": { "description": "Default Response" },
+              "404": { "description": "Default Response" }
+            }
+          },
+          "patch": {
+            "summary": "Atualizar legenda",
+            "tags": ["Posts"],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["caption"],
+                    "properties": { "caption": { "type": "string", "maxLength": 250 } }
+                  }
+                }
+              }
+            },
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "postId", "required": true }
+            ],
+            "responses": {
+              "200": { "description": "Default Response" },
+              "400": { "description": "Default Response" }
+            }
+          },
+          "delete": {
+            "summary": "Remover post (soft delete)",
+            "tags": ["Posts"],
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "postId", "required": true }
+            ],
+            "responses": { "204": { "description": "Removido com sucesso" } }
+          }
+        },
+        "/post/users/{userId}/posts": {
+          "get": {
+            "summary": "Listar posts de um usuário",
+            "tags": ["Posts"],
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "userId", "required": true }
+            ],
+            "responses": { "200": { "description": "Default Response" } }
+          }
+        },
+        "/post/establishments/{establishmentId}/posts": {
+          "get": {
+            "summary": "Listar posts de um estabelecimento",
+            "tags": ["Posts"],
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "establishmentId", "required": true }
+            ],
+            "responses": { "200": { "description": "Default Response" } }
+          }
+        },
+        "/post/posts/{postId}/likes": {
+          "post": {
+            "summary": "Curtir post",
+            "tags": ["Likes"],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["userId"],
+                    "properties": { "userId": { "type": "string", "format": "uuid" } }
+                  }
+                }
+              }
+            },
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "postId", "required": true }
+            ],
+            "responses": { "201": { "description": "Default Response" } }
+          },
+          "delete": {
+            "summary": "Descurtir post",
+            "tags": ["Likes"],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["userId"],
+                    "properties": { "userId": { "type": "string", "format": "uuid" } }
+                  }
+                }
+              }
+            },
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "postId", "required": true }
+            ],
+            "responses": { "204": { "description": "Descurtido com sucesso" } }
+          },
+          "get": {
+            "summary": "Listar curtidas de um post",
+            "tags": ["Likes"],
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "postId", "required": true }
+            ],
+            "responses": { "200": { "description": "Default Response" } }
+          }
+        },
+        "/post/users/{userId}/likes": {
+          "get": {
+            "summary": "Listar curtidas de um usuário",
+            "tags": ["Likes"],
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "userId", "required": true }
+            ],
+            "responses": { "200": { "description": "Default Response" } }
+          }
+        },
+        "/post/comments": {
+          "post": {
+            "summary": "Criar comentário",
+            "tags": ["Comments"],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["postId", "userId", "content"],
+                    "properties": {
+                      "postId": { "type": "string", "format": "uuid" },
+                      "userId": { "type": "string", "format": "uuid" },
+                      "content": { "type": "string", "example": "Que lugar incrível!" }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": { "201": { "description": "Default Response" } }
+          }
+        },
+        "/post/posts/{postId}/comments": {
+          "get": {
+            "summary": "Listar comentários de um post",
+            "tags": ["Comments"],
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "postId", "required": true }
+            ],
+            "responses": { "200": { "description": "Default Response" } }
+          }
+        },
+        "/post/users/{userId}/comments": {
+          "get": {
+            "summary": "Listar comentários de um usuário",
+            "tags": ["Comments"],
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "userId", "required": true }
+            ],
+            "responses": { "200": { "description": "Default Response" } }
+          }
+        },
+        "/post/comments/{commentId}": {
+          "patch": {
+            "summary": "Atualizar comentário",
+            "tags": ["Comments"],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["userId", "content"],
+                    "properties": {
+                      "userId": { "type": "string", "format": "uuid" },
+                      "content": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "commentId", "required": true }
+            ],
+            "responses": { "200": { "description": "Default Response" } }
+          },
+          "delete": {
+            "summary": "Remover comentário (soft delete)",
+            "tags": ["Comments"],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["userId"],
+                    "properties": { "userId": { "type": "string", "format": "uuid" } }
+                  }
+                }
+              }
+            },
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "commentId", "required": true }
+            ],
+            "responses": { "204": { "description": "Removido com sucesso" } }
+          }
+        },
+        "/scrapping/health": {
+          "get": {
+            "summary": "Health check",
+            "tags": ["Health"],
+            "responses": {
+              "200": {
+                "description": "Default Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": { "status": { "type": "string", "example": "ok" } }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/scrapping/places/{placeId}/popularity": {
+          "get": {
+            "summary": "Popularidade de um lugar",
+            "tags": ["Places"],
+            "description": "Consulta a popularidade (movimento) de um lugar pelo seu placeId via SerpAPI.",
+            "parameters": [
+              { "schema": { "type": "string" }, "in": "path", "name": "placeId", "required": true, "description": "Google Place ID" }
+            ],
+            "responses": {
+              "200": { "description": "Default Response" },
+              "404": { "description": "Default Response" },
+              "500": { "description": "Default Response" }
+            }
+          }
+        },
+        "/scrapping/movements/{establishmentId}": {
+          "get": {
+            "summary": "Movimento por estabelecimento",
+            "tags": ["Movements"],
+            "description": "Retorna o nível de movimento registrado para um estabelecimento.",
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "establishmentId", "required": true }
+            ],
+            "responses": {
+              "200": { "description": "Default Response" },
+              "404": { "description": "Default Response" }
+            }
+          }
+        },
+        "/scrapping/places/nearby": {
+          "get": {
+            "summary": "Buscar lugares próximos",
+            "tags": ["Places"],
+            "description": "Busca lugares próximos a uma coordenada usando a API do Google Places.",
+            "parameters": [
+              { "schema": { "type": "array", "items": { "type": "string", "enum": ["bar", "night_club", "restaurant", "cafe"] } }, "in": "query", "name": "types", "required": false, "description": "Tipos de lugar (padrão: bar)" },
+              { "schema": { "type": "number", "minimum": -90, "maximum": 90, "default": -23.4205 }, "in": "query", "name": "lat", "required": false },
+              { "schema": { "type": "number", "minimum": -180, "maximum": 180, "default": -51.9333 }, "in": "query", "name": "lng", "required": false },
+              { "schema": { "type": "integer", "minimum": 1, "maximum": 20000, "default": 5000 }, "in": "query", "name": "radius", "required": false, "description": "Raio em metros" }
+            ],
+            "responses": {
+              "200": { "description": "Default Response" },
+              "400": { "description": "Default Response" },
+              "500": { "description": "Default Response" }
+            }
+          }
+        },
+        "/user/health": {
+          "get": {
+            "summary": "Health check",
+            "tags": ["Health"],
+            "responses": {
+              "200": {
+                "description": "Default Response",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": { "status": { "type": "string" } },
+                      "required": ["status"],
+                      "additionalProperties": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/user/users/profile": {
+          "post": {
+            "summary": "Criar perfil",
+            "tags": ["Profile"],
+            "description": "Cria o perfil de um usuário a partir do seu accountId. Chamado internamente pelo auth-service após o registro.",
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["userID"],
+                    "properties": { "userID": { "type": "string", "format": "uuid", "description": "accountId retornado pelo auth-service" } }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "201": {
+                "description": "Perfil criado com sucesso",
+                "content": {
+                  "application/json": { "schema": { "$ref": "#/components/schemas/UserProfile" } }
+                }
+              },
+              "500": { "description": "Erro ao criar perfil" }
+            }
+          }
+        },
+        "/user/users/profile/{id}": {
+          "get": {
+            "summary": "Buscar perfil por ID",
+            "tags": ["Profile"],
+            "description": "Retorna o perfil de um usuário pelo profileId.",
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "id", "required": true, "description": "profileId retornado no registro ou em chamadas de edição" }
+            ],
+            "responses": {
+              "200": {
+                "description": "Perfil encontrado",
+                "content": {
+                  "application/json": { "schema": { "$ref": "#/components/schemas/UserProfile" } }
+                }
+              },
+              "404": { "description": "Perfil não encontrado" },
+              "500": { "description": "Erro interno" }
+            }
+          }
+        },
+        "/user/users/profile/bio": {
+          "put": {
+            "summary": "Atualizar bio",
+            "tags": ["Profile"],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["userID", "bio"],
+                    "properties": {
+                      "userID": { "type": "string", "format": "uuid", "description": "accountId do usuário" },
+                      "bio": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Bio atualizada",
+                "content": {
+                  "application/json": { "schema": { "$ref": "#/components/schemas/UserProfile" } }
+                }
+              },
+              "500": { "description": "Erro ao atualizar" }
+            }
+          }
+        },
+        "/user/users/profile/avatar": {
+          "put": {
+            "summary": "Atualizar avatar",
+            "tags": ["Profile"],
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["userID", "avatarUrl"],
+                    "properties": {
+                      "userID": { "type": "string", "format": "uuid", "description": "accountId do usuário" },
+                      "avatarUrl": { "type": "string", "format": "uri" }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Avatar atualizado",
+                "content": {
+                  "application/json": { "schema": { "$ref": "#/components/schemas/UserProfile" } }
+                }
+              },
+              "500": { "description": "Erro ao atualizar" }
+            }
+          }
+        },
+        "/user/users/profile/followers/increase": {
+          "post": {
+            "summary": "Seguir usuário",
+            "tags": ["Profile"],
+            "description": "Registra que followerId passou a seguir followingId. Atualiza contadores em ambos os perfis.",
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["followerId", "followingId"],
+                    "properties": {
+                      "followerId": { "type": "string", "format": "uuid" },
+                      "followingId": { "type": "string", "format": "uuid" }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Seguindo com sucesso",
+                "content": {
+                  "application/json": { "schema": { "$ref": "#/components/schemas/UserProfile" } }
+                }
+              },
+              "500": { "description": "Erro ao seguir" }
+            }
+          }
+        },
+        "/user/users/profile/followers/decrease": {
+          "post": {
+            "summary": "Deixar de seguir usuário",
+            "tags": ["Profile"],
+            "description": "Remove o relacionamento de follow entre followerId e followingId. Atualiza contadores em ambos os perfis.",
+            "requestBody": {
+              "required": true,
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "required": ["followerId", "followingId"],
+                    "properties": {
+                      "followerId": { "type": "string", "format": "uuid" },
+                      "followingId": { "type": "string", "format": "uuid" }
+                    }
+                  }
+                }
+              }
+            },
+            "responses": {
+              "200": {
+                "description": "Deixou de seguir com sucesso",
+                "content": {
+                  "application/json": { "schema": { "$ref": "#/components/schemas/UserProfile" } }
+                }
+              },
+              "500": { "description": "Erro ao deixar de seguir" }
+            }
+          }
+        },
+        "/user/{userID}/followers": {
+          "get": {
+            "summary": "Listar seguidores",
+            "tags": ["Profile"],
+            "description": "Retorna a lista de usuários que seguem o usuário informado.",
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "userID", "required": true }
+            ],
+            "responses": {
+              "200": {
+                "description": "Lista de seguidores",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "followerId": { "type": "string", "format": "uuid" },
+                          "createdAt": { "type": "string", "format": "date-time" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/user/{userID}/following": {
+          "get": {
+            "summary": "Listar quem o usuário segue",
+            "tags": ["Profile"],
+            "description": "Retorna a lista de usuários que o usuário informado está seguindo.",
+            "parameters": [
+              { "schema": { "type": "string", "format": "uuid" }, "in": "path", "name": "userID", "required": true }
+            ],
+            "responses": {
+              "200": {
+                "description": "Lista de seguindo",
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "followingId": { "type": "string", "format": "uuid" },
+                          "createdAt": { "type": "string", "format": "date-time" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "UserProfile": {
+            "type": "object",
+            "properties": {
+              "profileId": { "type": "string", "format": "uuid", "description": "ID do perfil no user-service" },
+              "userID": { "type": "string", "format": "uuid", "description": "accountId do auth-service" },
+              "name": { "type": "string", "nullable": true },
+              "username": { "type": "string", "nullable": true },
+              "avatarUrl": { "type": "string", "nullable": true },
+              "bio": { "type": "string", "nullable": true },
+              "followers": { "type": "integer" },
+              "following": { "type": "integer" },
+              "totalPosts": { "type": "integer" },
+              "createdAt": { "type": "string", "format": "date-time" },
+              "updatedAt": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      }
+    }

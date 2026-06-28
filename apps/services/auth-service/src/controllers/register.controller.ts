@@ -11,14 +11,17 @@ export class RegisterController {
     ) {
         const { name, username, email, password, bornAt } = request.body;
 
-        const account = await this.registerService.register({
-            name,
-            username,
-            email,
-            password,
-            bornAt: new Date(bornAt),
-        });
-
-        return reply.status(201).send(account);
+        try {
+            const account = await this.registerService.register({
+                name,
+                username,
+                email,
+                password,
+                bornAt: new Date(bornAt),
+            });
+            return reply.status(201).send(account);
+        } catch (error: any) {
+            return reply.status(400).send({ error: error.message });
+        }
     }
 }

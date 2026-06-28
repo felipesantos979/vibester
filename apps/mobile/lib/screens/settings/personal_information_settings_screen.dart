@@ -15,7 +15,6 @@ class PersonalInformationSettingsScreen extends StatefulWidget {
 
 class _PersonalInformationSettingsScreenState
     extends State<PersonalInformationSettingsScreen> {
-
   void _editarCampo(
     String titulo,
     String valorAtual,
@@ -140,6 +139,19 @@ class _PersonalInformationSettingsScreenState
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserProvider>().user;
+
+    if (user == null) {
+      return Scaffold(
+        backgroundColor: Color(colorNoturno),
+        appBar: AppBar(
+          title: Text('Informações pessoais'),
+          backgroundColor: Color(colorNoturno),
+          foregroundColor: Colors.white,
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     final Color _color = Color(colorDarkGrey);
 
     return Scaffold(
@@ -224,8 +236,11 @@ class _PersonalInformationSettingsScreenState
                 children: [
                   GestureDetector(
                     onTap: () => _editarCampo("Nome", user.nome, (valor) {
-  context.read<UserProvider>().atualizarCampo('nome', valor);
-}),
+                      context.read<UserProvider>().atualizarCampo(
+                        'nome',
+                        valor,
+                      );
+                    }),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -272,9 +287,16 @@ class _PersonalInformationSettingsScreenState
                   ),
                   SizedBox(height: 12),
                   GestureDetector(
-                    onTap: () => _editarCampo("Nome de Usuário", user.nomeUsuario, (valor) {
-  context.read<UserProvider>().atualizarCampo('nomeUsuario', valor);
-}),
+                    onTap: () => _editarCampo(
+                      "Nome de Usuário",
+                      user.nomeUsuario,
+                      (valor) {
+                        context.read<UserProvider>().atualizarCampo(
+                          'nomeUsuario',
+                          valor,
+                        );
+                      },
+                    ),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -322,8 +344,8 @@ class _PersonalInformationSettingsScreenState
                   SizedBox(height: 12),
                   GestureDetector(
                     onTap: () => _editarCampo("Bio", user.bio, (valor) {
-  context.read<UserProvider>().atualizarCampo('bio', valor);
-}),
+                      context.read<UserProvider>().atualizarCampo('bio', valor);
+                    }),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -370,9 +392,13 @@ class _PersonalInformationSettingsScreenState
                   ),
                   SizedBox(height: 12),
                   GestureDetector(
-                    onTap: () => _editarCampo("Interesses", user.interesses, (valor) {
-  context.read<UserProvider>().atualizarCampo('interesses', valor);
-}),
+                    onTap: () =>
+                        _editarCampo("Interesses", user.interesses, (valor) {
+                          context.read<UserProvider>().atualizarCampo(
+                            'interesses',
+                            valor,
+                          );
+                        }),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -450,8 +476,11 @@ class _PersonalInformationSettingsScreenState
                 children: [
                   GestureDetector(
                     onTap: () => _editarCampo("E-mail", user.email, (valor) {
-  context.read<UserProvider>().atualizarCampo('email', valor);
-}),
+                      context.read<UserProvider>().atualizarCampo(
+                        'email',
+                        valor,
+                      );
+                    }),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -497,9 +526,13 @@ class _PersonalInformationSettingsScreenState
                     height: 1,
                   ),
                   GestureDetector(
-                    onTap: () => _editarCampo("Telefone", user.telefone, (valor) {
-  context.read<UserProvider>().atualizarCampo('telefone', valor);
-}),
+                    onTap: () =>
+                        _editarCampo("Telefone", user.telefone, (valor) {
+                          context.read<UserProvider>().atualizarCampo(
+                            'telefone',
+                            valor,
+                          );
+                        }),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -545,9 +578,16 @@ class _PersonalInformationSettingsScreenState
                     height: 1,
                   ),
                   GestureDetector(
-                    onTap: () => _editarCampo("Data de Nascimento", user.dataNascimento, (valor) {
-  context.read<UserProvider>().atualizarCampo('dataNascimento', valor);
-}),
+                    onTap: () => _editarCampo(
+                      "Data de Nascimento",
+                      user.dataNascimento,
+                      (valor) {
+                        context.read<UserProvider>().atualizarCampo(
+                          'dataNascimento',
+                          valor,
+                        );
+                      },
+                    ),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -594,8 +634,11 @@ class _PersonalInformationSettingsScreenState
                   ),
                   GestureDetector(
                     onTap: () => _editarCampo("Cidade", user.cidade, (valor) {
-  context.read<UserProvider>().atualizarCampo('cidade', valor);
-}),
+                      context.read<UserProvider>().atualizarCampo(
+                        'cidade',
+                        valor,
+                      );
+                    }),
                     child: Row(
                       children: [
                         SizedBox(width: 10),

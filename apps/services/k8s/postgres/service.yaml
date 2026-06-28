@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-shared
+  namespace: default
+  labels:
+    app: postgres-shared
+spec:
+  type: ClusterIP
+  selector:
+    app: postgres-shared
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

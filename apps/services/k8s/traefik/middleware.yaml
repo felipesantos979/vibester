@@ -46,6 +46,27 @@ spec:
       - /event
 
 ---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-scrapping-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /scrapping
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-post-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /post
+
 # Middleware para redirecionar HTTP → HTTPS
 apiVersion: traefik.io/v1alpha1
 kind: Middleware

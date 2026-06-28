@@ -1,6 +1,7 @@
 import { LikeRepository } from "../repository/like.repository";
 import { PostRepository } from "../repository/post.repository";
 import { PostLike } from "../types/like.types";
+import { producer } from "../kafka/producer";
 
 export class LikeService {
     constructor(private readonly likeRepository: LikeRepository, private readonly postRepository: PostRepository) {}
@@ -35,6 +36,18 @@ export class LikeService {
             await this.postRepository.updateTotalLikesByEstablishment(post.establishmentId, post.createdAt,
                  total_likes, post.postId);
         }
+
+        await producer.send({
+            topic: 'post.liked',
+            messages: [{
+                key: postId,
+                value: JSON.stringify({
+                    postId,
+                    postOwnerId: post.userId,
+                    likedByUserId: userId,
+                }),
+            }],
+        });
 
         return like;
     }

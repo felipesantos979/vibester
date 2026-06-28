@@ -1,0 +1,80 @@
+name: Generate API Docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/services/**/src/**"
+      - "apps/services/scripts/merge-docs.ts"
+
+jobs:
+  generate:
+    name: Generate openapi.json
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies (all services)
+        working-directory: apps/services
+        env:
+          DATABASE_URL: postgresql://u:p@localhost:5432/db
+        run: |
+          set -e
+          for s in auth-service establishment-service event-service post-service scrapping-service user-service; do
+            echo "Installing $s..."
+            (cd "$s" && npm install)
+          done
+
+      - name: Generate combined OpenAPI spec
+        working-directory: apps/services
+        run: node auth-service/node_modules/.bin/tsx scripts/merge-docs.ts
+
+      - name: Upload openapi.json as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-${{ github.sha }}
+          path: apps/services/openapi.json
+          retention-days: 90
+
+  deploy-docs:
+    name: Update Swagger UI on cluster
+    runs-on: ubuntu-latest
+    needs: generate
+
+    steps:
+      - name: Download openapi.json artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi-${{ github.sha }}
+          path: apps/services
+
+      - name: Copy openapi.json to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "apps/services/openapi.json"
+          target: "/tmp/"
+
+      - name: Update ConfigMap and restart Swagger UI
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            kubectl create configmap swagger-ui-spec \
+              --from-file=openapi.json=/tmp/apps/services/openapi.json \
+              --dry-run=client -o yaml | kubectl apply -f -
+            rm -rf /tmp/apps
+            kubectl rollout restart deployment/swagger-ui
+            kubectl rollout status deployment/swagger-ui --timeout=120s
