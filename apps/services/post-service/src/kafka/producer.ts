@@ -7,10 +7,10 @@ function getProducer(): Producer {
     if (!_producer) {
         // eslint-disable-next-line @typescript-eslint/no-require-imports
         const { Kafka } = require('kafkajs');
-        const kafka = new Kafka({ clientId: 'post-service', brokers: env.kafkaBrokers.split(',') });
+        const kafka = new Kafka({ clientId: 'post-service', brokers: env.kafka_brokers.split(',') });
         _producer = kafka.producer();
     }
-    return _producer;
+    return _producer!;
 }
 
 export const producer = {

@@ -4,6 +4,7 @@ import { routes } from "./routes";
 import { registerSwagger } from "./config/swagger";
 import { ZodError } from "zod";
 import multipart from "@fastify/multipart";
+import { producer } from "./kafka/producer";
 
 const app = Fastify();
 
