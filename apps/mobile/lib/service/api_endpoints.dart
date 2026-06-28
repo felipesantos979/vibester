@@ -24,7 +24,11 @@ class ApiEndpoints {
   static String establishments() => '$baseUrl/establishment/establishments';
   static String establishmentDetail(String establishmentId) =>
       '$baseUrl/establishment/establishments/$establishmentId';
-  static String openEstablishments() => '$baseUrl/establishment/establishments/open';
+  static String openEstablishments() =>
+      '$baseUrl/establishment/establishments/open';
   static String rateEstablishment(String establishmentId) =>
       '$baseUrl/establishment/establishments/$establishmentId/rating';
+
+  // Payment
+  static String checkout() => '$baseUrl/payment/checkout';
 }

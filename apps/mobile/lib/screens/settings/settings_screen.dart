@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/routes/app_routes.dart';
+import 'package:mobile/service/payment/payment_service.dart';
 import 'package:mobile/utils/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -15,7 +17,43 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final Color _color = Color(colorDarkGrey);
+  final PaymentService _paymentService = PaymentService();
   bool modoFantasma = false;
+  bool _carregandoCheckout = false;
+
+  static const String _promocoesProductId = 'prod_g3JtzRb2TASCFuBYrQ2M4gTp';
+
+  Future<void> _abrirCheckoutPromocoes() async {
+    if (_carregandoCheckout) return;
+
+    setState(() => _carregandoCheckout = true);
+
+    try {
+      final url = await _paymentService.createCheckout(
+        productId: _promocoesProductId,
+        quantity: 1,
+      );
+
+      final uri = Uri.parse(url);
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível abrir o checkout')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _carregandoCheckout = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,8 +93,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Container(
               margin: EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: Platform.isIOS ? 190 : 150,
               padding: EdgeInsets.all(12),
+              height: Platform.isIOS ? 190 : 150,
               decoration: BoxDecoration(
                 color: _color,
                 borderRadius: BorderRadius.circular(20),
@@ -391,19 +429,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   //Parceria
                   InkWell(
-                    onTap: () {},
+                    onTap: _abrirCheckoutPromocoes,
                     child: Row(
                       children: [
-                        Icon(
-                          Icons.confirmation_number_outlined,
-                          color: Colors.white54,
-                        ),
+                        _carregandoCheckout
+                            ? SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white54,
+                                ),
+                              )
+                            : Icon(
+                                Icons.confirmation_number_outlined,
+                                color: Colors.white54,
+                              ),
 
                         SizedBox(width: 10),
 
                         Expanded(
                           child: Text(
-                            "Promoções e Parcerias",
+                            "Assinar o Vibester Club",
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontSize: 18,
