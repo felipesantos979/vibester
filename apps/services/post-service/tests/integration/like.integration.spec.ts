@@ -81,7 +81,7 @@ describe('post-service — Likes Integration', () => {
       );
     });
 
-    it('retorna 400 quando post não existe', async () => {
+    it('retorna 404 quando post não existe', async () => {
       mockExecute.mockResolvedValue({ rows: [] }); // post not found
 
       const res = await app.inject({
@@ -90,7 +90,7 @@ describe('post-service — Likes Integration', () => {
         payload: { userId: LIKER_ID },
       });
 
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(404);
       expect(mockProducerSend).not.toHaveBeenCalled();
     });
   });

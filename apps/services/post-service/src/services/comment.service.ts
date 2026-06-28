@@ -76,7 +76,7 @@ export class CommentService {
 
         if (!comment) { throw new HttpError("Comment not found", 404); }
 
-        if (comment.userId != currentUserId) { throw new HttpError("You cannot update this comment", 403); }
+        if (comment.userId != currentUserId) { throw new HttpError("You cannot update this comment.", 403); }
 
         if (comment.isDeleted) { throw new HttpError("Comment is deleted", 404); }
 
@@ -107,7 +107,7 @@ export class CommentService {
 
         if (!comment) { throw new HttpError("Comment not found", 404); }
 
-        if (comment.userId != currentUserId) { throw new HttpError("You cannot delete this comment", 403); }
+        if (comment.userId != currentUserId) { throw new HttpError("You cannot delete this comment.", 403); }
 
         if (comment.isDeleted) { throw new HttpError("Comment already deleted", 409); }
 
