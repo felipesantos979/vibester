@@ -72,7 +72,7 @@ describe("auth-service — HTTP Integration (Postgres real)", () => {
       expect(row?.passwordHash).toMatch(/^\$2[aby]\$.{56}$/); // bcrypt format
     });
 
-    it("retorna 400 quando username já existe", async () => {
+    it("retorna 409 quando username já existe", async () => {
       const payload = {
         username: "duplicate",
         name: "User",
@@ -89,10 +89,10 @@ describe("auth-service — HTTP Integration (Postgres real)", () => {
         payload: { ...payload, email: "second@example.com" },
       });
 
-      expect(res.statusCode).toBe(400);
+      expect(res.statusCode).toBe(409);
     });
 
-    it("retorna 400 quando user-service falha ao criar perfil", async () => {
+    it("retorna 502 quando user-service falha ao criar perfil", async () => {
       mockFetch.mockResolvedValueOnce({ ok: false });
 
       const res = await app.inject({
@@ -107,7 +107,10 @@ describe("auth-service — HTTP Integration (Postgres real)", () => {
         },
       });
 
-      expect(res.statusCode).toBe(400);
+      expect(res.statusCode).toBe(502);
+
+      const row = await prismaClient.access.findFirst({ where: { username: "failuser" } });
+      expect(row).toBeNull();
     });
   });
 });
