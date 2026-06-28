@@ -20,6 +20,7 @@ describe("user-service — HTTP Integration (Postgres + Redis reais)", () => {
   let app: Awaited<ReturnType<typeof buildServer>>;
 
   beforeAll(async () => {
+    await redis.connect();
     app = await buildServer();
   });
 
