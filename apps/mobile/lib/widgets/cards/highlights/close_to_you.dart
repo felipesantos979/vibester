@@ -173,7 +173,7 @@ class _CloseToYouState extends State<CloseToYou> {
                 Navigator.pushNamed(
                   context,
                   AppRoutes.placeDetail,
-                  arguments: place,
+                  arguments: place.id,
                 );
               },
               borderRadius: BorderRadius.circular(70),
