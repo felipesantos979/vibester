@@ -3,8 +3,9 @@ import { CreateEventInput } from "../types/event.types.js";
 import { CreateEventService } from "../services/createEvent.service.js";
 import { ListEventsService } from "../services/listEvents.service.js";
 import { GetEventDetailsService } from "../services/getEventDetails.service.js";
+import { ToggleFeaturedService } from "../services/toggleFeatured.service.js";
 
-
+const toggleFeaturedService = new ToggleFeaturedService();
 const eventService = new CreateEventService();
 const listEventsService = new ListEventsService();
 const detailsService = new GetEventDetailsService();
@@ -55,6 +56,22 @@ export async function eventRoutes(app: FastifyInstance) {
             return reply.status(200).send(eventDetaisl);
         } catch (error) {
             return reply.status(500).send({ message: "Error event details" });
+        }
+    });
+
+    app.patch("/:eventId/featured", async (request: FastifyRequest<{
+        Params: { eventId: string };
+        Body: { isFeatured: boolean };
+    }>, reply: FastifyReply) => {
+        try {
+            const event = await toggleFeaturedService.toggleFeatured(
+                request.params.eventId,
+                request.body.isFeatured
+            );
+            return reply.status(200).send(event);
+        } catch (error) {
+            console.log("Erro no toggleFeatured:", error);
+            return reply.status(500).send({ message: "Error updating featured status" });
         }
     });
 }
