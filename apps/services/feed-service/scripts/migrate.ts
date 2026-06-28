@@ -1,11 +1,11 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { cassandraClient } from "../src/config/cassandra";
+import { getCassandraClient } from "../src/config/cassandra";
 
 const MIGRATIONS_PATH = path.resolve("migrations");
 
 async function migrate() {
-    await cassandraClient.connect();
+    await getCassandraClient().connect();
 
     const files = (await fs.readdir(MIGRATIONS_PATH))
         .filter(file => file.endsWith(".cql"))
@@ -14,7 +14,7 @@ async function migrate() {
     for (const file of files) {
         const version = file.split("__")[0];
 
-        const existing = await cassandraClient.execute(
+        const existing = await getCassandraClient().execute(
             `
                 SELECT version
                 FROM feed_keyspace.schema_migrations
@@ -36,9 +36,9 @@ async function migrate() {
 
         console.log(`Running ${file}`);
 
-        await cassandraClient.execute(migration);
+        await getCassandraClient().execute(migration);
 
-        await cassandraClient.execute(
+        await getCassandraClient().execute(
             `
                 INSERT INTO feed_keyspace.schema_migrations (
                     version,
@@ -53,7 +53,7 @@ async function migrate() {
         console.log(`${version} applied`);
     }
 
-    await cassandraClient.shutdown();
+    await getCassandraClient().shutdown();
 }
 
 migrate().catch(error => {
