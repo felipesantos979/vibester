@@ -23,8 +23,8 @@ const userProfileSchema = z.object({
   followers: z.number().int(),
   following: z.number().int(),
   totalPosts: z.number().int(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 
 function toProfileResponse(profile: UserProfileModel) {
@@ -34,6 +34,12 @@ function toProfileResponse(profile: UserProfileModel) {
 
 const createProfileSchema = z.object({
   accountId: z.string().uuid(),
+});
+
+const updateProfileInfoSchema = z.object({
+  accountId: z.string().uuid(),
+  name: z.string(),
+  username: z.string(),
 });
 
 const updateBioSchema = z.object({
@@ -106,6 +112,24 @@ export async function profileRoutes(app: FastifyInstance) {
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({ message: "Error fetching profile" });
+    }
+  });
+
+  router.put("/profile/info", {
+    schema: {
+      tags: ["Profile"],
+      summary: "Atualizar nome e username",
+      description: "Atualiza o nome e o username do usuário.",
+      body: updateProfileInfoSchema,
+      response: { 200: userProfileSchema, 500: errorSchema },
+    },
+  }, async (request, reply) => {
+    try {
+      const profile = await editProfileService.updateProfileInfo(request.body);
+      return reply.status(200).send(toProfileResponse(profile));
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ message: "Error updating profile info" });
     }
   });
 

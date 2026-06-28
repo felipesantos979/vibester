@@ -1,9 +1,18 @@
 import prismaClient from "../prisma/index.js";
-import { UpdateAvatarInput, UpdateBioInput } from "../types/profile.types.js";
+import { UpdateAvatarInput, UpdateBioInput, UpdateProfileInfoInput } from "../types/profile.types.js";
 import { producer } from "../kafka/producer.js";
 import { redis } from "../config/redis.js";
 
 export class EditProfileService {
+    async updateProfileInfo(input: UpdateProfileInfoInput) {
+        const profile = await prismaClient.userProfile.update({
+            where: { userID: input.accountId },
+            data: { name: input.name, username: input.username },
+        });
+        await redis.del(`user:profile:${profile.userID}`).catch(() => {});
+        return profile;
+    }
+
     async updateBio(input: UpdateBioInput) {
         const profile = await prismaClient.userProfile.update({
             where: { userID: input.accountId },
