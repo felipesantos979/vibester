@@ -40,12 +40,18 @@ describe('Login integration', () => {
     expect(body.authId).toBe(user.id);
   });
 
-  it('POST /login invalid password returns 400', async () => {
+  it('POST /login invalid password returns 401', async () => {
     const user = makeUser({ passwordHash: 'hashed' });
     mockAccess.findFirst.mockResolvedValueOnce(user);
     vi.mocked(bcrypt.compare).mockResolvedValueOnce(false as never);
 
     const res = await app.inject({ method: 'POST', url: '/login', payload: { email: user.email, password: 'wrongpw' } });
+
+    expect(res.statusCode).toBe(401);
+  });
+
+  it('POST /login missing email and username returns 400', async () => {
+    const res = await app.inject({ method: 'POST', url: '/login', payload: { password: 'password123' } });
 
     expect(res.statusCode).toBe(400);
   });

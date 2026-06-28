@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { LoginInputInterface } from "../types/register.types";
 import { LoginService } from "../services/login.service";
-import z from "zod";
+import { AppError } from "../errors/app-error";
 
 export class LoginController {
     private readonly loginService = new LoginService();
@@ -10,28 +10,21 @@ export class LoginController {
         request: FastifyRequest<{ Body: LoginInputInterface }>,
         reply: FastifyReply
     ) {
+        const { email, username } = request.body;
 
-        const schema = z.object({
-            email: z.string().email().optional(),
-            username: z.string().optional(),
-            password: z.string().min(6),
-        }).refine((data) => data.email || data.username, {
-            message: "Email ou username é obrigatório",
-        });
-
-        const parseResult = schema.safeParse(request.body);
-
-        if (!parseResult.success) {
-            return reply.status(400).send({ error: parseResult.error.message });
+        if (!email && !username) {
+            return reply.status(400).send({ error: "Email ou username é obrigatório" });
         }
 
-        const { email, username, password } = parseResult.data;
-
         try {
-            const account = await this.loginService.login({ email, username, password });
+            const account = await this.loginService.login(request.body);
             return reply.status(200).send(account);
         } catch (error: any) {
-            return reply.status(400).send({ error: error.message });
+            if (error instanceof AppError) {
+                return reply.status(error.statusCode).send({ error: error.message });
+            }
+            request.log.error(error);
+            return reply.status(500).send({ error: "Erro interno do servidor" });
         }
     }
 }

@@ -3,29 +3,27 @@ import { LoginInputInterface, LoginOutputInterface } from "../types/register.typ
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { env } from "../config/env";
-
+import { AppError } from "../errors/app-error";
 
 export class LoginService {
     async login(input: LoginInputInterface): Promise<LoginOutputInterface> {
-        console.log("Realizando login de usuário");
-
         const user = await prismaClient.access.findFirst({
             where: {
                 OR: [
-                    { email: input.email },
-                    { username: input.username }
+                    ...(input.email ? [{ email: input.email }] : []),
+                    ...(input.username ? [{ username: input.username }] : []),
                 ],
-            }
+            },
         });
 
         if (!user) {
-            throw new Error("Usuário ou senha inválidos");
+            throw new AppError("Usuário ou senha inválidos", 401);
         }
 
         const passwordMatch = await bcrypt.compare(input.password, user.passwordHash);
 
         if (!passwordMatch) {
-            throw new Error("Usuário ou senha inválidos");
+            throw new AppError("Usuário ou senha inválidos", 401);
         }
 
         const token = jwt.sign(

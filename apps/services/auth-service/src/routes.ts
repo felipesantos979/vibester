@@ -3,6 +3,9 @@ import { LoginInputInterface, RegisterInputInterface } from "./types/register.ty
 import { RegisterController } from "./controllers/register.controller";
 import { LoginController } from "./controllers/login.controller";
 
+const registerController = new RegisterController();
+const loginController = new LoginController();
+
 export async function authRoutes(instance: FastifyInstance, options: FastifyPluginOptions) {
 
     instance.get("/health", {
@@ -53,16 +56,29 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
                     },
                 },
                 400: {
-                    description: "Erro ao criar conta",
+                    description: "Dados inválidos",
+                    type: "object",
+                    properties: { error: { type: "string" } },
+                },
+                409: {
+                    description: "Email ou username já está em uso",
+                    type: "object",
+                    properties: { error: { type: "string" } },
+                },
+                502: {
+                    description: "Serviço de perfil indisponível",
                     type: "object",
                     properties: { error: { type: "string" } },
                 },
             },
         },
+        config: {
+            rateLimit: { max: 10, timeWindow: '1 minute' },
+        },
     }, async (
         request: FastifyRequest<{ Body: RegisterInputInterface }>,
         reply: FastifyReply) => {
-            return new RegisterController().register(request, reply);
+            return registerController.register(request, reply);
         }
     );
 
@@ -74,6 +90,10 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
             body: {
                 type: "object",
                 required: ["password"],
+                anyOf: [
+                    { required: ["email"] },
+                    { required: ["username"] },
+                ],
                 properties: {
                     email: { type: "string", format: "email", example: "joao@email.com" },
                     username: { type: "string", example: "joaosilva" },
@@ -95,12 +115,20 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
                     type: "object",
                     properties: { error: { type: "string" } },
                 },
+                401: {
+                    description: "Credenciais inválidas",
+                    type: "object",
+                    properties: { error: { type: "string" } },
+                },
             },
+        },
+        config: {
+            rateLimit: { max: 10, timeWindow: '1 minute' },
         },
     }, async (
         request: FastifyRequest<{ Body: LoginInputInterface }>,
         reply: FastifyReply) => {
-            return new LoginController().login(request, reply);
+            return loginController.login(request, reply);
         }
     );
 }
