@@ -5,6 +5,10 @@ import { PostRepository } from "../../repository/post.repository";
 import { Post } from "../../types/post.types";
 import { Comment, CreateCommentInput, UpdateCommentInput } from "../../types/comment.type";
 
+vi.mock("../../kafka/producer", () => ({
+  producer: { send: vi.fn().mockResolvedValue(undefined) },
+}));
+
 function createMockCommentRepo() {
   return {
     createCommentById: vi.fn().mockResolvedValue(undefined),
