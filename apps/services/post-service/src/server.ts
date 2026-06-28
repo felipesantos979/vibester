@@ -1,5 +1,5 @@
 import Fastify from "fastify";
-import { cassandraClient } from "./config/cassandra";
+import { getCassandraClient } from "./config/cassandra";
 import { routes } from "./routes";
 import { registerSwagger } from "./config/swagger";
 import { ZodError } from "zod";
@@ -41,7 +41,7 @@ app.setErrorHandler((error, request, reply) => {
 async function start() {
   try {
     await producer.connect();
-    await cassandraClient.connect();
+    await getCassandraClient().connect();
 
     await registerSwagger(app);
     await app.register(routes);
