@@ -4,9 +4,14 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
+    include: ["tests/**/*.spec.ts", "src/**/*.test.ts"],
+    setupFiles: ["tests/setup/vitest.setup.ts"],
     coverage: {
       provider: "v8",
-      include: ["src/services/**"],
+      include: ["src/services/**", "src/controller/**", "src/routes.ts"],
+      reporter: ["text", "json-summary", "html"],
+      thresholds: { lines: 70, functions: 70, branches: 60 },
     },
+    reporters: ["verbose"],
   },
 });
