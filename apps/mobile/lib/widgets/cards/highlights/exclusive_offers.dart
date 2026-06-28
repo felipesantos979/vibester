@@ -52,7 +52,10 @@ class _ExclusiveOffersState extends State<ExclusiveOffers> {
                         child: SizedBox(
                           height: 85,
                           width: 85,
-                          child: Placeholder(),
+                          child: Image.asset(
+                            widget.offer.imgURL,
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                     ),
