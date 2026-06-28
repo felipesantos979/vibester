@@ -1,12 +1,17 @@
 export interface EstablishmentInterface {
   id: string;
-  googlePlaceId?: string | null,
+  googlePlaceId?: string | null;
   name: string;
+  bio?: string | null;
+  endereco?: string | null;
   photoUrl?: string | null;
   bannerUrl?: string | null;
   category: string;
   priceIndicator?: string | null;
   averageRating: number;
+  qtdAvaliacoes: number;
+  distribuicao: number[];
+  nivelMovimento: number;
   latitude: number;
   longitude: number;
   movementLevel?: MovementLevelResponse | null;
@@ -31,6 +36,8 @@ export interface GetEstablishmentParams {
 export interface EstablishmentProfileResponse {
   icon: string | null;
   name: string;
+  bio: string | null;
+  endereco: string | null;
   banner: string | null;
   location: {
     latitude: number;
@@ -39,6 +46,9 @@ export interface EstablishmentProfileResponse {
   category: string;
   priceIndicator: string | null;
   rating: number;
+  qtdAvaliacoes: number;
+  distribuicao: number[];
+  nivelMovimento: number;
   movementLevel?: MovementLevelResponse | null;
 }
 

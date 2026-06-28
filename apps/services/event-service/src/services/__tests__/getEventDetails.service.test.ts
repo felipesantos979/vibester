@@ -47,13 +47,7 @@ describe("GetEventDetailsService", () => {
     const result = await service.get("event-id-1");
 
     expect(mockFindUnique).toHaveBeenCalledWith({ where: { id: "event-id-1" } });
-    expect(result).toEqual({
-      name: event.name,
-      organizer: event.organizer,
-      location: event.location,
-      totalConfirmed: event.totalConfirmed,
-      ticketLink: event.ticketLink,
-    });
+    expect(result).toEqual(event);
   });
 
   it("should return ticketLink as null when not set", async () => {

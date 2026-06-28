@@ -6,6 +6,7 @@ import { ListEventsService } from "../services/listEvents.service.js";
 import { GetEventDetailsService } from "../services/getEventDetails.service.js";
 import { GetEventsByEstablishmentService } from "../services/getEventsByEstablishment.service.js";
 import { ToggleFeaturedService } from "../services/toggleFeatured.service.js";
+import { GetEventsByEstablishmentService } from "../services/getEventsByEstablishment.service.js";
 
 const toggleFeaturedService = new ToggleFeaturedService();
 const eventService = new CreateEventService();
@@ -19,6 +20,7 @@ const createEventSchema = z.object({
     category: z.string(),
     organizer: z.string(),
     location: z.string(),
+    informacoes: z.string().optional(),
     startDate: z.string().datetime(),
     endDate: z.string().datetime(),
     ticketLink: z.string().url().optional(),
@@ -44,22 +46,46 @@ const establishmentIdParamsSchema = z.object({
 const errorSchema = z.object({ message: z.string() });
 
 const eventDetailsSchema = z.object({
+    id: z.string(),
     name: z.string(),
+    photoUrl: z.string(),
+    category: z.string(),
     organizer: z.string(),
     location: z.string(),
-    totalConfirmed: z.number(),
-    ticketLink: z.string().url().nullable(),
-});
-
-const nearbyEventSchema = z.object({
-    photoUrl: z.string(),
-    name: z.string(),
-    location: z.string(),
+    informacoes: z.string().nullish(),
     startDate: z.date(),
+    endDate: z.date(),
+    ticketLink: z.string().nullable(),
     totalConfirmed: z.number(),
     latitude: z.number(),
     longitude: z.number(),
+    isFeatured: z.boolean(),
+    establishmentId: z.string(),
+});
+
+const nearbyEventSchema = z.object({
+    id: z.string(),
+    name: z.string(),
+    informacoes: z.string().nullish(),
+    photoUrl: z.string(),
+    category: z.string(),
+    organizer: z.string(),
+    location: z.string(),
+    startDate: z.date(),
+    endDate: z.date(),
+    ticketLink: z.string().nullable(),
+    totalConfirmed: z.number(),
+    latitude: z.number(),
+    longitude: z.number(),
+    establishmentId: z.string(),
+    isFeatured: z.boolean(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
     distanceKm: z.number(),
+});
+
+const toggleFeaturedBodySchema = z.object({
+    isFeatured: z.boolean(),
 });
 
 export async function eventRoutes(app: FastifyInstance) {
@@ -121,6 +147,7 @@ export async function eventRoutes(app: FastifyInstance) {
             const events = await listEventsService.listEvents({ latitude, longitude, radiusKm });
             return reply.status(200).send(events);
         } catch (error) {
+            console.log(error);
             request.log.error(error);
             return reply.status(500).send({ message: "Error listing nearby events" });
         }
@@ -166,14 +193,23 @@ export async function eventRoutes(app: FastifyInstance) {
             if (error instanceof Error && error.message === "Evento não encontrado") {
                 return reply.status(404).send({ message: error.message });
             }
+            console.log(error);
             return reply.status(500).send({ message: "Error event details" });
         }
     });
 
-    app.patch("/:eventId/featured", async (request: FastifyRequest<{
-        Params: { eventId: string };
-        Body: { isFeatured: boolean };
-    }>, reply: FastifyReply) => {
+    router.patch("/:eventId/featured", {
+        schema: {
+            tags: ["Events"],
+            summary: "Destacar/remover destaque de evento",
+            params: eventIdParamsSchema,
+            body: toggleFeaturedBodySchema,
+            response: {
+                200: z.object({ id: z.string().uuid(), isFeatured: z.boolean() }),
+                500: errorSchema,
+            },
+        },
+    }, async (request, reply) => {
         try {
             const event = await toggleFeaturedService.toggleFeatured(
                 request.params.eventId,
