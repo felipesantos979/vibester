@@ -333,7 +333,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         Navigator.pushNamed(
                           context,
                           AppRoutes.placeDetail,
-                          arguments: listaFiltrada[index],
+                          arguments: listaFiltrada[index].id,
                         );
                       },
                     );
