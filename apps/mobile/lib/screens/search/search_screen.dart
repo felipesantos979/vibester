@@ -21,8 +21,8 @@ class _SearchScreenState extends State<SearchScreen> {
   List<String>? _historicoGuardado;
 
   static const _categorias = [
-    {'label': 'Baladas', 'image': 'assets/img/baladas.jpg'},
-    {'label': 'Bares', 'image': 'assets/img/bares.jpg'},
+    {'label': 'Balada', 'image': 'assets/img/baladas.jpg'},
+    {'label': 'Bar', 'image': 'assets/img/bares.jpg'},
     {'label': 'Lounges', 'image': 'assets/img/lounges.jpg'},
     {'label': 'Eventos', 'image': 'assets/img/eventos.jpg'},
     {'label': 'Restaurantes', 'image': 'assets/img/restaurantes.jpg'},
@@ -333,7 +333,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         Navigator.pushNamed(
                           context,
                           AppRoutes.placeDetail,
-                          arguments: listaFiltrada[index],
+                          arguments: listaFiltrada[index].id,
                         );
                       },
                     );
