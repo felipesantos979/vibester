@@ -24,16 +24,6 @@ export class ListEventsService {
     const radiusKm = input.radiusKm ?? 10;
 
     const events = prismaClient.event.findMany({
-      select: {
-        photoUrl: true,
-        name: true,
-        location: true,
-        startDate: true,
-        totalConfirmed: true,
-        latitude: true,
-        longitude: true,
-      },
-      
       orderBy: {
         startDate: "asc"
       }

@@ -12,13 +12,7 @@ export class GetEventDetailsService{
                 throw new Error("Evento não encontrado");
             }
 
-            return {
-                name: event.name,
-                organizer: event.organizer,
-                location: event.location,
-                totalConfirmed: event.totalConfirmed,
-                ticketLink: event.ticketLink
-            };
+            return event;
         });
     }
 }

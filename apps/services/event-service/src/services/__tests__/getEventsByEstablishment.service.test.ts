@@ -48,13 +48,7 @@ describe("GetEventsByEstablishmentService", () => {
 
     expect(mockFindMany).toHaveBeenCalledWith({
       where: { establishmentId: ESTABLISHMENT_ID },
-      select: {
-        name: true,
-        organizer: true,
-        location: true,
-        totalConfirmed: true,
-        ticketLink: true,
-      },
+      orderBy: { startDate: "asc" },
     });
     expect(result).toHaveLength(2);
     expect(result[0].name).toBe("Evento A");
