@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/highlights/highlight_model.dart';
+import 'package:mobile/service/highlights/highlights_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/highlights/highlights_card.dart';
 
 class PropertyHighlightsScreen extends StatefulWidget {
-  const PropertyHighlightsScreen({super.key});
+  final String? accountId;
+  final String? placeId;
+
+  const PropertyHighlightsScreen({super.key, this.accountId, this.placeId});
 
   @override
   State<PropertyHighlightsScreen> createState() =>
@@ -12,46 +16,137 @@ class PropertyHighlightsScreen extends StatefulWidget {
 }
 
 class _PropertyHighlightsScreenState extends State<PropertyHighlightsScreen> {
-  static const String fotos =
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgpnQNClh0kA43xMUXgiu_GKAqIL97g2dMY80DJ4A15pnck6ZxZ6APvn2KKdSIxajG8RSdRq6mesWTCn0kIItn6tlCqAZkE8Nx-snm2TCW&s=10";
+  final HighlightsService _highlightsService = HighlightsService();
 
-  List<HighlightModel> get highlights => [
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-    HighlightModel(imagemEmDestaque: fotos),
-  ];
+  // Guardam qual id a tela recebeu e de quem
+  late String? _accountId;
+  late String? _placeId;
+
+  List<HighlightModel> _highlights = [];
+  bool _isLoading = true;
+  String? _erro;
+
+  @override
+  void initState() {
+    super.initState();
+    _accountId = widget.accountId;
+    _placeId = widget.placeId;
+    _buscarHighlights();
+  }
+
+  @override
+  void didUpdateWidget(PropertyHighlightsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.accountId != widget.accountId ||
+        oldWidget.placeId != widget.placeId) {
+      _accountId = widget.accountId;
+      _placeId = widget.placeId;
+      _buscarHighlights();
+    }
+  }
+
+  Future<void> _buscarHighlights() async {
+    setState(() {
+      _isLoading = true;
+      _erro = null;
+    });
+
+    try {
+      List<HighlightModel> highlights;
+
+      if (_accountId != null && _accountId!.isNotEmpty) {
+        // Chamado a partir do perfil de usuário.
+        highlights = await _highlightsService.getHighlightsByAccountId(
+          _accountId!,
+        );
+      } else if (_placeId != null && _placeId!.isNotEmpty) {
+        // Chamado a partir do detalhe de um estabelecimento
+        highlights = await _highlightsService.getHighlightsByEstablishmentId(
+          _placeId!,
+        );
+      } else {
+        highlights = [];
+      }
+
+      setState(() {
+        _highlights = highlights;
+      });
+    } catch (e) {
+      setState(() {
+        _erro = 'Não foi possível carregar as fotos';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: Color(colorAmbar)),
+      );
+    }
+
+    if (_erro != null) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.wifi_off, color: Colors.white38, size: 48),
+          const SizedBox(height: 12),
+          Text(
+            _erro!,
+            style: const TextStyle(color: Colors.white38, fontSize: 16),
+          ),
+          const SizedBox(height: 16),
+          TextButton(
+            onPressed: _buscarHighlights,
+            child: Text(
+              'Tentar novamente',
+              style: TextStyle(color: Color(colorAmbar)),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (_highlights.isEmpty) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+            child: SizedBox(
+              height: 200,
+              width: 200,
+              child: Opacity(
+                opacity: 0.8,
+                child: Image.asset('assets/img/mascote/lupa.png'),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'Nenhuma foto ainda',
+            style: TextStyle(
+              color: Colors.white38,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
       backgroundColor: Color(colorNoturno),
 
       //Uso o gridview no lugar do listview pq é mais simples de mecher e de montar as imagens
       //O gridview pega toda a largura ta tela, q é dividido pelo crossAC e pelo childAR
       body: GridView.builder(
-        itemCount: 4,
+        // Deve ser dinamico e não fixo
+        itemCount: _highlights.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           //pega a largura da tela dividido por 2 (pra dar duas imagens por linha)
           crossAxisCount: 2,
@@ -68,7 +163,7 @@ class _PropertyHighlightsScreenState extends State<PropertyHighlightsScreen> {
           bottom: 12,
         ),
         itemBuilder: (context, index) {
-          return HighlightsCard(highlight: highlights[index]);
+          return HighlightsCard(highlight: _highlights[index]);
         },
       ),
     );
