@@ -2,6 +2,7 @@ import { LikeRepository } from "../repository/like.repository";
 import { PostRepository } from "../repository/post.repository";
 import { PostLike } from "../types/like.types";
 import { producer } from "../kafka/producer";
+import { HttpError } from "../errors/http.error";
 
 export class LikeService {
     constructor(private readonly likeRepository: LikeRepository, private readonly postRepository: PostRepository) {}
@@ -9,13 +10,13 @@ export class LikeService {
     async likePost(postId: string, userId: string): Promise<PostLike> {
         const post = await this.postRepository.findById(postId);
 
-        if (!post) { throw new Error("Post not found"); }
+        if (!post) { throw new HttpError("Post not found", 404); }
 
-        if (post.isDeleted) { throw new Error("Post is deleted"); }
+        if (post.isDeleted) { throw new HttpError("Post is deleted", 404); }
 
         const existingLike = await this.likeRepository.findLikeByPostAndUser(postId, userId);
 
-        if (existingLike) { throw new Error("Post already liked"); }
+        if (existingLike) { throw new HttpError("Post already liked", 409); }
 
         const like: PostLike = {
             postId,
@@ -55,11 +56,11 @@ export class LikeService {
     async unlikePost(postId: string, userId: string): Promise<void> {
         const post = await this.postRepository.findById(postId);
 
-        if (!post) { throw new Error("Post not found"); }
+        if (!post) { throw new HttpError("Post not found", 404); }
 
         const existingLike = await this.likeRepository.findLikeByPostAndUser(postId, userId);
 
-        if (!existingLike) { throw new Error("Like not found"); }
+        if (!existingLike) { throw new HttpError("Like not found", 404); }
 
         let totalLikes = post.totalLikes;
 

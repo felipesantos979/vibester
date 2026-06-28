@@ -217,7 +217,7 @@ export async function routes(app: FastifyInstance) {
                 properties: {
                     postId: { type: "string", format: "uuid" },
                     userId: { type: "string", format: "uuid" },
-                    content: { type: "string" },
+                    content: { type: "string", minLength: 1 },
                 },
             },
             response: { 201: commentSchema },

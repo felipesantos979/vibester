@@ -57,6 +57,9 @@ const updateAvatarSchema = z.object({
 const followerActionSchema = z.object({
   followerId: z.string().uuid(),
   followingId: z.string().uuid(),
+}).refine(data => data.followerId !== data.followingId, {
+  message: "Cannot follow yourself",
+  path: ["followerId"],
 });
 
 const accountIdParamsSchema = z.object({

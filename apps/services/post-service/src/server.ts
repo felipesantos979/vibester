@@ -6,6 +6,7 @@ import { ZodError } from "zod";
 import multipart from "@fastify/multipart";
 import { producer } from "./kafka/producer";
 import { env } from "./config/env";
+import { HttpError } from "./errors/http.error";
 
 const app = Fastify();
 
@@ -27,14 +28,19 @@ app.setErrorHandler((error, request, reply) => {
     });
   }
 
-  if (error instanceof Error) {
-    return reply.status(500).send({
-      message: error.message,
-    });
+  // Erros de negócio com código HTTP explícito
+  if (error instanceof HttpError) {
+    return reply.status(error.statusCode).send({ message: error.message });
+  }
+
+  // Erros de validação do schema AJV do Fastify (ex: campo obrigatório ausente)
+  const fastifyError = error as { statusCode?: number; message?: string };
+  if (typeof fastifyError.statusCode === "number" && fastifyError.statusCode < 500) {
+    return reply.status(fastifyError.statusCode).send({ message: fastifyError.message });
   }
 
   return reply.status(500).send({
-    message: "Internal server error",
+    message: error instanceof Error ? error.message : "Internal server error",
   });
 });
 

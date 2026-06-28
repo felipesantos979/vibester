@@ -227,16 +227,19 @@ describe("Post Service — posts, likes e comentários", () => {
     it("PATCH /comments/:id — edita o comentário", async () => {
       const res = await http.patch<{ content: string }>(
         `${SERVICES.post}/comments/${commentId}`,
-        { content: "Comentário editado E2E" },
+        { userId: reader.accountId, content: "Comentário editado E2E" },
       );
 
       expect(res.status).toBe(200);
       expect(res.body.content).toBe("Comentário editado E2E");
     });
 
-    it("DELETE /comments/:id — deleta o comentário", async () => {
-      const res = await http.delete(`${SERVICES.post}/comments/${commentId}`);
-      expect(res.status).toBe(200);
+    it("DELETE /comments/:id — deleta o comentário (retorna 204)", async () => {
+      const res = await http.delete(
+        `${SERVICES.post}/comments/${commentId}`,
+        { userId: reader.accountId },
+      );
+      expect(res.status).toBe(204);
     });
 
     it("POST /comments — retorna 400 com content vazio", async () => {
@@ -251,9 +254,9 @@ describe("Post Service — posts, likes e comentários", () => {
   });
 
   describe("DELETE /posts/:postId — soft delete", () => {
-    it("deleta o post (soft delete) e retorna 200", async () => {
+    it("deleta o post (soft delete) e retorna 204", async () => {
       const res = await http.delete(`${SERVICES.post}/posts/${postId}`);
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(204);
     });
 
     it("post deletado retorna isDeleted=true ou 404 ao buscar", async () => {
