@@ -81,7 +81,7 @@ describe("EditProfileService", () => {
       const updatedProfile = makeProfile({ bio: "Minha nova bio" });
       mockUpdate.mockResolvedValue(updatedProfile);
 
-      const result = await service.updateBio({ userID: FOLLOWING_ID, bio: "Minha nova bio" });
+      const result = await service.updateBio({ accountId: FOLLOWING_ID, bio: "Minha nova bio" });
 
       expect(mockUpdate).toHaveBeenCalledWith({
         where: { userID: FOLLOWING_ID },
@@ -94,7 +94,7 @@ describe("EditProfileService", () => {
       mockUpdate.mockRejectedValue(new Error("Record to update not found."));
 
       await expect(
-        service.updateBio({ userID: "non-existent", bio: "bio" })
+        service.updateBio({ accountId: "non-existent", bio: "bio" })
       ).rejects.toThrow("Record to update not found.");
     });
   });
@@ -107,7 +107,7 @@ describe("EditProfileService", () => {
       const updatedProfile = makeProfile({ avatarUrl: url });
       mockUpdate.mockResolvedValue(updatedProfile);
 
-      const result = await service.updateAvatar({ userID: FOLLOWING_ID, avatarUrl: url });
+      const result = await service.updateAvatar({ accountId: FOLLOWING_ID, avatarUrl: url });
 
       expect(mockUpdate).toHaveBeenCalledWith({
         where: { userID: FOLLOWING_ID },
@@ -120,7 +120,7 @@ describe("EditProfileService", () => {
       mockUpdate.mockRejectedValue(new Error("Record to update not found."));
 
       await expect(
-        service.updateAvatar({ userID: "non-existent", avatarUrl: "https://example.com/a.jpg" })
+        service.updateAvatar({ accountId: "non-existent", avatarUrl: "https://example.com/a.jpg" })
       ).rejects.toThrow("Record to update not found.");
     });
   });

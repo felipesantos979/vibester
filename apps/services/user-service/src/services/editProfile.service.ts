@@ -6,19 +6,19 @@ import { redis } from "../config/redis.js";
 export class EditProfileService {
     async updateBio(input: UpdateBioInput) {
         const profile = await prismaClient.userProfile.update({
-            where: { userID: input.userID },
+            where: { userID: input.accountId },
             data: { bio: input.bio }
         });
-        await redis.del(`user:profile:${profile.id}`).catch(() => {});
+        await redis.del(`user:profile:${profile.userID}`).catch(() => {});
         return profile;
     }
 
     async updateAvatar(input: UpdateAvatarInput) {
         const profile = await prismaClient.userProfile.update({
-            where: { userID: input.userID },
+            where: { userID: input.accountId },
             data: { avatarUrl: input.avatarUrl }
         });
-        await redis.del(`user:profile:${profile.id}`).catch(() => {});
+        await redis.del(`user:profile:${profile.userID}`).catch(() => {});
         return profile;
     }
 
@@ -46,7 +46,7 @@ export class EditProfileService {
         await redis.del(
             `user:followers:${followingId}`,
             `user:following:${followerId}`,
-            `user:profile:${result.id}`,
+            `user:profile:${result.userID}`,
         ).catch(() => {});
 
         return result;
@@ -73,7 +73,7 @@ export class EditProfileService {
         await redis.del(
             `user:followers:${followingId}`,
             `user:following:${followerId}`,
-            `user:profile:${result.id}`,
+            `user:profile:${result.userID}`,
         ).catch(() => {});
 
         return result;

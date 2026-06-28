@@ -43,7 +43,7 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
                     type: "object",
                     properties: {
                         authId: { type: "string", format: "uuid" },
-                        profileId: { type: "string", format: "uuid" },
+                        accountId: { type: "string", format: "uuid" },
                         username: { type: "string" },
                         name: { type: "string" },
                         email: { type: "string", format: "email" },

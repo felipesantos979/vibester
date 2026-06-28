@@ -50,11 +50,11 @@ describe("CreateProfileService", () => {
     vi.clearAllMocks();
   });
 
-  it("should create a profile with the given userID", async () => {
+  it("should create a profile with the given accountId", async () => {
     const profile = makeProfile({ userID: "user-uuid-1" });
     mockCreate.mockResolvedValue(profile);
 
-    const result = await service.createProfile({ userID: "user-uuid-1" });
+    const result = await service.createProfile({ accountId: "user-uuid-1" });
 
     expect(mockCreate).toHaveBeenCalledWith({
       data: { userID: "user-uuid-1" },
@@ -66,7 +66,7 @@ describe("CreateProfileService", () => {
     const profile = makeProfile({ userID: "user-uuid-2", followers: 5 });
     mockCreate.mockResolvedValue(profile);
 
-    const result = await service.createProfile({ userID: "user-uuid-2" });
+    const result = await service.createProfile({ accountId: "user-uuid-2" });
 
     expect(result.userID).toBe("user-uuid-2");
     expect(result.followers).toBe(5);
@@ -76,7 +76,7 @@ describe("CreateProfileService", () => {
     mockCreate.mockRejectedValue(new Error("Database error"));
 
     await expect(
-      service.createProfile({ userID: "user-uuid-1" })
+      service.createProfile({ accountId: "user-uuid-1" })
     ).rejects.toThrow("Database error");
   });
 });

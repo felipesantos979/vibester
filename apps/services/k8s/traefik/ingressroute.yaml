@@ -74,6 +74,26 @@ spec:
     certResolver: letsencrypt
 
 ---
+# IngressRoute HTTPS — roteia requisições de vibester.com.br para a landing page.
+
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: vibester-landing-tls
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`vibester.com.br`) || Host(`www.vibester.com.br`)
+      kind: Rule
+      services:
+        - name: landing-page
+          port: 3000
+  tls:
+    certResolver: letsencrypt
+
+---
 # IngressRoute HTTP — redireciona todo tráfego na porta 80 para HTTPS.
 
 apiVersion: traefik.io/v1alpha1

@@ -13,7 +13,7 @@ export async function startConsumer() {
     await consumer.run({
         eachMessage: async ({ message }) => {
             const payload = JSON.parse(message.value!.toString());
-            await createProfileService.createProfile({ userID: payload.accountId });
+            await createProfileService.createProfile({ accountId: payload.accountId });
         },
     });
 }

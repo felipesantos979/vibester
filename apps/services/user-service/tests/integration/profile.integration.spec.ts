@@ -93,39 +93,38 @@ describe('user-service — HTTP Integration', () => {
   });
 
   describe('POST /users/profile', () => {
-    it('cria perfil e retorna 201 com profileId', async () => {
+    it('cria perfil e retorna 201 com accountId', async () => {
       mockUserProfile.create.mockResolvedValue(makeProfile());
 
       const res = await app.inject({
         method: 'POST',
         url: '/users/profile',
-        payload: { userID: USER_ID },
+        payload: { accountId: USER_ID },
       });
 
       expect(res.statusCode).toBe(201);
       const body = JSON.parse(res.payload);
-      expect(body).toHaveProperty('profileId', PROFILE_ID);
-      expect(body).toHaveProperty('userID', USER_ID);
+      expect(body).toHaveProperty('accountId', USER_ID);
       expect(mockUserProfile.create).toHaveBeenCalledWith({ data: { userID: USER_ID } });
     });
   });
 
-  describe('GET /users/profile/:id — Redis cache-aside', () => {
+  describe('GET /users/profile/:accountId — Redis cache-aside', () => {
     it('retorna 200 no cache miss e consulta o banco', async () => {
       mockUserProfile.findUnique.mockResolvedValue(makeProfile());
 
-      const res = await app.inject({ method: 'GET', url: `/users/profile/${PROFILE_ID}` });
+      const res = await app.inject({ method: 'GET', url: `/users/profile/${USER_ID}` });
 
       expect(res.statusCode).toBe(200);
-      expect(JSON.parse(res.payload)).toHaveProperty('profileId', PROFILE_ID);
+      expect(JSON.parse(res.payload)).toHaveProperty('accountId', USER_ID);
       expect(mockUserProfile.findUnique).toHaveBeenCalledTimes(1);
     });
 
     it('retorna 200 no cache hit sem consultar o banco', async () => {
       mockUserProfile.findUnique.mockResolvedValue(makeProfile());
 
-      await app.inject({ method: 'GET', url: `/users/profile/${PROFILE_ID}` });
-      const res = await app.inject({ method: 'GET', url: `/users/profile/${PROFILE_ID}` });
+      await app.inject({ method: 'GET', url: `/users/profile/${USER_ID}` });
+      const res = await app.inject({ method: 'GET', url: `/users/profile/${USER_ID}` });
 
       expect(res.statusCode).toBe(200);
       expect(mockUserProfile.findUnique).toHaveBeenCalledTimes(1);
@@ -149,20 +148,20 @@ describe('user-service — HTTP Integration', () => {
       const updated = makeProfile({ bio: 'Nova bio' });
 
       mockUserProfile.findUnique.mockResolvedValue(original);
-      await app.inject({ method: 'GET', url: `/users/profile/${PROFILE_ID}` });
+      await app.inject({ method: 'GET', url: `/users/profile/${USER_ID}` });
       expect(mockUserProfile.findUnique).toHaveBeenCalledTimes(1);
 
       mockUserProfile.update.mockResolvedValue(updated);
       const res = await app.inject({
         method: 'PUT',
         url: '/users/profile/bio',
-        payload: { userID: USER_ID, bio: 'Nova bio' },
+        payload: { accountId: USER_ID, bio: 'Nova bio' },
       });
       expect(res.statusCode).toBe(200);
 
       // Cache invalidado: próximo GET chama banco novamente
       mockUserProfile.findUnique.mockResolvedValue(updated);
-      await app.inject({ method: 'GET', url: `/users/profile/${PROFILE_ID}` });
+      await app.inject({ method: 'GET', url: `/users/profile/${USER_ID}` });
       expect(mockUserProfile.findUnique).toHaveBeenCalledTimes(2);
     });
   });
@@ -175,7 +174,7 @@ describe('user-service — HTTP Integration', () => {
       const res = await app.inject({
         method: 'PUT',
         url: '/users/profile/avatar',
-        payload: { userID: USER_ID, avatarUrl },
+        payload: { accountId: USER_ID, avatarUrl },
       });
 
       expect(res.statusCode).toBe(200);

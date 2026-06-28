@@ -38,7 +38,7 @@ describe('user-service — Kafka Consumer: user.registered', () => {
     // const payload = JSON.parse(message.value.toString());
     // await createProfileService.createProfile({ userID: payload.accountId });
     const kafkaPayload = { accountId: userID };
-    await service.createProfile({ userID: kafkaPayload.accountId });
+    await service.createProfile({ accountId: kafkaPayload.accountId });
 
     expect(mockCreate).toHaveBeenCalledWith({ data: { userID } });
   });
@@ -51,7 +51,7 @@ describe('user-service — Kafka Consumer: user.registered', () => {
     mockCreate.mockImplementation(({ data }) => Promise.resolve(makeCreatedProfile(data.userID)));
 
     for (const userID of ids) {
-      await service.createProfile({ userID });
+      await service.createProfile({ accountId: userID });
     }
 
     expect(mockCreate).toHaveBeenCalledTimes(2);
@@ -63,7 +63,7 @@ describe('user-service — Kafka Consumer: user.registered', () => {
     mockCreate.mockRejectedValue(new Error('DB connection lost'));
 
     await expect(
-      service.createProfile({ userID: '11111111-1111-1111-1111-111111111111' })
+      service.createProfile({ accountId: '11111111-1111-1111-1111-111111111111' })
     ).rejects.toThrow('DB connection lost');
   });
 });
