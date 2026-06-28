@@ -32,6 +32,14 @@ vi.mock('../../src/kafka/producer', () => ({
   producer: { connect: vi.fn(), disconnect: vi.fn(), send: mockProducerSend },
 }));
 
+const { mockGetSignedUrl } = vi.hoisted(() => ({
+  mockGetSignedUrl: vi.fn().mockResolvedValue('https://signed.r2.dev/presigned?X-Amz-Signature=test'),
+}));
+vi.mock('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: mockGetSignedUrl,
+}));
+vi.mock('../../src/config/r2', () => ({ r2Client: {} }));
+
 import { buildServer } from '../helpers/fastify.test.helper';
 import { redis } from '../../src/config/redis';
 
@@ -169,6 +177,86 @@ describe('post-service — HTTP Integration', () => {
 
       const res = await app.inject({ method: 'DELETE', url: `/posts/${POST_ID}` });
       expect(res.statusCode).toBe(204);
+    });
+  });
+
+  describe('POST /posts/upload-url', () => {
+    beforeEach(() => {
+      mockGetSignedUrl.mockResolvedValue('https://signed.r2.dev/presigned?X-Amz-Signature=test');
+    });
+
+    it('retorna 200 com array de URLs pré-assinadas', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/posts/upload-url',
+        payload: { userId: USER_ID, count: 2 },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload) as unknown[];
+      expect(body).toHaveLength(2);
+    });
+
+    it('cada item retorna uploadUrl, key e publicUrl', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/posts/upload-url',
+        payload: { userId: USER_ID, count: 1 },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const [item] = JSON.parse(res.payload) as { uploadUrl: string; key: string; publicUrl: string }[];
+      expect(item).toHaveProperty('uploadUrl');
+      expect(item).toHaveProperty('key');
+      expect(item).toHaveProperty('publicUrl');
+      expect(item.uploadUrl).toBe('https://signed.r2.dev/presigned?X-Amz-Signature=test');
+      expect(item.key).toMatch(new RegExp(`^posts/${USER_ID}/`));
+      expect(item.publicUrl).toBe(`https://test.r2.dev/${item.key}`);
+    });
+
+    it('chama getSignedUrl uma vez por imagem solicitada', async () => {
+      await app.inject({
+        method: 'POST',
+        url: '/posts/upload-url',
+        payload: { userId: USER_ID, count: 3 },
+      });
+      expect(mockGetSignedUrl).toHaveBeenCalledTimes(3);
+    });
+
+    it('retorna 400 quando userId não é UUID válido', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/posts/upload-url',
+        payload: { userId: 'invalid-id', count: 1 },
+      });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('retorna 400 quando count é zero', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/posts/upload-url',
+        payload: { userId: USER_ID, count: 0 },
+      });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('retorna 400 quando count excede 20', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/posts/upload-url',
+        payload: { userId: USER_ID, count: 21 },
+      });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('retorna 400 quando body está ausente', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/posts/upload-url',
+        payload: {},
+      });
+      expect(res.statusCode).toBe(400);
     });
   });
 });

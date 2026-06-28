@@ -86,6 +86,37 @@ export async function routes(app: FastifyInstance) {
     const commentService = new CommentService(commentRepository, postRepository);
     const commentController = new CommentController(commentService);
 
+    //rota de upload
+    app.post("/posts/upload-url", {
+        schema: {
+            tags: ["Upload"],
+            summary: "Gerar URLs pré-assinadas para upload direto ao bucket",
+            description: "Retorna URLs temporárias (5 min) para o cliente fazer PUT direto no Cloudflare R2, sem passar pela VPS. Após o upload, use as publicUrls no corpo de POST /posts.",
+            body: {
+                type: "object",
+                required: ["userId", "count"],
+                properties: {
+                    userId: { type: "string", format: "uuid", description: "ID do usuário que fará o upload" },
+                    count: { type: "integer", minimum: 1, maximum: 20, description: "Quantidade de imagens a serem enviadas" },
+                },
+            },
+            response: {
+                200: {
+                    type: "array",
+                    items: {
+                        type: "object",
+                        properties: {
+                            uploadUrl: { type: "string", description: "URL pré-assinada para PUT da imagem (expira em 5 min)" },
+                            key: { type: "string", description: "Chave do objeto no bucket" },
+                            publicUrl: { type: "string", description: "URL pública final da imagem após upload" },
+                        },
+                    },
+                },
+                400: errorSchema,
+            },
+        },
+    }, postController.generateUploadUrls.bind(postController));
+
     //rota de posts
     app.post("/posts", {
         schema: {

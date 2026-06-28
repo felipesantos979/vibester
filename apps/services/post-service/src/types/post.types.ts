@@ -43,3 +43,14 @@ export interface CreatePostData {
   caption: string;
   imageUrls: string[];
 }
+
+export interface PresignedUrlItem {
+  uploadUrl: string;
+  key: string;
+  publicUrl: string;
+}
+
+export interface GeneratePresignedUrlsInput {
+  userId: string;
+  count: number;
+}

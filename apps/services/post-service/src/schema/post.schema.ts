@@ -22,3 +22,8 @@ export const postIdParamsSchema = z.object({ postId: z.uuid(), });
 export const userIdParamsSchema = z.object({ userId: z.uuid(), });
 
 export const establishmentIdParamsSchema = z.object({ establishmentId: z.uuid(), });
+
+export const generateUploadUrlsSchema = z.object({
+  userId: z.string().uuid(),
+  count: z.number().int().min(1).max(20),
+});

@@ -6,13 +6,7 @@ export class GetEventsByEstablishmentService {
         return cacheAside(`event:establishment:${establishmentId}`, 120, () =>
             prismaClient.event.findMany({
                 where: { establishmentId },
-                select: {
-                    name: true,
-                    organizer: true,
-                    location: true,
-                    totalConfirmed: true,
-                    ticketLink: true,
-                },
+                orderBy: { startDate: "asc" },
             })
         );
     }

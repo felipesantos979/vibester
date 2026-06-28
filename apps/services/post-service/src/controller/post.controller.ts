@@ -3,12 +3,16 @@ import {
     postIdParamsSchema,
     userIdParamsSchema,
     establishmentIdParamsSchema,
-    updatePostSchema
+    updatePostSchema,
+    generateUploadUrlsSchema,
 } from "../schema/post.schema";
 import { PostService } from "../services/post.service";
+import { UploadService } from "../services/upload.service";
 import { CreatePostInput, UpdatePostInput } from "../types/post.types";
 
 export class PostController {
+
+    private readonly uploadService = new UploadService();
 
     constructor(private readonly postService: PostService) { }
 
@@ -109,5 +113,17 @@ export class PostController {
         await this.postService.softDelete(postId);
 
         return reply.status(204).send();
+    }
+
+    async generateUploadUrls(
+        request: FastifyRequest<{
+            Body: { userId: string; count: number };
+        }>,
+        reply: FastifyReply
+    ) {
+        const { userId, count } = generateUploadUrlsSchema.parse(request.body);
+        const urls = await this.uploadService.generatePresignedUrls(userId, count);
+
+        return reply.status(200).send(urls);
     }
 }

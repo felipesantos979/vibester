@@ -41,3 +41,7 @@ class ApiEndpoints {
   static String establishmentPosts(String establishmentId) =>
       '$baseUrl/establishments/$establishmentId/posts';
 }
+  //Post
+  static String posts() => '$baseUrl/post/posts';
+  static String postsUploadUrl() => '$baseUrl/post/posts/upload-url';
+}
