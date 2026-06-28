@@ -96,16 +96,9 @@ function sortEstablishments(
   }
 
   const sortOptions = {
-    name: () =>
-      establishments.sort((a, b) => a.name.localeCompare(b.name)),
-
-    rating: () =>
-      establishments.sort((a, b) => b.averageRating - a.averageRating),
-
-    distance: () =>
-      establishments.sort(
-        (a, b) => (a.distanceTo ?? 0) - (b.distanceTo ?? 0)
-      ),
+    name: () => establishments.sort((a, b) => a.name.localeCompare(b.name)),
+    rating: () => establishments.sort((a, b) => b.averageRating - a.averageRating),
+    distance: () => establishments.sort((a, b) => (a.distanceTo ?? 0) - (b.distanceTo ?? 0)),
   };
 
   if (filters.sortBy) {
@@ -135,7 +128,7 @@ export class EstablishmentService {
     return sortEstablishments(establishmentsWithDistance, filters);
   }
 
-  static async updateRating(id: string, newRating: number) {
+  static async updateRating(id: string, newRating: number, newQtdAvaliacoes?: number) {
     if (newRating < 0 || newRating > 5) {
       throw new Error("INVALID_RATING");
     }
@@ -152,10 +145,12 @@ export class EstablishmentService {
       where: { id },
       data: {
         averageRating: newRating,
+        // incrementa qtdAvaliacoes se não for passado explicitamente
+        qtdAvaliacoes: newQtdAvaliacoes ?? { increment: 1 },
       },
     });
 
-    await redis.del(`establishment:profile:${id}`).catch(() => {});
+    await redis.del(`establishment:profile:${id}`).catch(() => { });
 
     return updated;
   }
@@ -175,6 +170,8 @@ export class EstablishmentService {
       return {
         icon: establishment.photoUrl,
         name: establishment.name,
+        bio: establishment.bio,
+        endereco: establishment.endereco,
         banner: establishment.bannerUrl,
         location: {
           latitude: establishment.latitude,
@@ -183,6 +180,9 @@ export class EstablishmentService {
         category: establishment.category,
         priceIndicator: establishment.priceIndicator,
         rating: establishment.averageRating,
+        qtdAvaliacoes: establishment.qtdAvaliacoes,
+        distribuicao: establishment.distribuicao,
+        nivelMovimento: establishment.nivelMovimento,
       };
     });
   }
@@ -197,7 +197,7 @@ export class EstablishmentService {
 
       const now = new Date();
 
-      return establishments.filter((establishment) =>
+      return establishments.filter((establishment: typeof establishments[number]) =>
         this.isEstablishmentOpen(establishment.openingHours, now)
       );
     });

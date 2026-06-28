@@ -7,23 +7,27 @@ datasource db {
 }
 
 model Establishment {
-  id             String  @id @default(uuid())
-  googlePlaceId  String? @unique
-  name           String
-  photoUrl       String?
-  bannerUrl      String?
-  category       String
-  priceIndicator String?
-  averageRating  Float   @default(0.0)
-  latitude       Float
-  longitude      Float
-  openingHours   EstablishmentOpeningHour[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(uuid())
+  googlePlaceId   String?  @unique
+  name            String
+  bio             String?
+  endereco        String?
+  photoUrl        String?
+  bannerUrl       String?
+  category        String
+  priceIndicator  String?
+  nivelMovimento  Int      @default(0)
+  averageRating   Float    @default(0.0)
+  qtdAvaliacoes   Int      @default(0)
+  distribuicao    Float[]
+  latitude        Float
+  longitude       Float
+  openingHours    EstablishmentOpeningHour[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   @@map("establishments")
 }
-
 
 model EstablishmentOpeningHour {
   id              String        @id @default(uuid())
