@@ -34,4 +34,8 @@ class ApiEndpoints {
 
   // Payment
   static String checkout() => '$baseUrl/payment/checkout';
+
+  //Post
+  static String posts() => '$baseUrl/post/posts';
+  static String postsUploadUrl() => '$baseUrl/post/posts/upload-url';
 }
