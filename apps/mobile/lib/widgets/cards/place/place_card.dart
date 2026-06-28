@@ -54,42 +54,46 @@ class PlaceCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        place.nome,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Icon(Icons.star, color: Colors.yellow, size: 16),
-                          SizedBox(width: 4),
-                          Text(
-                            '${place.avaliacao}',
-                            style: TextStyle(color: Colors.white54),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          place.nome,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
-                          SizedBox(width: 4),
-                          Icon(Icons.circle, color: Colors.white38, size: 6),
-                          SizedBox(width: 4),
-                          PriceIndicator(nivel: place.nivelPrecoMedio),
-                        ],
-                      ),
-                      Text(
-                        'Movimento',
-                        style: TextStyle(
-                          color: Colors.white.withAlpha(150),
-                          fontWeight: FontWeight.bold,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      SizedBox(height: 3),
-                      MovimentoIndicator(nivel: place.nivelMovimento),
-                    ],
+                        SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Icon(Icons.star, color: Colors.yellow, size: 16),
+                            SizedBox(width: 4),
+                            Text(
+                              '${place.avaliacao}',
+                              style: TextStyle(color: Colors.white54),
+                            ),
+                            SizedBox(width: 4),
+                            Icon(Icons.circle, color: Colors.white38, size: 6),
+                            SizedBox(width: 4),
+                            PriceIndicator(nivel: place.nivelPrecoMedio),
+                          ],
+                        ),
+                        Text(
+                          'Movimento',
+                          style: TextStyle(
+                            color: Colors.white.withAlpha(150),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 3),
+                        MovimentoIndicator(nivel: place.nivelMovimento),
+                      ],
+                    ),
                   ),
                 ],
               ),

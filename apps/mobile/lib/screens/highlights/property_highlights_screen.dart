@@ -91,51 +91,74 @@ class _PropertyHighlightsScreenState extends State<PropertyHighlightsScreen> {
     }
 
     if (_erro != null) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.wifi_off, color: Colors.white38, size: 48),
-          const SizedBox(height: 12),
-          Text(
-            _erro!,
-            style: const TextStyle(color: Colors.white38, fontSize: 16),
-          ),
-          const SizedBox(height: 16),
-          TextButton(
-            onPressed: _buscarHighlights,
-            child: Text(
-              'Tentar novamente',
-              style: TextStyle(color: Color(colorAmbar)),
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.wifi_off, color: Colors.white38, size: 48),
+                    const SizedBox(height: 12),
+                    Text(
+                      _erro!,
+                      style: const TextStyle(
+                        color: Colors.white38,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: _buscarHighlights,
+                      child: Text(
+                        'Tentar novamente',
+                        style: TextStyle(color: Color(colorAmbar)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
-        ],
+          );
+        },
       );
     }
 
     if (_highlights.isEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: SizedBox(
-              height: 200,
-              width: 200,
-              child: Opacity(
-                opacity: 0.8,
-                child: Image.asset('assets/img/mascote/lupa.png'),
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: Opacity(
+                        opacity: 0.8,
+                        child: Image.asset('assets/img/mascote/lupa.png'),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      'Nenhuma foto ainda',
+                      style: TextStyle(
+                        color: Colors.white38,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            'Nenhuma foto ainda',
-            style: TextStyle(
-              color: Colors.white38,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
+          );
+        },
       );
     }
 
