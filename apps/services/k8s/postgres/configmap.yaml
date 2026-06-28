@@ -10,3 +10,4 @@ data:
     CREATE DATABASE establishment_db;
     CREATE DATABASE event_db;
     CREATE DATABASE scrapping_db;
+    CREATE DATABASE payment_db;
