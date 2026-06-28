@@ -3,115 +3,98 @@ import path from "path";
 import "dotenv/config"
 import { Client } from "cassandra-driver";
 
-const KEYSPACE = process.env.CASSANDRA_KEYSPACE;
-const CONTACT_POINT = process.env.CASSANDRA_CONTACT_POINT
-const DATA_CENTER = process.env.CASSANDRA_DATACENTER;
+const KEYSPACE = process.env.ASTRA_KEYSPACE;
+const BUNDLE_PATH = process.env.ASTRA_SECURE_CONNECT_BUNDLE;
+const CLIENT_ID = process.env.ASTRA_CLIENT_ID;
+const CLIENT_SECRET = process.env.ASTRA_CLIENT_SECRET;
 
-if (!CONTACT_POINT) {
-  throw new Error("CASSANDRA_CONTACT_POINT não definida");
-}
-
-if (!DATA_CENTER) {
-  throw new Error("CASSANDRA_DATACENTER não definida");
-}
-
-if (!KEYSPACE){
-  throw new Error("KEYSPACE não definida");
-}
+if (!KEYSPACE) throw new Error("ASTRA_KEYSPACE não definida");
+if (!BUNDLE_PATH) throw new Error("ASTRA_BUNDLE_PATH não definida");
+if (!CLIENT_ID) throw new Error("ASTRA_CLIENT_ID não definida");
+if (!CLIENT_SECRET) throw new Error("ASTRA_CLIENT_SECRET não definida");
 
 const client = new Client({
-  contactPoints: [CONTACT_POINT!],
-  localDataCenter: DATA_CENTER!,
+    cloud: {
+        secureConnectBundle: BUNDLE_PATH,
+    },
+    credentials: {
+        username: CLIENT_ID,
+        password: CLIENT_SECRET,
+    },
+    keyspace: KEYSPACE,
 });
 
-async function ensureKeyspace() {
-  await client.execute(
-    `
-      CREATE KEYSPACE IF NOT EXISTS ${KEYSPACE}
-      WITH replication = {
-        'class': 'SimpleStrategy',
-        'replication_factor': 1
-      };
-    `
-  );
-}
-
 async function ensureMigrationTable() {
-  await client.execute(
-    `
-      CREATE TABLE IF NOT EXISTS ${KEYSPACE}.schema_migrations (
-        version text PRIMARY KEY,
-        executed_at timestamp
-      );
-   `
-  );
+    await client.execute(
+        `
+            CREATE TABLE IF NOT EXISTS ${KEYSPACE}.schema_migrations (
+                version text PRIMARY KEY,
+                executed_at timestamp
+            );
+        `
+    );
 }
 
 async function getExecutedMigrations(): Promise<Set<string>> {
-  const result = await client.execute(
-    `SELECT version FROM ${KEYSPACE}.schema_migrations`
-  );
+    const result = await client.execute(
+        `SELECT version FROM ${KEYSPACE}.schema_migrations`
+    );
 
-  return new Set(
-    result.rows.map((row) => row.version as string)
-  );
+    return new Set(result.rows.map((row) => row.version as string));
 }
 
 async function registerMigration(version: string) {
-  await client.execute(
-    `
-      INSERT INTO ${KEYSPACE}.schema_migrations
-      (version, executed_at)
-      VALUES (?, toTimestamp(now()))
-    `,
-    [version],
-    { prepare: true }
-  );
+    await client.execute(
+        `
+            INSERT INTO ${KEYSPACE}.schema_migrations
+            (version, executed_at)
+            VALUES (?, toTimestamp(now()))
+        `,
+        [version],
+        { prepare: true }
+    );
 }
 
 async function run() {
-  await client.connect();
-  console.log(KEYSPACE);
+    await client.connect();
+    console.log(KEYSPACE);
 
-  await ensureKeyspace();
-  await ensureMigrationTable();
+    await ensureMigrationTable();
 
-  const executed = await getExecutedMigrations();
+    const executed = await getExecutedMigrations();
 
-  const migrationsPath = path.resolve("migrations");
+    const migrationsPath = path.resolve("migrations");
 
-  const files = fs
-    .readdirSync(migrationsPath)
-    .filter((file) => file.endsWith(".cql"))
-    .sort();
+    const files = fs
+        .readdirSync(migrationsPath)
+        .filter((file) => file.endsWith(".cql"))
+        .sort();
 
-  for (const file of files) {
-    const version = file.split("__")[0];
+    for (const file of files) {
+        const version = file.split("__")[0];
 
-    if (executed.has(version)) { continue; }
+        if (executed.has(version)) { continue; }
 
-    console.log(`${file}`);
+        console.log(`${file}`);
 
-    const content = fs.readFileSync(
-      path.join(migrationsPath, file),
-      "utf8"
-    );
+        const content = fs.readFileSync(
+            path.join(migrationsPath, file),
+            "utf8"
+        );
 
-    await client.execute(content);
+        await client.execute(content);
+        await registerMigration(version);
 
-    await registerMigration(version);
+        console.log(`${version} executada`);
+    }
 
-    console.log(`${version} executada`);
-  }
+    console.log("Migrate Finalizado");
 
-  console.log("Migrate Finalizado");
-
-  await client.shutdown();
+    await client.shutdown();
 }
 
 run().catch((error) => {
-  console.error("Erro ao executar o migrate");
-  console.error(error);
-
-  process.exit(1);
+    console.error("Erro ao executar o migrate");
+    console.error(error);
+    process.exit(1);
 });

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS vibester_posts.likes_by_user (
+CREATE TABLE IF NOT EXISTS post_keyspace.likes_by_user (
     user_id uuid,
     liked_at timestamp,
     post_id uuid,

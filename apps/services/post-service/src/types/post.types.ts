@@ -1,24 +1,45 @@
 export interface Post {
-  postId: string;
-  userId: string;
-  establishmentId?: string;
-  imageUrls: string[];
-  caption: string;
-  totalLikes: number;
-  totalComments: number;
-  isDeleted: boolean;
-  createdAt: Date;
-  updatedAt?: Date;
+    postId: string;
+    userId: string;
+    userUsername: string;
+    userProfilePicture: string;
+    userVerified: boolean;
+    establishmentId?: string;
+    establishmentName?: string;
+    establishmentLogo?: string;
+    establishmentCategory?: string;
+    imageUrls: string[];
+    caption: string;
+    tags?: string[];
+    totalLikes: number;
+    totalComments: number;
+    isDeleted: boolean;
+    createdAt: Date;
+    updatedAt?: Date;
 }
 
 export interface CreatePostInput {
-  userId: string;
-  establishmentId?: string;
-  imageUrls: string[];
-  caption: string;
+    userId: string;
+    userUsername: string;
+    userProfilePicture: string;
+    userVerified: boolean;
+    establishmentId?: string;
+    establishmentName?: string;
+    establishmentLogo?: string;
+    establishmentCategory?: string;
+    caption: string;
+    tags?: string[];
+    imageFiles: Array<{ buffer: Buffer; mimetype: string }>;
 }
 
 export interface UpdatePostInput {
-  postId: string;
+    postId: string;
+    caption: string;
+}
+
+export interface CreatePostData {
+  userId: string;
+  establishmentId?: string;
   caption: string;
+  imageUrls: string[];
 }
