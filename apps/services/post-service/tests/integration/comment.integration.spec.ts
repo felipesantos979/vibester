@@ -87,7 +87,7 @@ describe('post-service — Comments Integration', () => {
       );
     });
 
-    it('retorna 500 quando post não existe', async () => {
+    it('retorna 404 quando post não existe', async () => {
       mockExecute.mockResolvedValue({ rows: [] }); // post not found
 
       const res = await app.inject({
@@ -96,7 +96,7 @@ describe('post-service — Comments Integration', () => {
         payload: { postId: POST_ID, userId: COMMENTER_ID, content: 'comentário' },
       });
 
-      expect(res.statusCode).toBe(500);
+      expect(res.statusCode).toBe(404);
       expect(mockProducerSend).not.toHaveBeenCalled();
     });
   });
