@@ -17,6 +17,10 @@ spec:
     spec:
       imagePullSecrets:
         - name: ghcr-secret
+      volumes:
+        - name: astra-bundle
+          secret:
+            secretName: astra-secure-connect-bundle
       containers:
         - name: post-service
           image: ghcr.io/felipesantos979/vibester-post-service:latest
@@ -28,6 +32,13 @@ spec:
                 name: post-service-secret
             - configMapRef:
                 name: redis-env
+          env:
+            - name: ASTRA_SECURE_CONNECT_BUNDLE
+              value: /etc/astra/secure-connect-bundle.zip
+          volumeMounts:
+            - name: astra-bundle
+              mountPath: /etc/astra
+              readOnly: true
           resources:
             requests:
               cpu: "100m"
@@ -49,66 +60,3 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 30
             failureThreshold: 3
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: cassandra
-  namespace: default
-  labels:
-    app: cassandra
-spec:
-  serviceName: cassandra
-  replicas: 1
-  selector:
-    matchLabels:
-      app: cassandra
-  template:
-    metadata:
-      labels:
-        app: cassandra
-    spec:
-      containers:
-        - name: cassandra
-          image: cassandra:4.1
-          ports:
-            - containerPort: 9042
-          env:
-            - name: CASSANDRA_CLUSTER_NAME
-              value: "vibester"
-            - name: CASSANDRA_DC
-              value: "datacenter1"
-            - name: CASSANDRA_RACK
-              value: "rack1"
-            - name: HEAP_NEWSIZE
-              value: "128M"
-            - name: MAX_HEAP_SIZE
-              value: "256M"
-          volumeMounts:
-            - name: cassandra-data
-              mountPath: /var/lib/cassandra
-          resources:
-            requests:
-              cpu: "200m"
-              memory: "512Mi"
-            limits:
-              cpu: "1000m"
-              memory: "1Gi"
-          readinessProbe:
-            exec:
-              command:
-                - cqlsh
-                - -e
-                - "describe keyspaces"
-            initialDelaySeconds: 60
-            periodSeconds: 10
-            failureThreshold: 10
-  volumeClaimTemplates:
-    - metadata:
-        name: cassandra-data
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 5Gi
