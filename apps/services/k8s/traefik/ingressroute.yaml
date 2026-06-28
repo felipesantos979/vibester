@@ -55,6 +55,15 @@ spec:
         - name: post-service
           port: 3000
 
+    - match: Host(`api.vibester.com.br`) && PathPrefix(`/payment`)
+      kind: Rule
+      middlewares:
+        - name: strip-payment-prefix
+          namespace: default
+      services:
+        - name: payment-service
+          port: 8080
+
     - match: Host(`api.vibester.com.br`) && PathPrefix(`/scrapping`)
       kind: Rule
       middlewares:

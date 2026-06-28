@@ -1,11 +1,18 @@
 import { execSync } from 'child_process';
-import { writeFileSync, unlinkSync, existsSync } from 'fs';
+import { writeFileSync, unlinkSync, existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { tmpdir } from 'os';
 
 const ROOT = join(__dirname, '..');
 
-const services = [
+interface ServiceConfig {
+  name: string;
+  prefix: string;
+  env?: Record<string, string>;
+  staticSpecFile?: string;
+}
+
+const services: ServiceConfig[] = [
   {
     name: 'auth-service',
     prefix: '/auth',
@@ -44,6 +51,11 @@ const services = [
     prefix: '/user',
     env: { DATABASE_URL: 'postgresql://u:p@localhost:5432/db' },
   },
+  {
+    name: 'payment-service',
+    prefix: '/payment',
+    staticSpecFile: 'openapi-partial.json',
+  },
 ];
 
 const combined: any = {
@@ -59,20 +71,28 @@ const combined: any = {
 };
 
 for (const service of services) {
-  const dir = join(ROOT, service.name);
-  const outFile = join(tmpdir(), `vibester-spec-${service.name}.json`);
   console.error(`Gerando spec: ${service.name}...`);
 
   try {
-    execSync(`npx tsx src/generate-spec.ts "${outFile}"`, {
-      cwd: dir,
-      env: { ...process.env, ...service.env },
-      timeout: 30_000,
-      stdio: 'pipe',
-    });
+    let spec: any;
 
-    const spec = JSON.parse(require('fs').readFileSync(outFile, 'utf-8'));
-    if (existsSync(outFile)) unlinkSync(outFile);
+    if (service.staticSpecFile) {
+      const specPath = join(ROOT, service.name, service.staticSpecFile);
+      spec = JSON.parse(readFileSync(specPath, 'utf-8'));
+    } else {
+      const dir = join(ROOT, service.name);
+      const outFile = join(tmpdir(), `vibester-spec-${service.name}.json`);
+
+      execSync(`npx tsx src/generate-spec.ts "${outFile}"`, {
+        cwd: dir,
+        env: { ...process.env, ...service.env },
+        timeout: 30_000,
+        stdio: 'pipe',
+      });
+
+      spec = JSON.parse(readFileSync(outFile, 'utf-8'));
+      if (existsSync(outFile)) unlinkSync(outFile);
+    }
 
     for (const tag of spec.tags ?? []) {
       if (!combined.tags.find((t: any) => t.name === tag.name)) {
