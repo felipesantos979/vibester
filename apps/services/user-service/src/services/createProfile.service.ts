@@ -7,7 +7,9 @@ export class CreateProfileService {
 
         const profile = await prismaClient.userProfile.create({
             data: {
-                userID: input.accountId
+                userID: input.accountId,
+                name: input.name,
+                username: input.username,
             }
         });
 

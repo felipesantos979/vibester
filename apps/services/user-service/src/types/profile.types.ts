@@ -1,5 +1,7 @@
 export interface CreateProfileInput {
   accountId: string;
+  name?: string;
+  username?: string;
 }
 
 export interface UpdateBioInput {

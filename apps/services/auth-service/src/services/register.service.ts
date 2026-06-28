@@ -22,7 +22,7 @@ export class RegisterService {
         const profileResponse = await fetch(`${env.profileServiceUrl}/users/profile`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ accountId: account.accountId }),
+            body: JSON.stringify({ accountId: account.accountId, name: input.name, username: input.username }),
         });
 
         if (!profileResponse.ok) {
