@@ -4,7 +4,6 @@ import { z } from "zod";
 import { CreateEventService } from "../services/createEvent.service.js";
 import { ListEventsService } from "../services/listEvents.service.js";
 import { GetEventDetailsService } from "../services/getEventDetails.service.js";
-import { GetEventsByEstablishmentService } from "../services/getEventsByEstablishment.service.js";
 import { ToggleFeaturedService } from "../services/toggleFeatured.service.js";
 import { GetEventsByEstablishmentService } from "../services/getEventsByEstablishment.service.js";
 
@@ -97,23 +96,7 @@ export async function eventRoutes(app: FastifyInstance) {
             summary: "Criar evento",
             body: createEventSchema,
             response: {
-                201: z.object({
-                    id: z.string().uuid(),
-                    name: z.string(),
-                    photoUrl: z.string().url(),
-                    category: z.string(),
-                    organizer: z.string(),
-                    location: z.string(),
-                    startDate: z.date(),
-                    endDate: z.date(),
-                    ticketLink: z.string().url().nullable(),
-                    totalConfirmed: z.number(),
-                    latitude: z.number(),
-                    longitude: z.number(),
-                    establishmentId: z.string().uuid(),
-                    createdAt: z.date(),
-                    updatedAt: z.date(),
-                }),
+                201: eventDetailsSchema,
                 500: errorSchema,
             },
         },
