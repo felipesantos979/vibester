@@ -24,11 +24,11 @@ describe('Register integration', () => {
   beforeEach(() => {
     mockFetch.mockResolvedValue({
       ok: true,
-      json: vi.fn().mockResolvedValue({ profileId: 'profile-uuid-1' }),
+      json: vi.fn().mockResolvedValue({ accountId: 'acc-1' }),
     });
   });
 
-  it('POST /register returns 201 with authId and profileId', async () => {
+  it('POST /register returns 201 with authId and accountId', async () => {
     mockAccess.create.mockResolvedValueOnce({ id: '1', accountId: 'acc-1', username: 'u', email: 'e', createdAt: new Date(), updatedAt: new Date() });
 
     const res = await app.inject({ method: 'POST', url: '/register', payload: { username: 'u', name: 'n', email: 'u@example.com', password: 'secret', bornAt: '1990-01-01' } });
@@ -36,7 +36,7 @@ describe('Register integration', () => {
     expect(res.statusCode).toBe(201);
     const body = JSON.parse(res.payload);
     expect(body).toHaveProperty('authId');
-    expect(body).toHaveProperty('profileId');
+    expect(body).toHaveProperty('accountId');
     expect(body).toHaveProperty('username');
   });
 

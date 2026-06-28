@@ -22,18 +22,18 @@ export class RegisterService {
         const profileResponse = await fetch(`${env.profileServiceUrl}/users/profile`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userID: account.accountId }),
+            body: JSON.stringify({ accountId: account.accountId }),
         });
 
         if (!profileResponse.ok) {
             throw new Error('Failed to create user profile');
         }
 
-        const profile = await profileResponse.json() as { profileId: string };
+        const profile = await profileResponse.json() as { accountId: string };
 
         return {
             authId: account.id,
-            profileId: profile.profileId,
+            accountId: profile.accountId,
             username: account.username,
             name: input.name,
             email: account.email,

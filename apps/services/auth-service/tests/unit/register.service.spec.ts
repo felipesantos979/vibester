@@ -23,12 +23,12 @@ describe('RegisterService', () => {
     vi.clearAllMocks();
     mockFetch.mockResolvedValue({
       ok: true,
-      json: vi.fn().mockResolvedValue({ profileId: 'profile-uuid-1' }),
+      json: vi.fn().mockResolvedValue({ accountId: 'acc-1' }),
     });
     service = new RegisterService();
   });
 
-  it('should register successfully and return authId and profileId', async () => {
+  it('should register successfully and return authId and accountId', async () => {
     const input = { username: 'newuser', email: 'new@example.com', password: 'secret', name: 'New', bornAt: new Date() };
     mockAccess.create.mockResolvedValueOnce({ id: '1', accountId: 'acc-1', username: input.username, email: input.email, createdAt: new Date(), updatedAt: new Date() });
 
@@ -41,7 +41,7 @@ describe('RegisterService', () => {
       expect.objectContaining({ method: 'POST' }),
     );
     expect(result).toHaveProperty('authId', '1');
-    expect(result).toHaveProperty('profileId', 'profile-uuid-1');
+    expect(result).toHaveProperty('accountId', 'acc-1');
     expect(result.username).toBe(input.username);
   });
 

@@ -15,8 +15,7 @@ const getFollowersService = new GetFollowersService();
 const errorSchema = z.object({ message: z.string() });
 
 const userProfileSchema = z.object({
-  profileId: z.string().uuid(),
-  userID: z.string().uuid(),
+  accountId: z.string().uuid(),
   name: z.string().nullable(),
   username: z.string().nullable(),
   avatarUrl: z.string().nullable(),
@@ -29,21 +28,21 @@ const userProfileSchema = z.object({
 });
 
 function toProfileResponse(profile: UserProfileModel) {
-  const { id: profileId, ...rest } = profile;
-  return { profileId, ...rest };
+  const { id: _id, userID: accountId, ...rest } = profile;
+  return { accountId, ...rest };
 }
 
 const createProfileSchema = z.object({
-  userID: z.string().uuid(),
+  accountId: z.string().uuid(),
 });
 
 const updateBioSchema = z.object({
-  userID: z.string().uuid(),
+  accountId: z.string().uuid(),
   bio: z.string(),
 });
 
 const updateAvatarSchema = z.object({
-  userID: z.string().uuid(),
+  accountId: z.string().uuid(),
   avatarUrl: z.string().url(),
 });
 
@@ -52,12 +51,8 @@ const followerActionSchema = z.object({
   followingId: z.string().uuid(),
 });
 
-const userIDParamsSchema = z.object({
-  userID: z.string().uuid(),
-});
-
-const profileIDParamsSchema = z.object({
-  id: z.string().uuid(),
+const accountIdParamsSchema = z.object({
+  accountId: z.string().uuid(),
 });
 
 const followerEntrySchema = z.object({
@@ -77,7 +72,7 @@ export async function profileRoutes(app: FastifyInstance) {
     schema: {
       tags: ["Profile"],
       summary: "Criar perfil",
-      description: "Cria o perfil de um usuário a partir do seu userID.",
+      description: "Cria o perfil de um usuário a partir do seu accountId.",
       body: createProfileSchema,
       response: { 201: userProfileSchema, 500: errorSchema },
     },
@@ -91,12 +86,12 @@ export async function profileRoutes(app: FastifyInstance) {
     }
   });
 
-  router.get("/profile/:id", {
+  router.get("/profile/:accountId", {
     schema: {
       tags: ["Profile"],
-      summary: "Buscar perfil por ID",
-      description: "Retorna o perfil de um usuário pelo ID do profile (UUID).",
-      params: profileIDParamsSchema,
+      summary: "Buscar perfil por accountId",
+      description: "Retorna o perfil de um usuário pelo accountId (UUID da conta).",
+      params: accountIdParamsSchema,
       response: {
         200: userProfileSchema,
         404: errorSchema,
@@ -105,7 +100,7 @@ export async function profileRoutes(app: FastifyInstance) {
     },
   }, async (request, reply) => {
     try {
-      const profile = await getProfileService.getProfileById(request.params.id);
+      const profile = await getProfileService.getProfileByAccountId(request.params.accountId);
       if (!profile) return reply.status(404).send({ message: "Profile not found" });
       return reply.status(200).send(toProfileResponse(profile));
     } catch (error) {
@@ -150,6 +145,7 @@ export async function profileRoutes(app: FastifyInstance) {
     }
   });
 
+
   router.post("/profile/followers/increase", {
     schema: {
       tags: ["Profile"],
@@ -188,17 +184,17 @@ export async function profileRoutes(app: FastifyInstance) {
     }
   });
 
-  router.get("/:userID/followers", {
+  router.get("/:accountId/followers", {
     schema: {
       tags: ["Profile"],
       summary: "Listar seguidores",
       description: "Retorna a lista de usuários que seguem o usuário informado.",
-      params: userIDParamsSchema,
+      params: accountIdParamsSchema,
       response: { 200: z.array(followerEntrySchema), 500: errorSchema },
     },
   }, async (request, reply) => {
     try {
-      const followers = await getFollowersService.listFollowers(request.params.userID);
+      const followers = await getFollowersService.listFollowers(request.params.accountId);
       return reply.status(200).send(followers);
     } catch (error) {
       request.log.error(error);
@@ -206,17 +202,17 @@ export async function profileRoutes(app: FastifyInstance) {
     }
   });
 
-  router.get("/:userID/following", {
+  router.get("/:accountId/following", {
     schema: {
       tags: ["Profile"],
       summary: "Listar quem o usuário segue",
       description: "Retorna a lista de usuários que o usuário informado está seguindo.",
-      params: userIDParamsSchema,
+      params: accountIdParamsSchema,
       response: { 200: z.array(followingEntrySchema), 500: errorSchema },
     },
   }, async (request, reply) => {
     try {
-      const following = await getFollowersService.listFollowing(request.params.userID);
+      const following = await getFollowersService.listFollowing(request.params.accountId);
       return reply.status(200).send(following);
     } catch (error) {
       request.log.error(error);

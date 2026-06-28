@@ -50,28 +50,28 @@ describe("GetProfileService", () => {
     vi.clearAllMocks();
   });
 
-  it("should return the profile when found by id", async () => {
-    const profile = makeProfile({ id: "profile-id-1" });
+  it("should return the profile when found by accountId", async () => {
+    const profile = makeProfile({ userID: "user-uuid-1" });
     mockFindUnique.mockResolvedValue(profile);
 
-    const result = await service.getProfileById("profile-id-1");
+    const result = await service.getProfileByAccountId("user-uuid-1");
 
-    expect(mockFindUnique).toHaveBeenCalledWith({ where: { id: "profile-id-1" } });
+    expect(mockFindUnique).toHaveBeenCalledWith({ where: { userID: "user-uuid-1" } });
     expect(result).toEqual(profile);
   });
 
   it("should return null when profile is not found", async () => {
     mockFindUnique.mockResolvedValue(null);
 
-    const result = await service.getProfileById("non-existent-id");
+    const result = await service.getProfileByAccountId("non-existent-id");
 
-    expect(mockFindUnique).toHaveBeenCalledWith({ where: { id: "non-existent-id" } });
+    expect(mockFindUnique).toHaveBeenCalledWith({ where: { userID: "non-existent-id" } });
     expect(result).toBeNull();
   });
 
   it("should throw when prisma fails", async () => {
     mockFindUnique.mockRejectedValue(new Error("Database error"));
 
-    await expect(service.getProfileById("profile-id-1")).rejects.toThrow("Database error");
+    await expect(service.getProfileByAccountId("user-uuid-1")).rejects.toThrow("Database error");
   });
 });
