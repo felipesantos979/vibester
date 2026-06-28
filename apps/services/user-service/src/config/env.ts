@@ -9,4 +9,5 @@ export const env = {
     jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
     databaseUrl: process.env.DATABASE_URL as string,
     profileServiceUrl: process.env.PROFILE_SERVICE_URL as string,
+    kafkaBrokers: process.env.KAFKA_BROKERS as string,
 };

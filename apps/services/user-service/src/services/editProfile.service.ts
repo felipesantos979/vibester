@@ -1,44 +1,90 @@
 import prismaClient from "../prisma/index.js";
-import { UpdateAvatarInput, UpdateBioInput } from "../types/profile.types.js";
+import { UpdateAvatarInput, UpdateBioInput, UpdateProfileInfoInput } from "../types/profile.types.js";
+import { producer } from "../kafka/producer.js";
+import { redis } from "../config/redis.js";
 
 export class EditProfileService {
-    async updateBio(input: UpdateBioInput) {
-        console.log("Atualizando bio do usuário", input.userID);
-
+    async updateProfileInfo(input: UpdateProfileInfoInput) {
         const profile = await prismaClient.userProfile.update({
-            where: { userID: input.userID },
+            where: { userID: input.accountId },
+            data: { name: input.name, username: input.username },
+        });
+        await redis.del(`user:profile:${profile.userID}`).catch(() => {});
+        return profile;
+    }
+
+    async updateBio(input: UpdateBioInput) {
+        const profile = await prismaClient.userProfile.update({
+            where: { userID: input.accountId },
             data: { bio: input.bio }
         });
-
+        await redis.del(`user:profile:${profile.userID}`).catch(() => {});
         return profile;
     }
 
     async updateAvatar(input: UpdateAvatarInput) {
-        console.log("Atualizando avatar do usuário", input.userID);
-
         const profile = await prismaClient.userProfile.update({
-            where: { userID: input.userID },
+            where: { userID: input.accountId },
             data: { avatarUrl: input.avatarUrl }
         });
-
+        await redis.del(`user:profile:${profile.userID}`).catch(() => {});
         return profile;
     }
 
-    async increaseFollower(userID: string) {
-        const profile = await prismaClient.userProfile.update({
-            where: { userID: userID },
-            data: { followers: { increment: 1 } }
+    async increaseFollower(followerId: string, followingId: string) {
+        await prismaClient.userFollow.create({ data: { followerId, followingId } });
+
+        await Promise.all([
+            prismaClient.userProfile.update({
+                where: { userID: followingId },
+                data: { followers: { increment: 1 } },
+            }),
+            prismaClient.userProfile.update({
+                where: { userID: followerId },
+                data: { following: { increment: 1 } },
+            }),
+        ]);
+
+        await producer.send({
+            topic: 'user.followed',
+            messages: [{ value: JSON.stringify({ followerId, followingId }) }],
         });
 
-        return profile;
+        const result = await prismaClient.userProfile.findUniqueOrThrow({ where: { userID: followingId } });
+
+        await redis.del(
+            `user:followers:${followingId}`,
+            `user:following:${followerId}`,
+            `user:profile:${result.userID}`,
+        ).catch(() => {});
+
+        return result;
     }
 
-    async decreaseFollower(userID: string) {
-        const profile = await prismaClient.userProfile.update({
-            where: { userID: userID },
-            data: { followers: { decrement: 1 } }
+    async decreaseFollower(followerId: string, followingId: string) {
+        await prismaClient.userFollow.delete({
+            where: { followerId_followingId: { followerId, followingId } },
         });
 
-        return profile;
+        await Promise.all([
+            prismaClient.userProfile.update({
+                where: { userID: followingId },
+                data: { followers: { decrement: 1 } },
+            }),
+            prismaClient.userProfile.update({
+                where: { userID: followerId },
+                data: { following: { decrement: 1 } },
+            }),
+        ]);
+
+        const result = await prismaClient.userProfile.findUniqueOrThrow({ where: { userID: followingId } });
+
+        await redis.del(
+            `user:followers:${followingId}`,
+            `user:following:${followerId}`,
+            `user:profile:${result.userID}`,
+        ).catch(() => {});
+
+        return result;
     }
 }

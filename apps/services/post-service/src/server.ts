@@ -1,9 +1,18 @@
 import Fastify from "fastify";
-import { cassandraClient } from "./config/cassandra";
+import { getCassandraClient } from "./config/cassandra";
 import { routes } from "./routes";
+import { registerSwagger } from "./config/swagger";
 import { ZodError } from "zod";
+import multipart from "@fastify/multipart";
 
 const app = Fastify();
+
+app.register(multipart, {
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+    files: 20,
+  },
+});
 
 app.register(routes);
 
@@ -31,7 +40,13 @@ app.setErrorHandler((error, request, reply) => {
 
 async function start() {
   try {
-    await cassandraClient.connect();
+    await producer.connect();
+    await getCassandraClient().connect();
+
+    await registerSwagger(app);
+    await app.register(routes);
+
+    process.on('SIGTERM', async () => { await producer.disconnect(); });
 
     await app.listen({
       port: 3000,

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/models/user/user_model.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
+import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
-import 'package:mobile/utils/date_picker_field.dart';
 import 'package:mobile/widgets/cards/users/editing_avatar.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
-import 'package:mobile/widgets/text-field/primary_text_field.dart';
+import 'package:provider/provider.dart';
 
 class ProfileEditingScreen extends StatefulWidget {
   const ProfileEditingScreen({super.key});
@@ -15,6 +18,61 @@ class ProfileEditingScreen extends StatefulWidget {
 }
 
 class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
+  final TextEditingController _nomeUsuarioController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
+  final _userService = UserService();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _nomeUsuarioController.dispose();
+    _bioController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _salvarPerfil() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final userAtual = context.read<UserProvider>().user;
+    final accountId = userAtual?.accountId ?? '';
+    final tokenAtual = userAtual?.token;
+    final bio = _bioController.text.trim();
+
+    setState(() => _isLoading = true);
+
+    try {
+      final profileResponse = await _userService.updateBio(
+        accountId: accountId,
+        bio: bio,
+      );
+
+      // Reaproveita o token que já estava no provider
+      final usuarioAtualizado = UserModel.fromProfileJson(
+        profileResponse,
+        accountId: accountId,
+        token: tokenAtual,
+      );
+
+      if (!mounted) return;
+      context.read<UserProvider>().setUser(usuarioAtualizado);
+
+      Navigator.pushNamed(context, AppRoutes.userInterests);
+    } catch (e) {
+      debugPrint(e.toString());
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Não foi possível atualizar a bio. Tente novamente.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,37 +83,169 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
         foregroundColor: Colors.white,
         titleTextStyle: GoogleFonts.inter(fontSize: 20),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Center(heightFactor: 2, child: EditableAvatar()),
-            PrimaryTextField(
-              labelText: 'Nome',
-              height: 60,
-              textInputAction: TextInputAction.done,
-            ),
-            SizedBox(height: 25),
-            DatePickerField(labelText: 'Data de Nascimento', height: 60),
-            SizedBox(height: 25),
-            PrimaryTextField(
-              labelText: 'Nome de usuário',
-              height: 60,
-              textInputAction: TextInputAction.next,
-            ),
-            SizedBox(height: 25),
-            PrimaryTextField(
-              labelText: 'Bio',
-              height: 90,
-              textInputAction: TextInputAction.done,
-            ),
-            SizedBox(height: 25),
-            PrimaryButton(
-              label: 'Cadastrar',
-              onPressed: () {
-                Navigator.pushNamed(context, AppRoutes.userInterests);
-              },
-            ),
-          ],
+      body: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Center(heightFactor: 2, child: EditableAvatar()),
+              SizedBox(height: 25),
+
+              Padding(
+                padding: const EdgeInsets.only(right: 250, bottom: 10),
+                child: Text(
+                  'NOME DE USUÁRIO',
+                  style: GoogleFonts.inter(
+                    color: Color(colorGrey),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+
+              SizedBox(
+                width: 350,
+                height: 60,
+                child: TextFormField(
+                  controller: _nomeUsuarioController,
+
+                  textInputAction: TextInputAction.next,
+                  style: const TextStyle(color: Colors.white),
+                  cursorColor: Color(colorAmbar),
+
+                  inputFormatters: [LengthLimitingTextInputFormatter(50)],
+
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0xFF141414),
+                    prefixIcon: const Icon(Icons.person),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    errorStyle: const TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 12,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: const BorderSide(
+                        color: Colors.white10,
+                        width: 1.3,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: const BorderSide(
+                        color: Color(colorAmbar),
+                        width: 1.3,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: const BorderSide(
+                        color: Colors.redAccent,
+                        width: 1.3,
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: const BorderSide(
+                        color: Colors.redAccent,
+                        width: 1.3,
+                      ),
+                    ),
+                  ),
+
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Informe seu nome de usuário!';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+
+              SizedBox(height: 30),
+
+              Padding(
+                padding: const EdgeInsets.only(right: 310, bottom: 10),
+                child: Text(
+                  'BIO',
+                  style: GoogleFonts.inter(
+                    color: Color(colorGrey),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+
+              SizedBox(
+                width: 350,
+                height: 150,
+                child: TextFormField(
+                  controller: _bioController,
+
+                  maxLines: null,
+                  expands: true,
+                  textInputAction: TextInputAction.done,
+                  style: const TextStyle(color: Colors.white),
+                  cursorColor: Color(colorAmbar),
+
+                  inputFormatters: [LengthLimitingTextInputFormatter(150)],
+
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0xFF141414),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    errorStyle: const TextStyle(
+                      color: Colors.redAccent,
+                      fontSize: 12,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: const BorderSide(
+                        color: Colors.white10,
+                        width: 1.3,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: const BorderSide(
+                        color: Color(colorAmbar),
+                        width: 1.3,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: const BorderSide(
+                        color: Colors.redAccent,
+                        width: 1.3,
+                      ),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(18),
+                      borderSide: const BorderSide(
+                        color: Colors.redAccent,
+                        width: 1.3,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 25),
+
+              Padding(
+                padding: const EdgeInsets.only(top: 100),
+                child: PrimaryButton(
+                  label: _isLoading ? 'Salvando...' : 'Cadastrar',
+                  onPressed: _isLoading ? () {} : _salvarPerfil,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

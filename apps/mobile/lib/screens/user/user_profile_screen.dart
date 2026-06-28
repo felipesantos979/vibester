@@ -40,6 +40,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget build(BuildContext context) {
     final user = context.watch<UserProvider>().user;
 
+    if (user == null) {
+      return Scaffold(
+        backgroundColor: Color(colorNoturno),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,

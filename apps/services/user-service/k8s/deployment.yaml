@@ -26,6 +26,8 @@ spec:
           envFrom:
             - secretRef:
                 name: user-service-secret
+            - configMapRef:
+                name: redis-env
           resources:
             requests:
               cpu: "100m"
@@ -45,55 +47,3 @@ spec:
               port: 3003
             initialDelaySeconds: 20
             periodSeconds: 30
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: user-db
-  namespace: default
-  labels:
-    app: user-db
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: user-db
-  template:
-    metadata:
-      labels:
-        app: user-db
-    spec:
-      containers:
-        - name: postgres
-          image: postgres:15-alpine
-          ports:
-            - containerPort: 5432
-          envFrom:
-            - secretRef:
-                name: user-service-secret
-          volumeMounts:
-            - name: user-db-data
-              mountPath: /var/lib/postgresql/data
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "500m"
-              memory: "512Mi"
-      volumes:
-        - name: user-db-data
-          persistentVolumeClaim:
-            claimName: user-db-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: user-db-pvc
-  namespace: default
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
