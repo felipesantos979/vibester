@@ -70,6 +70,14 @@ PageRouteBuilder _scaleRoute(Widget page, RouteSettings settings) {
   );
 }
 
+//Classe que da ao scroll uma propriedade especifica
+class _NoBounceScrollBehavior extends ScrollBehavior {
+  @override
+  ScrollPhysics getScrollPhysics(BuildContext context) {
+    return const ClampingScrollPhysics();
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('pt_BR', null);
@@ -90,6 +98,8 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        //Chama a classe da propriedade de scroll 
+        scrollBehavior: _NoBounceScrollBehavior(),
         theme: ThemeData(
           textTheme: GoogleFonts.interTextTheme(),
           fontFamily: GoogleFonts.inter().fontFamily,
