@@ -7,6 +7,7 @@ on:
     paths:
       - "apps/services/**/src/**"
       - "apps/services/scripts/merge-docs.ts"
+      - "apps/services/payment-service/openapi-partial.json"
 
 jobs:
   generate:
