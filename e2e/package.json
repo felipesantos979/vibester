@@ -1,0 +1,22 @@
+{
+  "name": "vibester-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "End-to-end tests against real running services",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:health": "vitest run tests/01-health.spec.ts",
+    "test:auth": "vitest run tests/02-auth.spec.ts",
+    "test:user": "vitest run tests/03-user.spec.ts",
+    "test:post": "vitest run tests/04-post.spec.ts",
+    "test:event": "vitest run tests/05-event.spec.ts",
+    "test:establishment": "vitest run tests/06-establishment.spec.ts",
+    "test:social": "vitest run tests/07-social-flow.spec.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^3.0.0"
+  }
+}

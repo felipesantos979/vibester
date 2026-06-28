@@ -5,6 +5,7 @@ import { registerSwagger } from "./config/swagger";
 import { ZodError } from "zod";
 import multipart from "@fastify/multipart";
 import { producer } from "./kafka/producer";
+import { env } from "./config/env";
 
 const app = Fastify();
 
@@ -48,7 +49,7 @@ async function start() {
     process.on('SIGTERM', async () => { await producer.disconnect(); });
 
     await app.listen({
-      port: 3000,
+      port: Number(env.port) || 3000,
       host: "0.0.0.0",
     });
   } catch (error) {

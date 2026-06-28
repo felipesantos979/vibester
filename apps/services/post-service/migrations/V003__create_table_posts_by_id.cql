@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS post_keyspace.posts_by_id (
+CREATE TABLE IF NOT EXISTS posts_by_id (
     post_id uuid PRIMARY KEY,
 
     -- dados do usuário
