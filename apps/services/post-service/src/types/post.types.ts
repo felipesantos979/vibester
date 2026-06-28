@@ -1,9 +1,9 @@
 export interface Post {
     postId: string;
     userId: string;
-    userUsername: string;
-    userProfilePicture: string;
-    userVerified: boolean;
+    userUsername?: string;
+    userProfilePicture?: string;
+    userVerified?: boolean;
     establishmentId?: string;
     establishmentName?: string;
     establishmentLogo?: string;
@@ -20,16 +20,16 @@ export interface Post {
 
 export interface CreatePostInput {
     userId: string;
-    userUsername: string;
-    userProfilePicture: string;
-    userVerified: boolean;
+    userUsername?: string;
+    userProfilePicture?: string;
+    userVerified?: boolean;
     establishmentId?: string;
     establishmentName?: string;
     establishmentLogo?: string;
     establishmentCategory?: string;
     caption: string;
     tags?: string[];
-    imageFiles: Array<{ buffer: Buffer; mimetype: string }>;
+    imageUrls: string[];
 }
 
 export interface UpdatePostInput {

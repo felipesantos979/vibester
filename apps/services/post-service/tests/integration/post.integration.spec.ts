@@ -24,7 +24,7 @@ vi.mock('../../src/config/redis', async () => {
 // Mock do Cassandra - execute retorna { rows: [] } por padrão
 const { mockExecute } = vi.hoisted(() => ({ mockExecute: vi.fn().mockResolvedValue({ rows: [] }) }));
 vi.mock('../../src/config/cassandra', () => ({
-  cassandraClient: { execute: mockExecute },
+  getCassandraClient: vi.fn(() => ({ execute: mockExecute })),
 }));
 
 const { mockProducerSend } = vi.hoisted(() => ({ mockProducerSend: vi.fn() }));
@@ -46,7 +46,7 @@ function makeCassandraRow(overrides: Record<string, unknown> = {}) {
     post_id: POST_ID,
     user_id: USER_ID,
     establishment_id: ESTAB_ID,
-    image_url: ['https://example.com/img.jpg'],
+    image_urls: ['https://example.com/img.jpg'],
     caption: 'Test post',
     total_likes: 0,
     total_comments: 0,

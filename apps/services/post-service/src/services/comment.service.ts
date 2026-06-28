@@ -3,7 +3,6 @@ import { randomUUID } from "crypto";
 import { CommentRepository } from "../repository/comment.repository";
 import { PostRepository } from "../repository/post.repository";
 import { Comment, CreateCommentInput, UpdateCommentInput } from "../types/comment.type";
-import el from "zod/v4/locales/el.js";
 import { producer } from "../kafka/producer";
 
 export class CommentService {

@@ -5,19 +5,16 @@ import {
     Post,
     UpdatePostInput
 } from "../types/post.types";
-import { UploadService } from "./upload.service";
+import { redis, cacheAside } from "../config/redis";
 
 export class PostService {
 
     constructor(
         private readonly postRepository: PostRepository,
-        private readonly uploadService: UploadService,
     ) {}
 
     async create(input: CreatePostInput): Promise<Post> {
         const postId = randomUUID();
-
-        const imageUrls = await this.uploadService.uploadImages(input.imageFiles, input.userId, postId);
 
         const post: Post = {
             postId,
@@ -29,7 +26,7 @@ export class PostService {
             establishmentName: input.establishmentName,
             establishmentLogo: input.establishmentLogo,
             establishmentCategory: input.establishmentCategory,
-            imageUrls,
+            imageUrls: input.imageUrls,
             caption: input.caption,
             tags: input.tags,
             totalLikes: 0,

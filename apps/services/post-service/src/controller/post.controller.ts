@@ -1,6 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import {
-    createPostSchema,
     postIdParamsSchema,
     userIdParamsSchema,
     establishmentIdParamsSchema,
@@ -8,58 +7,29 @@ import {
 } from "../schema/post.schema";
 import { PostService } from "../services/post.service";
 import { CreatePostInput, UpdatePostInput } from "../types/post.types";
-import { z } from "zod";
-
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-const MAX_FILES = 20;
 
 export class PostController {
 
     constructor(private readonly postService: PostService) { }
 
-    async create(request: FastifyRequest, reply: FastifyReply) {
-        const fields: Record<string, string> = {};
-        const imageFiles: Array<{ buffer: Buffer; mimetype: string }> = [];
-
-        for await (const part of request.parts()) {
-            if (part.type === 'field') {
-                fields[part.fieldname] = part.value as string;
-            } else if (part.type === 'file' && part.fieldname === 'images') {
-                if (!ALLOWED_TYPES.includes(part.mimetype)) {
-                    // drena a stream antes de rejeitar, senão o multipart trava
-                    await part.toBuffer();
-                    return reply.status(400).send({
-                        message: `Formato inválido: ${part.filename}. Use JPEG, PNG ou WebP.`
-                    });
-                }
-
-                if (imageFiles.length >= MAX_FILES) {
-                    await part.toBuffer();
-                    return reply.status(400).send({
-                        message: `Máximo de ${MAX_FILES} imagens por post.`
-                    });
-                }
-
-                const buffer = await part.toBuffer();
-                imageFiles.push({ buffer, mimetype: part.mimetype });
-            }
-        }
-
-        if (imageFiles.length === 0) {
-            return reply.status(400).send({ message: 'Pelo menos uma imagem é obrigatória.' });
-        }
-
-        const parsed = createPostSchema.safeParse(fields);
-        if (!parsed.success) {
-            return reply.status(400).send({
-                message: 'Dados inválidos.',
-                errors: parsed.error.flatten().fieldErrors
-            });
-        }
+    async create(
+        request: FastifyRequest<{
+            Body: {
+                userId: string;
+                imageUrls: string[];
+                caption?: string;
+                establishmentId?: string;
+            };
+        }>,
+        reply: FastifyReply
+    ) {
+        const { userId, imageUrls, caption, establishmentId } = request.body;
 
         const data: CreatePostInput = {
-            ...parsed.data,
-            imageFiles, // passa os buffers pro service processar
+            userId,
+            imageUrls,
+            caption: caption ?? '',
+            establishmentId,
         };
 
         const post = await this.postService.create(data);
