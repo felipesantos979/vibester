@@ -36,7 +36,7 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final userAtual = context.read<UserProvider>().user;
-    final userID = userAtual?.userID ?? '';
+    final accountId = userAtual?.accountId ?? '';
     final tokenAtual = userAtual?.token;
     final bio = _bioController.text.trim();
 
@@ -44,14 +44,14 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
 
     try {
       final profileResponse = await _userService.updateBio(
-        userID: userID,
+        accountId: accountId,
         bio: bio,
       );
 
       // Reaproveita o token que já estava no provider
       final usuarioAtualizado = UserModel.fromProfileJson(
         profileResponse,
-        accountId: userID,
+        accountId: accountId,
         token: tokenAtual,
       );
 

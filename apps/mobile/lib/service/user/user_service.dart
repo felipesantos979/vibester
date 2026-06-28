@@ -38,7 +38,10 @@ class UserService {
       final response = await ApiClient.dio.post(
         ApiEndpoints.login(),
         data: {
-          if (ehEmail) 'email': emailOuUsername else 'username': emailOuUsername,
+          if (ehEmail)
+            'email': emailOuUsername
+          else
+            'username': emailOuUsername,
           'password': password,
         },
       );
@@ -63,13 +66,13 @@ class UserService {
 
   // Atualiza a bio do usuário
   Future<Map<String, dynamic>> updateBio({
-    required String userID,
+    required String accountId,
     required String bio,
   }) async {
     try {
       final response = await ApiClient.dio.put(
         ApiEndpoints.updateBio(),
-        data: {'userID': userID, 'bio': bio},
+        data: {'accountId': accountId, 'bio': bio},
       );
       return response.data;
     } on DioException catch (e) {
