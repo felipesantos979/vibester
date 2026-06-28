@@ -5,7 +5,7 @@ import { CreateProfileService } from "../services/createProfile.service.js";
 import { EditProfileService } from "../services/editProfile.service.js";
 import { GetProfileService } from "../services/getProfile.service.js";
 import { GetFollowersService } from "../services/getFollowers.service.js";
-import type { UserProfileModel } from "../generated/prisma/models/UserProfile.js";
+import type { UserProfile as UserProfileModel } from "@prisma/client";
 
 const profileService = new CreateProfileService();
 const editProfileService = new EditProfileService();
