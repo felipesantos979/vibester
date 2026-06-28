@@ -23,9 +23,8 @@ export async function cacheAside<T>(
 
     const data = await fetchFn();
 
-    try {
-        await redis.set(key, JSON.stringify(data), "EX", ttlSeconds);
-    } catch { /* ignora falha ao gravar no cache */ }
+    // Fire-and-forget: não bloqueia a resposta aguardando confirmação do Redis
+    redis.set(key, JSON.stringify(data), "EX", ttlSeconds).catch(() => {});
 
     return data;
 }
