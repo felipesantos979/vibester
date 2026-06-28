@@ -36,29 +36,38 @@ class _EventListScreenState extends State<EventListScreen> {
     if (provider.error != null) {
       return Scaffold(
         backgroundColor: Color(colorNoturno),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(
-              child: SizedBox(
-                height: 200,
-                width: 200,
-                child: Opacity(
-                  opacity: 0.8,
-                  child: Image.asset('assets/img/mascote/lupa.png'),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        height: 200,
+                        width: 200,
+                        child: Opacity(
+                          opacity: 0.8,
+                          child: Image.asset('assets/img/mascote/lupa.png'),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        provider.error!,
+                        style: TextStyle(
+                          color: Colors.white38,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              provider.error!,
-              style: TextStyle(
-                color: Colors.white38,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+            );
+          },
         ),
       );
     }
