@@ -16,6 +16,10 @@ export const mockUserFollow = {
 const prisma = {
   userProfile: mockUserProfile,
   userFollow: mockUserFollow,
+  $transaction: vi.fn().mockImplementation((fn: Function) =>
+    fn({ userProfile: mockUserProfile, userFollow: mockUserFollow })
+  ),
+  $queryRaw: vi.fn().mockResolvedValue([]),
 };
 
 export default prisma;

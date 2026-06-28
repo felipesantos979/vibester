@@ -23,11 +23,18 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3003
+          command: ["node", "--max-old-space-size=384", "--require", "./dist/config/tracing.js", "dist/server.js"]
           envFrom:
             - secretRef:
                 name: user-service-secret
             - configMapRef:
                 name: redis-env
+          env:
+            - name: KAFKAJS_NO_PARTITIONER_WARNING
+              value: "1"
+            # Defina OTEL_EXPORTER_OTLP_ENDPOINT para ativar distributed tracing (ex: http://jaeger:4318)
+            # - name: OTEL_EXPORTER_OTLP_ENDPOINT
+            #   value: "http://jaeger-collector:4318"
           resources:
             requests:
               cpu: "100m"
@@ -35,15 +42,24 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
-          readinessProbe:
+          startupProbe:
             httpGet:
               path: /health
               port: 3003
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 12
           livenessProbe:
             httpGet:
               path: /health
               port: 3003
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 3003
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
