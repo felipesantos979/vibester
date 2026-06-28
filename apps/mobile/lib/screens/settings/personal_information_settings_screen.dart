@@ -19,8 +19,7 @@ class _PersonalInformationSettingsScreenState
     extends State<PersonalInformationSettingsScreen> {
   final _userService = UserService();
 
-  // Repopula o provider com o resultado da API, preservando o token (que
-  // não vem nesse retorno). Mesmo padrão já usado na ProfileEditingScreen.
+  // Repopula o provider com o resultado da API, preservando o token
   void _atualizarProviderComResposta(Map<String, dynamic> response) {
     final tokenAtual = context.read<UserProvider>().user?.token;
     final accountId = context.read<UserProvider>().user?.accountId ?? '';
@@ -39,9 +38,6 @@ class _PersonalInformationSettingsScreenState
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
   }
 
-  // Nome e username sempre vão juntos no body da API, então quem chama
-  // sempre manda o valor atual do campo que NÃO está sendo editado, pra
-  // ele permanecer igual ao que já está no provider.
   Future<void> _salvarNome(String novoNome) async {
     final user = context.read<UserProvider>().user;
     final accountId = user?.accountId ?? '';

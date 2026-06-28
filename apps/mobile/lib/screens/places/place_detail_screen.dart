@@ -251,7 +251,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
             child: TabBarView(
               controller: _tabController,
               children: [
-                PropertyHighlightsScreen(),
+                PropertyHighlightsScreen(placeId: place.id),
                 EventListScreen(),
                 PlaceReviewsScreen(place: place),
               ],

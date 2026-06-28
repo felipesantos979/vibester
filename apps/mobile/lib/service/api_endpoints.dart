@@ -34,4 +34,8 @@ class ApiEndpoints {
 
   // Payment
   static String checkout() => '$baseUrl/payment/checkout';
+
+  // Highlights
+  static String userPosts(String accountId) =>
+      '$baseUrl/post/users/$accountId/posts';
 }

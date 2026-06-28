@@ -323,7 +323,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    Center(child: PropertyHighlightsScreen()),
+                    Center(
+                      child: PropertyHighlightsScreen(
+                        // Precisa do ? pq usuario pede ser null, inclusive começa como null, assim não estora erro
+                        accountId: user?.accountId ?? '',
+                      ),
+                    ),
                     Center(child: FavoritePlacesScreen()),
                     Center(child: FavoritesEventsScreen()),
                   ],
