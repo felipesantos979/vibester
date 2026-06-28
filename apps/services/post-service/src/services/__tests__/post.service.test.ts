@@ -1,4 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+
+const { mockRedis } = vi.hoisted(() => ({
+  mockRedis: { del: vi.fn().mockResolvedValue(1), flushall: vi.fn() },
+}));
+vi.mock("../../config/redis", () => ({
+  redis: mockRedis,
+  cacheAside: async <T>(_key: string, _ttl: number, fetchFn: () => Promise<T>): Promise<T> => fetchFn(),
+}));
+
 import { PostService } from "../post.service";
 import { PostRepository } from "../../repository/post.repository";
 import { Post, CreatePostInput, UpdatePostInput } from "../../types/post.types";
@@ -54,6 +63,7 @@ describe("PostService", () => {
 
   beforeEach(() => {
     repo = createMockPostRepository();
+    mockRedis.del.mockResolvedValue(1);
     service = new PostService(repo);
   });
 

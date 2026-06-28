@@ -9,7 +9,6 @@ import { LikeService } from "./services/like.service";
 import { CommentRepository } from "./repository/comment.repository";
 import { CommentService } from "./services/comment.service";
 import { CommentController } from "./controller/comment.controller";
-import { UploadService } from "./services/upload.service";
 
 const postSchema = {
     type: "object",
@@ -75,9 +74,8 @@ export async function routes(app: FastifyInstance) {
         },
     }, async (_request, reply) => reply.status(200).send({ status: "ok" }));
 
-    const uploadService = new UploadService();
     const postRepository = new PostRepository();
-    const postService = new PostService(postRepository, uploadService);
+    const postService = new PostService(postRepository);
     const postController = new PostController(postService);
 
     const likeRepository = new LikeRepository();
