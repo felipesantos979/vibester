@@ -1,10 +1,12 @@
-import { Kafka, Producer } from 'kafkajs';
+import type { Producer } from 'kafkajs';
 import { env } from '../config/env';
 
 let _producer: Producer | null = null;
 
 function getProducer(): Producer {
     if (!_producer) {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const { Kafka } = require('kafkajs');
         const kafka = new Kafka({ clientId: 'post-service', brokers: env.kafkaBrokers.split(',') });
         _producer = kafka.producer();
     }
