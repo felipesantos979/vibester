@@ -2,7 +2,7 @@ import { vi, describe, it, expect, beforeAll, afterAll, beforeEach } from 'vites
 
 const { mockExecute } = vi.hoisted(() => ({ mockExecute: vi.fn().mockResolvedValue({ rows: [] }) }));
 vi.mock('../../src/config/cassandra', () => ({
-  cassandraClient: { execute: mockExecute },
+  getCassandraClient: () => ({ execute: mockExecute }),
 }));
 
 import { buildServer } from '../helpers/fastify.test.helper';
@@ -118,6 +118,39 @@ describe('feed-service — HTTP Integration', () => {
       });
 
       expect(res.statusCode).toBe(200);
+    });
+
+    it('retorna 400 para cursor com data inválida', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        url: `/feed/${USER_ID}?cursor=not-a-date`,
+      });
+
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('retorna nextCursor com o created_at do último item', async () => {
+      const lastDate = new Date('2024-01-10T08:00:00.000Z');
+      const rows = [
+        makeFeedRow({ created_at: new Date('2024-01-15T12:00:00.000Z') }),
+        makeFeedRow({ created_at: lastDate }),
+      ];
+      mockExecute.mockResolvedValueOnce({ rows });
+
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}` });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.nextCursor).not.toBeNull();
+    });
+  });
+
+  describe('GET /health', () => {
+    it('retorna status ok', async () => {
+      const res = await app.inject({ method: 'GET', url: '/health' });
+
+      expect(res.statusCode).toBe(200);
+      expect(JSON.parse(res.payload)).toEqual({ status: 'ok' });
     });
   });
 });
