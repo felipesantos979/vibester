@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { ZodTypeProvider } from "@fastify/type-provider-zod";
 import { z } from "zod";
 import { CreateEventService } from "../services/createEvent.service.js";
