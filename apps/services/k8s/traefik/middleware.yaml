@@ -78,6 +78,7 @@ spec:
     prefixes:
       - /payment
 
+---
 # Middleware para redirecionar HTTP → HTTPS
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
