@@ -61,7 +61,9 @@ class _PropertyHighlightsScreenState extends State<PropertyHighlightsScreen> {
         );
       } else if (_placeId != null && _placeId!.isNotEmpty) {
         // Chamado a partir do detalhe de um estabelecimento
-        highlights = [];
+        highlights = await _highlightsService.getHighlightsByEstablishmentId(
+          _placeId!,
+        );
       } else {
         highlights = [];
       }

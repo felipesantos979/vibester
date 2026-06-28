@@ -38,4 +38,6 @@ class ApiEndpoints {
   // Highlights
   static String userPosts(String accountId) =>
       '$baseUrl/post/users/$accountId/posts';
+  static String establishmentPosts(String establishmentId) =>
+      '$baseUrl/establishments/$establishmentId/posts';
 }
