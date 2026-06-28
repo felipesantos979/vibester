@@ -1,13 +1,21 @@
 export interface CreateProfileInput {
-  userID: string;
+  accountId: string;
+  name?: string;
+  username?: string;
 }
 
 export interface UpdateBioInput {
-  userID: string;
+  accountId: string;
   bio: string;
 }
 
 export interface UpdateAvatarInput {
-  userID: string;
+  accountId: string;
   avatarUrl: string;
+}
+
+export interface UpdateProfileInfoInput {
+  accountId: string;
+  name: string;
+  username: string;
 }

@@ -9,22 +9,36 @@ export class PostRepository extends BaseRepository {
                 INSERT INTO posts_by_id (
                     post_id,
                     user_id,
+                    user_username,
+                    user_profile_picture,
+                    user_verified,
                     establishment_id,
+                    establishment_name,
+                    establishment_logo,
+                    establishment_category,
                     image_urls,
                     caption,
+                    tags,
                     total_likes,
                     total_comments,
                     is_deleted,
                     created_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
             `,
             [
                 post.postId,
                 post.userId,
+                post.userUsername,
+                post.userProfilePicture,
+                post.userVerified,
                 post.establishmentId ?? null,
+                post.establishmentName ?? null,
+                post.establishmentLogo ?? null,
+                post.establishmentCategory ?? null,
                 post.imageUrls,
                 post.caption,
+                post.tags ?? null,
                 post.totalLikes,
                 post.totalComments,
                 post.isDeleted,
@@ -40,25 +54,41 @@ export class PostRepository extends BaseRepository {
                     user_id,
                     created_at,
                     post_id,
+                    user_username,
+                    user_profile_picture,
+                    user_verified,
                     establishment_id,
+                    establishment_name,
+                    establishment_logo,
+                    establishment_category,
+                    image_urls,
                     caption,
-                    is_deleted,
-                    total_comments,
+                    tags,
                     total_likes,
-                    image_urls
+                    total_comments,
+                    is_deleted
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-            `, [
-            post.userId,
-            post.createdAt,
-            post.postId,
-            post.establishmentId ?? null,
-            post.caption,
-            post.isDeleted,
-            post.totalComments,
-            post.totalLikes,
-            post.imageUrls
-        ]);
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            `,
+            [
+                post.userId,
+                post.createdAt,
+                post.postId,
+                post.userUsername,
+                post.userProfilePicture,
+                post.userVerified,
+                post.establishmentId ?? null,
+                post.establishmentName ?? null,
+                post.establishmentLogo ?? null,
+                post.establishmentCategory ?? null,
+                post.imageUrls,
+                post.caption,
+                post.tags ?? null,
+                post.totalLikes,
+                post.totalComments,
+                post.isDeleted
+            ]
+        );
     }
 
     async createPostByEstablishment(post: Post) {
@@ -71,21 +101,35 @@ export class PostRepository extends BaseRepository {
                     created_at,
                     post_id,
                     user_id,
+                    user_username,
+                    user_profile_picture,
+                    user_verified,
+                    establishment_name,
+                    establishment_logo,
+                    establishment_category,
                     image_urls,
                     caption,
+                    tags,
                     total_likes,
                     total_comments,
                     is_deleted
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
             `,
             [
                 post.establishmentId,
                 post.createdAt,
                 post.postId,
                 post.userId,
+                post.userUsername,
+                post.userProfilePicture,
+                post.userVerified,
+                post.establishmentName ?? null,
+                post.establishmentLogo ?? null,
+                post.establishmentCategory ?? null,
                 post.imageUrls,
                 post.caption,
+                post.tags ?? null,
                 post.totalLikes,
                 post.totalComments,
                 post.isDeleted
@@ -110,9 +154,16 @@ export class PostRepository extends BaseRepository {
         return {
             postId: row.post_id,
             userId: row.user_id,
+            userUsername: row.user_username,
+            userProfilePicture: row.user_profile_picture,
+            userVerified: row.user_verified,
             establishmentId: row.establishment_id,
-            imageUrls: row.image_url,
+            establishmentName: row.establishment_name,
+            establishmentLogo: row.establishment_logo,
+            establishmentCategory: row.establishment_category,
+            imageUrls: row.image_urls,
             caption: row.caption,
+            tags: row.tags,
             totalLikes: row.total_likes,
             totalComments: row.total_comments,
             isDeleted: row.is_deleted,
@@ -121,30 +172,66 @@ export class PostRepository extends BaseRepository {
         };
     }
 
-    async findByUser(userId: string) {
+    async findByUser(userId: string): Promise<Post[]> {
         const result = await this.execute(
             `
                 SELECT *
                 FROM posts_by_user
                 WHERE user_id = ?;
-             `,
+            `,
             [userId]
         );
 
-        return result.rows;
+        return result.rows.map((row) => ({
+            postId: row.post_id,
+            userId: row.user_id,
+            userUsername: row.user_username,
+            userProfilePicture: row.user_profile_picture,
+            userVerified: row.user_verified,
+            establishmentId: row.establishment_id,
+            establishmentName: row.establishment_name,
+            establishmentLogo: row.establishment_logo,
+            establishmentCategory: row.establishment_category,
+            imageUrls: row.image_urls,
+            caption: row.caption,
+            tags: row.tags,
+            totalLikes: row.total_likes,
+            totalComments: row.total_comments,
+            isDeleted: row.is_deleted,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at
+        }));
     }
 
-    async findByEstablishment(estblishmentId: string){
+    async findByEstablishment(establishmentId: string): Promise<Post[]> {
         const result = await this.execute(
             `
                 SELECT *
                 FROM posts_by_establishment
                 WHERE establishment_id = ?;
             `,
-            [estblishmentId]
+            [establishmentId]
         );
 
-        return result.rows;
+        return result.rows.map((row) => ({
+            postId: row.post_id,
+            userId: row.user_id,
+            userUsername: row.user_username,
+            userProfilePicture: row.user_profile_picture,
+            userVerified: row.user_verified,
+            establishmentId: row.establishment_id,
+            establishmentName: row.establishment_name,
+            establishmentLogo: row.establishment_logo,
+            establishmentCategory: row.establishment_category,
+            imageUrls: row.image_urls,
+            caption: row.caption,
+            tags: row.tags,
+            totalLikes: row.total_likes,
+            totalComments: row.total_comments,
+            isDeleted: row.is_deleted,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at
+        }));
     }
 
     async updateCaptionById(postId: string, caption: string, updatedAt: Date) {
@@ -183,13 +270,7 @@ export class PostRepository extends BaseRepository {
                 AND created_at = ?
                 AND post_id = ?;
             `,
-            [
-                caption,
-                updatedAt,
-                establishmentId,
-                createdAt,
-                postId
-            ]
+            [caption, updatedAt, establishmentId, createdAt, postId]
         );
     }
 
@@ -213,7 +294,8 @@ export class PostRepository extends BaseRepository {
                 AND created_at = ?
                 AND post_id = ?;
             `,
-            [userId, createdAt, postId]);
+            [userId, createdAt, postId]
+        );
     }
 
     async softDeleteByEstablishment(establishmentId: string, createdAt: Date, postId: string) {
@@ -229,18 +311,18 @@ export class PostRepository extends BaseRepository {
         );
     }
 
-    async updateTotalLikesById(total_likes: number, postId: string) {
+    async updateTotalLikesById(totalLikes: number, postId: string) {
         return this.execute(
             `
                 UPDATE posts_by_id
                 SET total_likes = ?
                 WHERE post_id = ?;
-             `,
-            [total_likes, postId]
+            `,
+            [totalLikes, postId]
         );
     }
 
-    async updateTotalLikesByUser(userId: string, createdAt: Date, total_likes: number, postId: string) {
+    async updateTotalLikesByUser(userId: string, createdAt: Date, totalLikes: number, postId: string) {
         return this.execute(
             `
                 UPDATE posts_by_user
@@ -249,12 +331,11 @@ export class PostRepository extends BaseRepository {
                 AND created_at = ?
                 AND post_id = ?;
             `,
-            [total_likes, userId, createdAt, postId]
+            [totalLikes, userId, createdAt, postId]
         );
     }
 
-    async updateTotalLikesByEstablishment(establishmentId: string, createdAt: Date, 
-        totalLikes: number, postId: string) {
+    async updateTotalLikesByEstablishment(establishmentId: string, createdAt: Date, totalLikes: number, postId: string) {
         return this.execute(
             `
                 UPDATE posts_by_establishment
@@ -263,16 +344,11 @@ export class PostRepository extends BaseRepository {
                 AND created_at = ?
                 AND post_id = ?;
             `,
-            [
-                totalLikes,
-                establishmentId,
-                createdAt,
-                postId
-            ]
+            [totalLikes, establishmentId, createdAt, postId]
         );
     }
 
-    async updateTotalCommentsById(totalComments: number, postId: string){
+    async updateTotalCommentsById(totalComments: number, postId: string) {
         return this.execute(
             `
                 UPDATE posts_by_id
@@ -283,7 +359,7 @@ export class PostRepository extends BaseRepository {
         );
     }
 
-     async updateTotalCommentsByUser(userId: string, createdAt: Date, totalComments: number, postId: string) {
+    async updateTotalCommentsByUser(userId: string, createdAt: Date, totalComments: number, postId: string) {
         return this.execute(
             `
                 UPDATE posts_by_user
@@ -296,8 +372,7 @@ export class PostRepository extends BaseRepository {
         );
     }
 
-    async updateTotalCommentsByEstablishment(establishmentId: string, createdAt: Date, 
-        totalComments: number, postId: string) {
+    async updateTotalCommentsByEstablishment(establishmentId: string, createdAt: Date, totalComments: number, postId: string) {
         return this.execute(
             `
                 UPDATE posts_by_establishment
@@ -306,12 +381,7 @@ export class PostRepository extends BaseRepository {
                 AND created_at = ?
                 AND post_id = ?;
             `,
-            [
-                totalComments,
-                establishmentId,
-                createdAt,
-                postId
-            ]
+            [totalComments, establishmentId, createdAt, postId]
         );
     }
 }

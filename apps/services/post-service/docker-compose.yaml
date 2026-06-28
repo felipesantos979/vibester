@@ -7,38 +7,6 @@ services:
     env_file:
       - .env
     command: sh -c "npm run migrate && npm run start"
-    depends_on:
-      cassandra:
-        condition: service_healthy
-    networks:
-      - vibester-network
-
-  cassandra:
-    image: cassandra:5.0
-    container_name: post_db
-    mem_limit: 2g
-    memswap_limit: 2g
-    ports:
-      - "9042:9042"
-    environment:
-      CASSANDRA_CLUSTER_NAME: $CLUSTER_NAME
-      CASSANDRA_DC: $CASSANDRA_DC
-      CASSANDRA_RACK: $CASSANDRA_RACK
-      CASSANDRA_ENDPOINT_SNITCH: $ENDPOINT_SNITCH
-      MAX_HEAP_SIZE: 1G
-      HEAP_NEWSIZE: 256M
-    volumes:
-      - cassandra_data:/var/lib/cassandra
-    healthcheck:
-      test: ["CMD-SHELL", "cqlsh -e 'DESCRIBE KEYSPACES'"]
-      interval: 20s
-      timeout: 10s
-      retries: 10
-    networks:
-      - vibester-network
-
-volumes:
-  cassandra_data:
 
 networks:
   vibester-network:

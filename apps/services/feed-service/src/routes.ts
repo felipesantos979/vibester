@@ -4,5 +4,6 @@ import { FeedController } from "./controllers/feed.controller";
 const feedController = new FeedController();
 
 export async function feedRoutes(app: FastifyInstance) {
+  app.get("/health", async () => ({ status: "ok" }));
   app.get("/feed/:userId", feedController.getFeedByUser);
 }

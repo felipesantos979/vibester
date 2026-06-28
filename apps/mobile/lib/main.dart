@@ -115,8 +115,8 @@ class MyApp extends StatelessWidget {
             case AppRoutes.hotPlaces:
               return _slideRoute(const HotPlacesScreen(), settings);
             case AppRoutes.placeDetail:
-              final place = settings.arguments as PlaceModel;
-              return _scaleRoute(PlaceDetailScreen(place: place), settings);
+              final placeId = settings.arguments as String;
+              return _scaleRoute(PlaceDetailScreen(placeId: placeId), settings);
             case AppRoutes.placeReviews:
               final place = settings.arguments as PlaceModel;
               return _scaleRoute(PlaceReviewsScreen(place: place), settings);

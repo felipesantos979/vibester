@@ -26,3 +26,12 @@ model UserProfile {
   updatedAt   DateTime @updatedAt
 }
 
+model UserFollow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+}
+

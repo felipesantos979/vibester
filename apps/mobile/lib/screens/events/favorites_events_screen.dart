@@ -15,6 +15,14 @@ class FavoritesEventsScreen extends StatefulWidget {
 
 class _FavoritesEventsScreenState extends State<FavoritesEventsScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EventsListProvider>().fetchEvents();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final List<EventModel> favorites = context
         .watch<EventsListProvider>()

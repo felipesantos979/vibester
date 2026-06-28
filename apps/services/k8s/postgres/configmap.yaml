@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-shared-init
+  namespace: default
+data:
+  init.sql: |
+    CREATE DATABASE auth_db;
+    CREATE DATABASE user_service;
+    CREATE DATABASE establishment_db;
+    CREATE DATABASE event_db;
+    CREATE DATABASE scrapping_db;
+    CREATE DATABASE payment_db;

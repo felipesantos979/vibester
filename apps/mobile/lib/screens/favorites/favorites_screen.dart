@@ -67,7 +67,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               Navigator.pushNamed(
                 context,
                 AppRoutes.placeDetail,
-                arguments: favorites[index - 1],
+                arguments: favorites[index - 1].id,
               );
             },
           );

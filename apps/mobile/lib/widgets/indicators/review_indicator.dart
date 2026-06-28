@@ -10,11 +10,16 @@ class ReviewIndicator extends StatelessWidget {
     super.key,
     required this.avaliacao,
     this.totalReviews = 0,
-    this.distribuicao = const [0.75, 0.15, 0.05, 0.03, 0.02],
+    this.distribuicao = const [],
   });
+
+  List<double> get _distribuicaoSegura =>
+      distribuicao.length == 5 ? distribuicao : const [0, 0, 0, 0, 0];
 
   @override
   Widget build(BuildContext context) {
+    final dist = _distribuicaoSegura;
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -60,7 +65,7 @@ class ReviewIndicator extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: List.generate(5, (i) {
                   final estrela = 5 - i;
-                  final percent = distribuicao[i];
+                  final percent = dist[i];
                   return _buildBarRow(estrela, percent);
                 }),
               ),

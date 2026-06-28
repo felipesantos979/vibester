@@ -35,7 +35,7 @@ export class LoginService {
         );
 
         return {
-            id: user.id,
+            authId: user.id,
             token,
             accountId: user.accountId,
         };

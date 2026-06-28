@@ -1,4 +1,5 @@
 class PlaceModel {
+  final String? id;
   final String nome;
   final int nivelMovimento;
   final String categoria;
@@ -10,9 +11,13 @@ class PlaceModel {
   final List<double> distribuicao;
   final double? distancia;
   final String profileImage;
+  final String bannerImage;
+  final double? latitude;
+  final double? longitude;
   bool isFavorite;
 
   PlaceModel({
+    this.id,
     required this.nome,
     required this.nivelMovimento,
     required this.categoria,
@@ -23,7 +28,53 @@ class PlaceModel {
     required this.distribuicao,
     required this.qtdAvaliacoes,
     this.profileImage = '',
+    this.bannerImage = '',
+    this.latitude,
+    this.longitude,
     this.distancia,
     this.isFavorite = false,
   });
+
+  //Json pra dart, é pra quando os dados virem da API, pra q eles possam ser usados pelo dart
+  factory PlaceModel.fromJson(Map<String, dynamic> json) {
+    final location = json['location'] as Map<String, dynamic>?;
+    return PlaceModel(
+      id: json['id'],
+      nome: json['name'] ?? '',
+      nivelMovimento: json['movementLevel'] ?? 0,
+      categoria: json['category'] ?? '',
+      avaliacao:
+          ((json['averageRating'] ?? json['rating']) as num?)?.toDouble() ?? 0,
+      nivelPrecoMedio: json['priceIndicator'] ?? '',
+      bio: json['bio'] ?? '',
+      endereco: json['address'] ?? '',
+      qtdAvaliacoes: json['reviewCount'] ?? 0,
+      distribuicao: json['ratingDistribution'] != null
+          ? List<double>.from(json['ratingDistribution'])
+          : [],
+      profileImage:
+          json['photoUrl'] ?? json['profileImage'] ?? json['icon'] ?? '',
+      bannerImage: json['banner'] ?? '',
+      latitude: (location?['latitude'] as num?)?.toDouble(),
+      longitude: (location?['longitude'] as num?)?.toDouble(),
+    );
+  }
+
+  //Dart pra json, é o contrario do de cima, pra quando for mandar pra API
+  Map<String, dynamic> toJson() {
+    return {
+      'name': nome,
+      'movementLevel': nivelMovimento,
+      'category': categoria,
+      'rating': avaliacao,
+      'priceLevel': nivelPrecoMedio,
+      'bio': bio,
+      'address': endereco,
+      'reviewCount': qtdAvaliacoes,
+      'ratingDistribution': distribuicao,
+      'profileImage': profileImage,
+      'banner': bannerImage,
+      'location': {'latitude': latitude, 'longitude': longitude},
+    };
+  }
 }

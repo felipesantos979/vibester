@@ -2,6 +2,7 @@ import prismaClient from "../prisma/index";
 import { RegisterInputInterface, RegisterOutputInterface } from "../types/register.types";
 import { hash } from "bcryptjs";
 import { randomUUID } from "node:crypto";
+import { env } from "../config/env";
 
 export class RegisterService {
     async register(input: RegisterInputInterface): Promise<RegisterOutputInterface> {
@@ -18,23 +19,21 @@ export class RegisterService {
             }
         });
 
-        try {
-            await fetch('http://localhost:3002/api/users/profile', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    userID: account.accountId,
-                })
-            });
-        } catch (err) {
-            console.error('Failed to create profile in user-service', err);
+        const profileResponse = await fetch(`${env.profileServiceUrl}/users/profile`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ accountId: account.accountId, name: input.name, username: input.username }),
+        });
+
+        if (!profileResponse.ok) {
+            throw new Error('Failed to create user profile');
         }
-        
+
+        const profile = await profileResponse.json() as { accountId: string };
+
         return {
-            id: account.id,
-            // token
+            authId: account.id,
+            accountId: profile.accountId,
             username: account.username,
             name: input.name,
             email: account.email,

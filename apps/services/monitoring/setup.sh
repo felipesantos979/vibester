@@ -2,6 +2,17 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Verificar se o token do Prometheus para o Kubernetes está presente
+if [[ ! -f "$SCRIPT_DIR/secrets/k8s-token" ]]; then
+  echo "[AVISO] Token Kubernetes não encontrado em secrets/k8s-token"
+  echo "        Execute os seguintes comandos para gerá-lo:"
+  echo ""
+  echo "  kubectl apply -f $SCRIPT_DIR/k8s-monitoring.yaml"
+  echo "  mkdir -p $SCRIPT_DIR/secrets"
+  echo "  kubectl get secret prometheus-token -n monitoring -o jsonpath='{.data.token}' | base64 -d > $SCRIPT_DIR/secrets/k8s-token"
+  echo ""
+fi
 GRAFANA_URL="http://localhost:3000"
 GRAFANA_HEALTH_ENDPOINT="${GRAFANA_URL}/api/health"
 MAX_WAIT=120
@@ -75,8 +86,11 @@ echo "  Usuário Grafana: ${ADMIN_USER}"
 echo "  Senha:           \${GRAFANA_ADMIN_PASSWORD:-admin}"
 echo ""
 echo "  Dashboards recomendados (importar via ID no Grafana):"
-echo "    1860  - Node Exporter Full"
-echo "    14282 - cAdvisor Exporter"
+echo "    1860  - Node Exporter Full (métricas do host/VPS)"
+echo "    15520 - Kubernetes All-in-one Cluster Monitoring (visão geral)"
+echo "    6417  - Kubernetes Pods (CPU/memória por pod)"
+echo "    13332 - kube-state-metrics v2 (estado dos deployments)"
+echo "    15661 - 1 Kubernetes All Namespaces (por namespace)"
 echo ""
 echo "  Logs:    $COMPOSE logs -f"
 echo "  Parar:   $COMPOSE down"
