@@ -10,6 +10,21 @@ class PlaceService {
     return data.map((json) => PlaceModel.fromJson(json)).toList();
   }
 
+  Future<List<PlaceModel>> getPlacesByCategory(String category) async {
+    try {
+      final response = await ApiClient.dio.get(
+        ApiEndpoints.establishmentsByCategory(category),
+      );
+      final List data = response.data;
+      return data.map((json) => PlaceModel.fromJson(json)).toList();
+    } on DioException catch (e) {
+      final mensagem =
+          e.response?.data?['message'] ??
+          'Erro ao buscar estabelecimentos por categoria';
+      throw Exception(mensagem);
+    }
+  }
+
   Future<PlaceModel> getPlaceById(String id) async {
     try {
       final response = await ApiClient.dio.get(

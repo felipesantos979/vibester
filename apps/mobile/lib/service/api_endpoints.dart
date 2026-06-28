@@ -22,6 +22,8 @@ class ApiEndpoints {
 
   // Establishments
   static String establishments() => '$baseUrl/establishment/establishments';
+  static String establishmentsByCategory(String category) =>
+      '$baseUrl/establishment/establishments?category=$category';
   static String establishmentDetail(String establishmentId) =>
       '$baseUrl/establishment/establishments/$establishmentId';
   static String openEstablishments() =>
