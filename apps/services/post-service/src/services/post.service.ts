@@ -6,6 +6,7 @@ import {
     UpdatePostInput
 } from "../types/post.types";
 import { redis, cacheAside } from "../config/redis";
+import { HttpError } from "../errors/http.error";
 
 export class PostService {
 
@@ -70,9 +71,9 @@ export class PostService {
     async updateCaption(input: UpdatePostInput): Promise<Post> {
         const post = await this.postRepository.findById(input.postId);
 
-        if (!post) { throw new Error("Post not found"); }
+        if (!post) { throw new HttpError("Post not found", 404); }
 
-        if (post.isDeleted) { throw new Error("Post is deleted"); }
+        if (post.isDeleted) { throw new HttpError("Post is deleted", 404); }
 
         const updatedAt = new Date();
 
@@ -102,7 +103,7 @@ export class PostService {
     async softDelete(postId: string) {
         const post = await this.postRepository.findById(postId);
 
-        if (!post) { throw new Error("Post not found"); }
+        if (!post) { throw new HttpError("Post not found", 404); }
 
         await Promise.all([
             this.postRepository.softDeleteById(postId),

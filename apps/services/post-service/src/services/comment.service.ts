@@ -4,6 +4,7 @@ import { CommentRepository } from "../repository/comment.repository";
 import { PostRepository } from "../repository/post.repository";
 import { Comment, CreateCommentInput, UpdateCommentInput } from "../types/comment.type";
 import { producer } from "../kafka/producer";
+import { HttpError } from "../errors/http.error";
 
 export class CommentService {
     constructor(private readonly commentRepository: CommentRepository,
@@ -12,9 +13,9 @@ export class CommentService {
     async create(input: CreateCommentInput): Promise<Comment> {
         const post = await this.postRepository.findById(input.postId);
 
-        if (!post) { throw new Error("Post not found"); }
+        if (!post) { throw new HttpError("Post not found", 404); }
 
-        if (post.isDeleted) { throw new Error("Post is deleted"); }
+        if (post.isDeleted) { throw new HttpError("Post is deleted", 404); }
 
         const comment: Comment = {
             commentId: randomUUID(),
@@ -73,11 +74,11 @@ export class CommentService {
     async update(input: UpdateCommentInput, currentUserId: string): Promise<Comment> {
         const comment = await this.commentRepository.findById(input.commentId);
 
-        if (!comment) { throw new Error("Comment not found"); }
+        if (!comment) { throw new HttpError("Comment not found", 404); }
 
-        if (comment.userId != currentUserId) { throw new Error("You cannot update this comment."); }
+        if (comment.userId != currentUserId) { throw new HttpError("You cannot update this comment", 403); }
 
-        if (comment.isDeleted) { throw new Error("Comment is deleted"); }
+        if (comment.isDeleted) { throw new HttpError("Comment is deleted", 404); }
 
         const updatedAt = new Date();
 
@@ -104,15 +105,15 @@ export class CommentService {
     ): Promise<void> {
         const comment = await this.commentRepository.findById(commentId);
 
-        if (!comment) { throw new Error("Comment not found"); }
+        if (!comment) { throw new HttpError("Comment not found", 404); }
 
-        if (comment.userId != currentUserId) { throw new Error("You cannot delete this comment."); }
+        if (comment.userId != currentUserId) { throw new HttpError("You cannot delete this comment", 403); }
 
-        if (comment.isDeleted) { throw new Error("Comment already deleted"); }
+        if (comment.isDeleted) { throw new HttpError("Comment already deleted", 409); }
 
         const post = await this.postRepository.findById(comment.postId);
 
-        if (post?.isDeleted) { throw new Error("Post deleted"); }
+        if (post?.isDeleted) { throw new HttpError("Post deleted", 404); }
 
         let totalComments = post?.totalComments ?? 0;
 
