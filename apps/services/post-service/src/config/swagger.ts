@@ -13,6 +13,7 @@ export async function registerSwagger(app: FastifyInstance) {
       },
       tags: [
         { name: "Health", description: "Verificação de saúde do serviço" },
+        { name: "Upload", description: "Geração de URLs pré-assinadas para upload direto ao bucket" },
         { name: "Posts", description: "Publicações" },
         { name: "Likes", description: "Curtidas" },
         { name: "Comments", description: "Comentários" },
