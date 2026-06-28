@@ -15,8 +15,6 @@ app.register(multipart, {
   },
 });
 
-app.register(routes);
-
 app.setErrorHandler((error, request, reply) => {
   if (error instanceof ZodError) {
     return reply.status(400).send({
