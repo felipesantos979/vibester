@@ -277,7 +277,10 @@ describe("EstablishmentService.updateRating", () => {
 
     expect(mockUpdate).toHaveBeenCalledWith({
       where: { id: "est-1" },
-      data: { averageRating: 4.8 },
+      data: {
+            averageRating: 4.8,
+            qtdAvaliacoes: { increment: 1 },
+        },
     });
     expect(result.averageRating).toBe(4.8);
   });
