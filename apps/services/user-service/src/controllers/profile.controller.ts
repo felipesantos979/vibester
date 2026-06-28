@@ -34,6 +34,8 @@ function toProfileResponse(profile: UserProfileModel) {
 
 const createProfileSchema = z.object({
   accountId: z.string().uuid(),
+  name: z.string().optional(),
+  username: z.string().optional(),
 });
 
 const updateProfileInfoSchema = z.object({
