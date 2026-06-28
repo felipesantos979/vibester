@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS post_keyspace.posts_by_user (
+CREATE TABLE IF NOT EXISTS posts_by_user (
     user_id uuid,
     created_at timestamp,
     post_id uuid,
