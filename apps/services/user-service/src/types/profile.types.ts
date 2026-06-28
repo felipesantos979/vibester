@@ -11,3 +11,9 @@ export interface UpdateAvatarInput {
   accountId: string;
   avatarUrl: string;
 }
+
+export interface UpdateProfileInfoInput {
+  accountId: string;
+  name: string;
+  username: string;
+}
