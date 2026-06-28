@@ -5,22 +5,33 @@ import {
     Post,
     UpdatePostInput
 } from "../types/post.types";
-import { redis, cacheAside } from "../config/redis";
+import { UploadService } from "./upload.service";
 
 export class PostService {
 
     constructor(
-        private readonly postRepository: PostRepository
-    ) { }
+        private readonly postRepository: PostRepository,
+        private readonly uploadService: UploadService,
+    ) {}
 
     async create(input: CreatePostInput): Promise<Post> {
+        const postId = randomUUID();
+
+        const imageUrls = await this.uploadService.uploadImages(input.imageFiles, input.userId, postId);
 
         const post: Post = {
-            postId: randomUUID(),
+            postId,
             userId: input.userId,
+            userUsername: input.userUsername,
+            userProfilePicture: input.userProfilePicture,
+            userVerified: input.userVerified,
             establishmentId: input.establishmentId,
-            imageUrls: input.imageUrls,
+            establishmentName: input.establishmentName,
+            establishmentLogo: input.establishmentLogo,
+            establishmentCategory: input.establishmentCategory,
+            imageUrls,
             caption: input.caption,
+            tags: input.tags,
             totalLikes: 0,
             totalComments: 0,
             isDeleted: false,
@@ -29,10 +40,12 @@ export class PostService {
 
         await Promise.all([
             this.postRepository.createPostById(post),
-            this.postRepository.createPostByUser(post)
+            this.postRepository.createPostByUser(post),
         ]);
 
-        if (post.establishmentId) { await this.postRepository.createPostByEstablishment(post) }
+        if (post.establishmentId) {
+            await this.postRepository.createPostByEstablishment(post);
+        }
 
         const keys = [`post:user:${post.userId}`];
         if (post.establishmentId) keys.push(`post:establishment:${post.establishmentId}`);
@@ -54,9 +67,7 @@ export class PostService {
     }
 
     async findByEstablishment(establishmentId: string) {
-        return cacheAside(`post:establishment:${establishmentId}`, 120, () =>
-            this.postRepository.findByEstablishment(establishmentId)
-        );
+        return this.postRepository.findByEstablishment(establishmentId);
     }
 
     async updateCaption(input: UpdatePostInput): Promise<Post> {
@@ -87,7 +98,7 @@ export class PostService {
         return {
             ...post,
             caption: input.caption,
-            updatedAt
+            updatedAt,
         };
     }
 
@@ -98,10 +109,10 @@ export class PostService {
 
         await Promise.all([
             this.postRepository.softDeleteById(postId),
-            this.postRepository.softDeleteByUser(post.userId, post.createdAt, postId)
+            this.postRepository.softDeleteByUser(post.userId, post.createdAt, postId),
         ]);
 
-        if (post.establishmentId){
+        if (post.establishmentId) {
             await this.postRepository.softDeleteByEstablishment(post.establishmentId, post.createdAt, post.postId);
         }
 

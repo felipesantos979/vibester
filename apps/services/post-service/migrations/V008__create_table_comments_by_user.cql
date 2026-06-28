@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS vibester_posts.comments_by_user (
+CREATE TABLE IF NOT EXISTS post_keyspace.comments_by_user (
     user_id uuid,
     created_at timestamp,
     comment_id uuid,

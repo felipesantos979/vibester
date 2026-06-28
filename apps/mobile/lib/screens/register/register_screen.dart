@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/user/user_model.dart';
 import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
+import 'package:mobile/service/api_client.dart';
 import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/date_picker_field.dart';
@@ -73,11 +74,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
         password: senha,
       );
 
-      //tem q fazer a parte de guardar token de login, deixa pra depois por enquanto kkkk
       final token = loginResponse['token'];
       final accountId = loginResponse['accountId'];
 
-      final usuarioLogado = UserModel.fromLoginJson(loginResponse);
+      // Token precisa estar setado ANTES do getProfile, porque é esse
+      // interceptor que anexa o header Authorization na chamada.
+      ApiClient.token = token;
+
+      // Busca os dados completos do perfil usando o accountId (não o id de
+      // login/auth), que é o que a API usa pra indexar o profile.
+      final profileResponse = await _userService.getProfile(accountId);
+      final usuarioLogado = UserModel.fromProfileJson(
+        profileResponse,
+        accountId: accountId,
+        token: token,
+      );
 
       if (!mounted) return;
       context.read<UserProvider>().setUser(usuarioLogado);

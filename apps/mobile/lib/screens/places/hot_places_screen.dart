@@ -138,7 +138,7 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
               Navigator.pushNamed(
                 context,
                 AppRoutes.placeDetail,
-                arguments: listaFiltrada[index - 1],
+                arguments: listaFiltrada[index - 1].id,
               );
             },
           );

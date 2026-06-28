@@ -1,42 +1,80 @@
 class UserModel {
   String? id;
+  String? userID;
+  String? token;
+  String? accountId;
   String nome;
   String nomeUsuario;
   String bio;
   int seguidores;
   int seguindo;
   int eventosVisitados;
+  int totalPosts;
   String fotoPerfil;
   String interesses;
   String email;
   String telefone;
   String dataNascimento;
   String cidade;
+  String createdAt;
+  String updatedAt;
 
   UserModel({
     this.id,
+    this.userID,
+    this.token,
+    this.accountId,
     required this.nome,
     required this.nomeUsuario,
     this.bio = '',
     this.seguidores = 0,
     this.seguindo = 0,
     this.eventosVisitados = 0,
+    this.totalPosts = 0,
     this.fotoPerfil = '',
     this.interesses = '',
     required this.email,
     this.telefone = '',
     required this.dataNascimento,
     this.cidade = '',
+    this.createdAt = '',
+    this.updatedAt = '',
   });
 
-  //Esse aqui é só pra quando vem a resposta do login e como o token e o accountId não fazem parte do UserModel, então ficam de fora daqui,
+  //Esse aqui é pra resposta do login
   factory UserModel.fromLoginJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
+      id: json['authId'],
+      token: json['token'],
+      accountId: json['accountId'],
       nome: '',
       nomeUsuario: '',
       email: '',
       dataNascimento: '',
+    );
+  }
+
+  factory UserModel.fromProfileJson(
+    Map<String, dynamic> json, {
+    String? accountId,
+    String? token,
+  }) {
+    return UserModel(
+      id: json['profileId'],
+      userID: accountId ?? json['userID'],
+      token: token,
+      accountId: accountId,
+      nome: json['name'] ?? '',
+      nomeUsuario: json['username'] ?? '',
+      bio: json['bio'] ?? '',
+      seguidores: json['followers'] ?? 0,
+      seguindo: json['following'] ?? 0,
+      totalPosts: json['totalPosts'] ?? 0,
+      fotoPerfil: json['avatarUrl'] ?? '',
+      email: '',
+      dataNascimento: '',
+      createdAt: json['createdAt'] ?? '',
+      updatedAt: json['updatedAt'] ?? '',
     );
   }
 

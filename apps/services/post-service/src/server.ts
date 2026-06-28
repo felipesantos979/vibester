@@ -3,9 +3,18 @@ import { getCassandraClient } from "./config/cassandra";
 import { routes } from "./routes";
 import { registerSwagger } from "./config/swagger";
 import { ZodError } from "zod";
-import { producer } from "./kafka/producer";
+import multipart from "@fastify/multipart";
 
-const app = Fastify({ ajv: { customOptions: { keywords: ["example"] } } });
+const app = Fastify();
+
+app.register(multipart, {
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+    files: 20,
+  },
+});
+
+app.register(routes);
 
 app.setErrorHandler((error, request, reply) => {
   if (error instanceof ZodError) {
