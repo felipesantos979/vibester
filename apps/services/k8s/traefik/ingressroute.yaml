@@ -73,6 +73,15 @@ spec:
         - name: scrapping-service
           port: 3000
 
+    - match: Host(`api.vibester.com.br`) && PathPrefix(`/feed`)
+      kind: Rule
+      middlewares:
+        - name: strip-feed-prefix
+          namespace: default
+      services:
+        - name: feed-service
+          port: 3006
+
     - match: Host(`api.vibester.com.br`) && PathPrefix(`/docs`)
       kind: Rule
       services:

@@ -1,6 +1,7 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { feedRoutes } from "./routes";
+import { registerSwagger } from "./config/swagger";
 import { KafkaConsumer } from "./kafka/consumer";
 import { FeedService } from "./services/feed.service";
 
@@ -11,6 +12,7 @@ async function start() {
         origin: true,
     });
 
+    await registerSwagger(app);
     await app.register(feedRoutes);
 
     const feedService = new FeedService();

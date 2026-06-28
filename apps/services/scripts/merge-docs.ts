@@ -33,6 +33,18 @@ const services: ServiceConfig[] = [
     env: { DATABASE_URL: 'postgresql://u:p@localhost:5432/db' },
   },
   {
+    name: 'feed-service',
+    prefix: '/feed',
+    env: {
+      ASTRA_SECURE_CONNECT_BUNDLE: '/dev/null',
+      ASTRA_TOKEN: 'ci-dummy',
+      ASTRA_CLIENT_ID: 'ci-dummy',
+      ASTRA_CLIENT_SECRET: 'ci-dummy',
+      ASTRA_KEYSPACE: 'feed_keyspace',
+      KAFKA_BROKERS: 'localhost:9092',
+    },
+  },
+  {
     name: 'post-service',
     prefix: '/post',
     env: {

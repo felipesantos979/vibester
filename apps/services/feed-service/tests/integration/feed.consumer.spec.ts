@@ -2,7 +2,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 const { mockExecute } = vi.hoisted(() => ({ mockExecute: vi.fn().mockResolvedValue({ rows: [] }) }));
 vi.mock('../../src/config/cassandra', () => ({
-  cassandraClient: { execute: mockExecute },
+  getCassandraClient: () => ({ execute: mockExecute }),
 }));
 
 import { FeedService } from '../../src/services/feed.service';
