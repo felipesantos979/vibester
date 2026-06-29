@@ -51,3 +51,18 @@ export async function connectRedis(): Promise<void> {
     console.warn("[Redis] could not connect on startup:", msg);
   }
 }
+
+/** Gera chave determinística para cache de estabelecimentos próximos (~1 km de precisão). */
+export function nearbyEstablishmentKey(lat: number, lon: number, radiusKm: number): string {
+    const rLat = Math.round(lat * 100) / 100;
+    const rLon = Math.round(lon * 100) / 100;
+    return `establishments:nearby:${rLat}:${rLon}:${radiusKm}`;
+}
+
+/** Apaga todas as chaves de cache de eventos próximos. */
+export async function invalidateNearbyEstablishmentCache(): Promise<void> {
+    try {
+        const keys = await redis.keys("establishments:nearby:*");
+        if (keys.length > 0) await redis.del(...keys);
+    } catch { /* ignora falha na invalidação */ }
+}

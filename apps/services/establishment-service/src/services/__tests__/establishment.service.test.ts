@@ -295,3 +295,85 @@ describe("EstablishmentService.getEstablishmentProfile", () => {
     });
   });
 });
+
+// ── ListEstablishmentsService (nearby) ──────────────────────────────────────
+import { ListEstablishmentsService } from "../listEstablishment.service";
+
+const listEstablishmentsNearbyService = new ListEstablishmentsService();
+
+const BASE_LAT = -23.5505;
+const BASE_LON = -46.6333;
+
+describe("ListEstablishmentsService.listEstablishments (nearby)", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("returns establishments within the radius with distanceKm attached", async () => {
+    mockFindMany.mockResolvedValueOnce([makeEstablishment()]);
+
+    const result = await listEstablishmentsNearbyService.listEstablishments({
+      latitude: BASE_LAT,
+      longitude: BASE_LON,
+      radiusKm: 10,
+    });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].distanceKm).toBeCloseTo(0, 1);
+  });
+
+  it("excludes establishments outside the radius", async () => {
+    mockFindMany.mockResolvedValueOnce([
+      makeEstablishment({ latitude: -22.9068, longitude: -43.1729 }), // Rio ~357km
+    ]);
+
+    const result = await listEstablishmentsNearbyService.listEstablishments({
+      latitude: BASE_LAT,
+      longitude: BASE_LON,
+      radiusKm: 10,
+    });
+
+    expect(result).toHaveLength(0);
+  });
+
+  it("sorts results by distanceKm ascending", async () => {
+    mockFindMany.mockResolvedValueOnce([
+      makeEstablishment({ id: "est-far", latitude: BASE_LAT + 0.05, longitude: BASE_LON }),
+      makeEstablishment({ id: "est-near", latitude: BASE_LAT + 0.01, longitude: BASE_LON }),
+    ]);
+
+    const result = await listEstablishmentsNearbyService.listEstablishments({
+      latitude: BASE_LAT,
+      longitude: BASE_LON,
+      radiusKm: 10,
+    });
+
+    expect(result[0].id).toBe("est-near");
+    expect(result[1].id).toBe("est-far");
+  });
+
+  it("uses default radius of 10km when radiusKm is not provided", async () => {
+    mockFindMany.mockResolvedValueOnce([
+      makeEstablishment({ latitude: BASE_LAT, longitude: BASE_LON }),
+    ]);
+
+    const result = await listEstablishmentsNearbyService.listEstablishments({
+      latitude: BASE_LAT,
+      longitude: BASE_LON,
+    });
+
+    expect(result).toHaveLength(1);
+  });
+
+  it("returns empty array when no establishments exist in the bounding box", async () => {
+    mockFindMany.mockResolvedValueOnce([]);
+
+    const result = await listEstablishmentsNearbyService.listEstablishments({
+      latitude: BASE_LAT,
+      longitude: BASE_LON,
+      radiusKm: 10,
+    });
+
+    expect(result).toHaveLength(0);
+  });
+});

@@ -6,6 +6,7 @@ import {
   listOpenEstablishmentsController,
   uploadProfilePictureController,
 } from "./controllers/establishment.controller";
+import { listNearbyEstablishmentsController } from "./controllers/establishment.controller";
 
 const movementLevelSchema = {
   type: "object",
@@ -87,6 +88,14 @@ const establishmentProfileSchema = {
         },
       },
     },
+  },
+};
+
+const nearbyEstablishmentSchema = {
+  type: "object",
+  properties: {
+    ...establishmentSchema.properties,
+    distanceKm: { type: "number" },
   },
 };
 
@@ -210,6 +219,31 @@ export async function establishmentRoutes(
       },
     },
     listOpenEstablishmentsController
+  );
+
+  fastify.get(
+    "/establishments/nearby",
+    {
+      schema: {
+        tags: ["Establishments"],
+        summary: "Listar estabelecimentos próximos",
+        querystring: {
+          type: "object",
+          properties: {
+            latitude: { type: "string" },
+            longitude: { type: "string" },
+            radiusKm: { type: "string" },
+          },
+          required: ["latitude", "longitude"],
+        },
+        response: {
+          200: { type: "array", items: nearbyEstablishmentSchema },
+          400: errorSchema,
+          500: errorSchema,
+        },
+      },
+    },
+    listNearbyEstablishmentsController
   );
 
   fastify.get(
