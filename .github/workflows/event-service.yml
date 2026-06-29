@@ -37,12 +37,12 @@ jobs:
         working-directory: apps/services/event-service
         run: npx tsc --noEmit
 
-      - name: Run unit tests with coverage
+      - name: Run unit tests
         working-directory: apps/services/event-service
         env:
           JWT_SECRET: ci-test-secret
           DATABASE_URL: postgresql://u:p@localhost:5432/db
-        run: npx vitest run --coverage src
+        run: npx vitest run src
 
   integration-test:
     name: Integration Tests
@@ -66,12 +66,12 @@ jobs:
           DATABASE_URL: postgresql://u:p@localhost:5432/db
         run: npm ci
 
-      - name: Run integration tests
+      - name: Run integration tests with coverage
         working-directory: apps/services/event-service
         env:
           JWT_SECRET: ci-test-secret
           DATABASE_URL: postgresql://u:p@localhost:5432/db
-        run: npx vitest run tests
+        run: npm run test:coverage
 
   build-and-push:
     name: Build & Push
