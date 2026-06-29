@@ -21,7 +21,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/prisma ./prisma
 
-COPY --from=builder /app/dist/prisma.config.js ./prisma.config.js
+RUN printf 'import { defineConfig } from "prisma/config";\nexport default defineConfig({\n  schema: "prisma/schema.prisma",\n  migrations: { path: "prisma/migrations" },\n  datasource: { url: process.env.DATABASE_URL },\n});\n' > prisma.config.mjs
 
 EXPOSE 3000
 
