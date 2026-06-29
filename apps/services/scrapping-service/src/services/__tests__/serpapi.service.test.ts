@@ -239,7 +239,7 @@ describe("SerpApiService", () => {
         })
       );
 
-      const result = await service.getPlacePopularity("place-id");
+      const result = await service.getPlacePopularity(`place-id-${day}`);
       expect(result!.currentDayInt).toBe(expectedInt);
     }
   });
@@ -274,6 +274,41 @@ describe("SerpApiService", () => {
       hour: 20,
       busyness_score: 90,
       status_text: "Very busy",
+    });
+  });
+
+  describe("cache", () => {
+    it("should return cached result on second call without fetching again", async () => {
+      fetchMock.mockResolvedValue(
+        makeFetchResponse({
+          place_results: {
+            popular_times: {
+              current_day: "friday",
+              graph_results: { friday: [] },
+            },
+          },
+        })
+      );
+
+      await service.getPlacePopularity("cached-place");
+      await service.getPlacePopularity("cached-place");
+
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("should make separate requests for different placeIds", async () => {
+      fetchMock.mockResolvedValue(
+        makeFetchResponse({
+          place_results: {
+            popular_times: { current_day: "friday", graph_results: { friday: [] } },
+          },
+        })
+      );
+
+      await service.getPlacePopularity("place-a");
+      await service.getPlacePopularity("place-b");
+
+      expect(fetchMock).toHaveBeenCalledTimes(2);
     });
   });
 });

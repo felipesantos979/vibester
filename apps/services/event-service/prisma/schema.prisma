@@ -20,8 +20,13 @@ model Event {
   totalConfirmed  Int      @default(0)
   latitude        Float
   longitude       Float
-  establishmentId String   @default(uuid())
+  establishmentId String
   isFeatured      Boolean  @default(false)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([establishmentId])
+  @@index([startDate])
+  @@index([isFeatured])
+  @@index([latitude, longitude])
 }

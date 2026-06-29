@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/feed/publication_model.dart';
 import 'package:mobile/providers/feed/publication_list_provider.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/feed/publication_card.dart';
 import 'package:provider/provider.dart';
 
 class FeedScreen extends StatefulWidget {
-  //Passa o estado da barra pra usar no botão de nova publicação
   final ValueNotifier<bool>? navbarVisibleNotifier;
 
   const FeedScreen({super.key, this.navbarVisibleNotifier});
@@ -20,38 +20,106 @@ class _FeedScreenState extends State<FeedScreen> {
   final _scrollController = ScrollController();
 
   @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userId = context.read<UserProvider>().user?.accountId;
+      if (userId != null) {
+        context.read<PublicationListProvider>().fetchPublications(userId);
+      }
+    });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<PublicationListProvider>().loadMore();
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    List<PublicationModel> publications = context
-        .watch<PublicationListProvider>()
-        .publications;
+    final provider = context.watch<PublicationListProvider>();
+    final List<PublicationModel> publications = provider.publications;
+    final userId = context.read<UserProvider>().user?.accountId;
 
     return Container(
       color: Color(colorNoturno),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          RefreshIndicator(
-            color: Color(colorAmbar),
-            onRefresh: () =>
-                context.read<PublicationListProvider>().fetchPublications(),
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: EdgeInsets.only(bottom: 80, top: 20),
-              itemCount: publications.length,
-              itemBuilder: (context, index) {
-                return PublicationCard(publication: publications[index]);
+          if (provider.isLoading)
+            const Center(
+              child: CircularProgressIndicator(color: Color(colorAmbar)),
+            )
+          else if (provider.erro != null && publications.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      provider.erro!,
+                      style: const TextStyle(color: Colors.white38),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () {
+                        if (userId != null) provider.fetchPublications(userId);
+                      },
+                      child: const Text(
+                        'Tentar novamente',
+                        style: TextStyle(color: Color(colorAmbar)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            RefreshIndicator(
+              color: Color(colorAmbar),
+              onRefresh: () async {
+                if (userId != null) {
+                  await provider.fetchPublications(userId);
+                }
               },
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.only(bottom: 80, top: 20),
+                itemCount: publications.length + (provider.hasMore ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index >= publications.length) {
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Color(colorAmbar),
+                        ),
+                      ),
+                    );
+                  }
+                  return PublicationCard(publication: publications[index]);
+                },
+              ),
             ),
-          ),
           Positioned(
             bottom: 100,
             right: 16,
             child: ValueListenableBuilder<bool>(
               valueListenable:
-                  widget.navbarVisibleNotifier ??
-                  ValueNotifier(true), //recebe o estado e muda tudo do builder
+                  widget.navbarVisibleNotifier ?? ValueNotifier(true),
               builder: (context, visible, child) {
-                //Teste pro botão simir
                 return AnimatedSlide(
                   offset: visible ? Offset.zero : const Offset(0, 3),
                   duration: const Duration(milliseconds: 300),
@@ -64,18 +132,22 @@ class _FeedScreenState extends State<FeedScreen> {
                 );
               },
               child: FloatingActionButton(
-                //O botão fica fora do builder para não reconstruir o designe
                 onPressed: () async {
                   await Navigator.pushNamed(context, AppRoutes.newPublication);
                   _scrollController.animateTo(
                     0,
-                    duration: Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 300),
                     curve: Curves.easeOut,
                   );
+                  if (userId != null && context.mounted) {
+                    context.read<PublicationListProvider>().fetchPublications(
+                      userId,
+                    );
+                  }
                 },
                 backgroundColor: Color(colorAmbar),
                 foregroundColor: Colors.white,
-                child: Icon(Icons.add, size: 48),
+                child: const Icon(Icons.add, size: 48),
               ),
             ),
           ),

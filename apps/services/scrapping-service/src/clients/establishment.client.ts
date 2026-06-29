@@ -1,4 +1,5 @@
 import { env } from "../config/env";
+import { fetchWithTimeout } from "../utils/retry";
 
 export interface EstablishmentResponse {
   id: string;
@@ -16,12 +17,10 @@ export class EstablishmentClient {
       throw new Error("ESTABLISHMENT_SERVICE_URL não configurada");
     }
 
-    const response = await fetch(`${this.baseUrl}/establishments/open`);
+    const response = await fetchWithTimeout(`${this.baseUrl}/establishments/open`);
 
     if (!response.ok) {
-      throw new Error(
-        `Erro ao buscar estabelecimentos: ${response.status}`
-      );
+      throw new Error(`Erro ao buscar estabelecimentos: ${response.status}`);
     }
 
     return response.json();

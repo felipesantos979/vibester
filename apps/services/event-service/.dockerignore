@@ -1,0 +1,9 @@
+node_modules
+dist
+.env
+*.local
+tests
+src/**/*.test.ts
+src/**/__tests__
+coverage
+.git

@@ -32,57 +32,63 @@ export class EditProfileService {
     }
 
     async increaseFollower(followerId: string, followingId: string) {
-        await prismaClient.userFollow.create({ data: { followerId, followingId } });
+        const result = await prismaClient.$transaction(async (tx) => {
+            await tx.userFollow.create({ data: { followerId, followingId } });
 
-        await Promise.all([
-            prismaClient.userProfile.update({
-                where: { userID: followingId },
-                data: { followers: { increment: 1 } },
-            }),
-            prismaClient.userProfile.update({
-                where: { userID: followerId },
-                data: { following: { increment: 1 } },
-            }),
-        ]);
+            const [followingProfile] = await Promise.all([
+                tx.userProfile.update({
+                    where: { userID: followingId },
+                    data: { followers: { increment: 1 } },
+                }),
+                tx.userProfile.update({
+                    where: { userID: followerId },
+                    data: { following: { increment: 1 } },
+                }),
+            ]);
+
+            return followingProfile;
+        });
 
         await producer.send({
             topic: 'user.followed',
             messages: [{ value: JSON.stringify({ followerId, followingId }) }],
         });
 
-        const result = await prismaClient.userProfile.findUniqueOrThrow({ where: { userID: followingId } });
-
         await redis.del(
             `user:followers:${followingId}`,
             `user:following:${followerId}`,
-            `user:profile:${result.userID}`,
+            `user:profile:${followingId}`,
+            `user:profile:${followerId}`,
         ).catch(() => {});
 
         return result;
     }
 
     async decreaseFollower(followerId: string, followingId: string) {
-        await prismaClient.userFollow.delete({
-            where: { followerId_followingId: { followerId, followingId } },
+        const result = await prismaClient.$transaction(async (tx) => {
+            await tx.userFollow.delete({
+                where: { followerId_followingId: { followerId, followingId } },
+            });
+
+            const [followingProfile] = await Promise.all([
+                tx.userProfile.update({
+                    where: { userID: followingId },
+                    data: { followers: { decrement: 1 } },
+                }),
+                tx.userProfile.update({
+                    where: { userID: followerId },
+                    data: { following: { decrement: 1 } },
+                }),
+            ]);
+
+            return followingProfile;
         });
-
-        await Promise.all([
-            prismaClient.userProfile.update({
-                where: { userID: followingId },
-                data: { followers: { decrement: 1 } },
-            }),
-            prismaClient.userProfile.update({
-                where: { userID: followerId },
-                data: { following: { decrement: 1 } },
-            }),
-        ]);
-
-        const result = await prismaClient.userProfile.findUniqueOrThrow({ where: { userID: followingId } });
 
         await redis.del(
             `user:followers:${followingId}`,
             `user:following:${followerId}`,
-            `user:profile:${result.userID}`,
+            `user:profile:${followingId}`,
+            `user:profile:${followerId}`,
         ).catch(() => {});
 
         return result;

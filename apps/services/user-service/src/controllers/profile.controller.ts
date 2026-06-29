@@ -1,4 +1,4 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyRequest } from "fastify";
 import { ZodTypeProvider } from "@fastify/type-provider-zod";
 import { z } from "zod";
 import { CreateProfileService } from "../services/createProfile.service.js";
@@ -174,8 +174,17 @@ export async function profileRoutes(app: FastifyInstance) {
     }
   });
 
-
   router.post("/profile/followers/increase", {
+    config: {
+      rateLimit: {
+        max: 60,
+        timeWindow: 60000,
+        keyGenerator: (request: FastifyRequest) => {
+          const body = request.body as { followerId?: string };
+          return `rate:follow:${body?.followerId ?? request.ip}`;
+        },
+      },
+    },
     schema: {
       tags: ["Profile"],
       summary: "Seguir usuário",
@@ -195,6 +204,16 @@ export async function profileRoutes(app: FastifyInstance) {
   });
 
   router.post("/profile/followers/decrease", {
+    config: {
+      rateLimit: {
+        max: 60,
+        timeWindow: 60000,
+        keyGenerator: (request: FastifyRequest) => {
+          const body = request.body as { followerId?: string };
+          return `rate:follow:${body?.followerId ?? request.ip}`;
+        },
+      },
+    },
     schema: {
       tags: ["Profile"],
       summary: "Deixar de seguir usuário",

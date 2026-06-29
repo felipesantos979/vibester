@@ -11,6 +11,16 @@ export async function registerSwagger(app: FastifyInstance) {
           "Documentação da API do serviço de scrapping do Vibester (popularidade, movimento e lugares próximos via Google Places / SerpAPI).",
         version: "1.0.0",
       },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+            description: "Token JWT assinado pelo auth-service",
+          },
+        },
+      },
       tags: [
         { name: "Health", description: "Verificação de saúde do serviço" },
         { name: "Places", description: "Lugares e popularidade" },
@@ -24,6 +34,7 @@ export async function registerSwagger(app: FastifyInstance) {
     uiConfig: {
       docExpansion: "list",
       deepLinking: true,
+      persistAuthorization: true,
     },
   });
 }

@@ -2,9 +2,9 @@ import type {
   GooglePlacesResponse,
   GooglePlaceResult,
 } from "../types/google-places.type";
-
 import type { PlaceResult } from "../types/place.type";
 import { env } from "../config/env";
+import { fetchWithTimeout } from "../utils/retry";
 
 const VALID_TYPES = new Set(["bar", "night_club", "restaurant", "cafe"]);
 
@@ -30,18 +30,10 @@ export class GooglePlacesService {
     const seenPlaceIds = new Set<string>();
 
     for (const type of types) {
-      const places = await this.searchNearbyPlacesByType(
-        type,
-        lat,
-        lng,
-        radius
-      );
+      const places = await this.searchNearbyPlacesByType(type, lat, lng, radius);
 
       for (const place of places) {
-        if (seenPlaceIds.has(place.placeId)) {
-          continue;
-        }
-
+        if (seenPlaceIds.has(place.placeId)) continue;
         seenPlaceIds.add(place.placeId);
         allPlaces.push(place);
       }
@@ -64,16 +56,10 @@ export class GooglePlacesService {
 
     const places: PlaceResult[] = [];
 
-    let url = this.buildNearbyUrl({
-      apiKey,
-      type,
-      lat,
-      lng,
-      radius,
-    });
+    let url = this.buildNearbyUrl({ apiKey, type, lat, lng, radius });
 
     while (true) {
-      const response = await fetch(url);
+      const response = await fetchWithTimeout(url);
 
       if (!response.ok) {
         throw new Error(`Erro HTTP Google Places: ${response.status}`);
@@ -81,18 +67,11 @@ export class GooglePlacesService {
 
       const data = (await response.json()) as GooglePlacesResponse;
 
-      if (data.status === "ZERO_RESULTS") {
-        return places;
-      }
-
-      if (data.status !== "OK") {
-        break;
-      }
+      if (data.status === "ZERO_RESULTS") return places;
+      if (data.status !== "OK") break;
 
       for (const item of data.results ?? []) {
-        if (!this.isValidPlace(item)) {
-          continue;
-        }
+        if (!this.isValidPlace(item)) continue;
 
         places.push({
           placeId: item.place_id,
@@ -103,16 +82,10 @@ export class GooglePlacesService {
         });
       }
 
-      if (!data.next_page_token) {
-        break;
-      }
+      if (!data.next_page_token) break;
 
       await this.sleep(2000);
-
-      url = this.buildNextPageUrl({
-        apiKey,
-        nextPageToken: data.next_page_token,
-      });
+      url = this.buildNextPageUrl({ apiKey, nextPageToken: data.next_page_token });
     }
 
     return places;
@@ -125,41 +98,25 @@ export class GooglePlacesService {
     lng: number;
     radius: number;
   }): URL {
-    const url = new URL(
-      "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-    );
-
+    const url = new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json");
     url.searchParams.set("location", `${params.lat},${params.lng}`);
     url.searchParams.set("radius", String(params.radius));
     url.searchParams.set("type", params.type);
     url.searchParams.set("key", params.apiKey);
-
     return url;
   }
 
-  private buildNextPageUrl(params: {
-    apiKey: string;
-    nextPageToken: string;
-  }): URL {
-    const url = new URL(
-      "https://maps.googleapis.com/maps/api/place/nearbysearch/json"
-    );
-
+  private buildNextPageUrl(params: { apiKey: string; nextPageToken: string }): URL {
+    const url = new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json");
     url.searchParams.set("pagetoken", params.nextPageToken);
     url.searchParams.set("key", params.apiKey);
-
     return url;
   }
 
   private isValidPlace(place: GooglePlaceResult): boolean {
     const placeTypes = new Set(place.types ?? []);
-
     const hasValidType = [...placeTypes].some((type) => VALID_TYPES.has(type));
-
-    const hasInvalidType = [...placeTypes].some((type) =>
-      INVALID_TYPES.has(type)
-    );
-
+    const hasInvalidType = [...placeTypes].some((type) => INVALID_TYPES.has(type));
     return hasValidType && !hasInvalidType;
   }
 

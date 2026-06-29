@@ -5,33 +5,32 @@ const {
   mockUpdate,
   mockUserFollowCreate,
   mockUserFollowDelete,
-  mockFindUniqueOrThrow,
   mockProducerSend,
-} = vi.hoisted(() => ({
-  mockUpdate: vi.fn(),
-  mockUserFollowCreate: vi.fn(),
-  mockUserFollowDelete: vi.fn(),
-  mockFindUniqueOrThrow: vi.fn(),
-  mockProducerSend: vi.fn(),
-}));
+  mockTransaction,
+} = vi.hoisted(() => {
+  const mockUpdate = vi.fn();
+  const mockUserFollowCreate = vi.fn();
+  const mockUserFollowDelete = vi.fn();
+  const mockProducerSend = vi.fn();
+  const mockTransaction = vi.fn().mockImplementation((fn: Function) =>
+    fn({
+      userProfile: { update: mockUpdate },
+      userFollow: { create: mockUserFollowCreate, delete: mockUserFollowDelete },
+    })
+  );
+  return { mockUpdate, mockUserFollowCreate, mockUserFollowDelete, mockProducerSend, mockTransaction };
+});
 
 vi.mock("../../prisma/index", () => ({
   default: {
-    userProfile: {
-      update: mockUpdate,
-      findUniqueOrThrow: mockFindUniqueOrThrow,
-    },
-    userFollow: {
-      create: mockUserFollowCreate,
-      delete: mockUserFollowDelete,
-    },
+    userProfile: { update: mockUpdate },
+    userFollow: { create: mockUserFollowCreate, delete: mockUserFollowDelete },
+    $transaction: mockTransaction,
   },
 }));
 
 vi.mock("../../kafka/producer", () => ({
-  producer: {
-    send: mockProducerSend,
-  },
+  producer: { send: mockProducerSend },
 }));
 
 const FOLLOWER_ID = "follower-uuid-1";
@@ -72,6 +71,12 @@ describe("EditProfileService", () => {
   beforeEach(() => {
     service = new EditProfileService();
     vi.clearAllMocks();
+    mockTransaction.mockImplementation((fn: Function) =>
+      fn({
+        userProfile: { update: mockUpdate },
+        userFollow: { create: mockUserFollowCreate, delete: mockUserFollowDelete },
+      })
+    );
   });
 
   // ======= updateBio =======
@@ -128,15 +133,17 @@ describe("EditProfileService", () => {
   // ======= increaseFollower =======
 
   describe("increaseFollower", () => {
-    it("should create a follow record, increment counters on both profiles, send Kafka event and return the followed profile", async () => {
-      const updatedProfile = makeProfile({ followers: 1 });
+    it("should create follow, increment counters atomically, send Kafka event and return the followed profile", async () => {
+      const updatedFollowingProfile = makeProfile({ followers: 1 });
       mockUserFollowCreate.mockResolvedValue({});
-      mockUpdate.mockResolvedValue({});
-      mockFindUniqueOrThrow.mockResolvedValue(updatedProfile);
+      mockUpdate
+        .mockResolvedValueOnce(updatedFollowingProfile)
+        .mockResolvedValueOnce(makeProfile({ userID: FOLLOWER_ID, following: 1 }));
       mockProducerSend.mockResolvedValue({});
 
       const result = await service.increaseFollower(FOLLOWER_ID, FOLLOWING_ID);
 
+      expect(mockTransaction).toHaveBeenCalledTimes(1);
       expect(mockUserFollowCreate).toHaveBeenCalledWith({
         data: { followerId: FOLLOWER_ID, followingId: FOLLOWING_ID },
       });
@@ -151,9 +158,6 @@ describe("EditProfileService", () => {
       expect(mockProducerSend).toHaveBeenCalledWith({
         topic: "user.followed",
         messages: [{ value: JSON.stringify({ followerId: FOLLOWER_ID, followingId: FOLLOWING_ID }) }],
-      });
-      expect(mockFindUniqueOrThrow).toHaveBeenCalledWith({
-        where: { userID: FOLLOWING_ID },
       });
       expect(result.followers).toBe(1);
     });
@@ -179,14 +183,16 @@ describe("EditProfileService", () => {
   // ======= decreaseFollower =======
 
   describe("decreaseFollower", () => {
-    it("should delete the follow record, decrement counters on both profiles and return the unfollowed profile", async () => {
-      const updatedProfile = makeProfile({ followers: 0 });
+    it("should delete follow, decrement counters atomically and return the unfollowed profile", async () => {
+      const updatedFollowingProfile = makeProfile({ followers: 0 });
       mockUserFollowDelete.mockResolvedValue({});
-      mockUpdate.mockResolvedValue({});
-      mockFindUniqueOrThrow.mockResolvedValue(updatedProfile);
+      mockUpdate
+        .mockResolvedValueOnce(updatedFollowingProfile)
+        .mockResolvedValueOnce(makeProfile({ userID: FOLLOWER_ID, following: 0 }));
 
       const result = await service.decreaseFollower(FOLLOWER_ID, FOLLOWING_ID);
 
+      expect(mockTransaction).toHaveBeenCalledTimes(1);
       expect(mockUserFollowDelete).toHaveBeenCalledWith({
         where: { followerId_followingId: { followerId: FOLLOWER_ID, followingId: FOLLOWING_ID } },
       });
@@ -197,9 +203,6 @@ describe("EditProfileService", () => {
       expect(mockUpdate).toHaveBeenCalledWith({
         where: { userID: FOLLOWER_ID },
         data: { following: { decrement: 1 } },
-      });
-      expect(mockFindUniqueOrThrow).toHaveBeenCalledWith({
-        where: { userID: FOLLOWING_ID },
       });
       expect(result.followers).toBe(0);
     });

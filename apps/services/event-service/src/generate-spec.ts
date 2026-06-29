@@ -1,3 +1,5 @@
+process.env.SWAGGER_ENABLED = 'true';
+
 import Fastify from 'fastify';
 import { writeFileSync } from 'fs';
 import { serializerCompiler, validatorCompiler } from '@fastify/type-provider-zod';

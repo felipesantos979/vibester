@@ -1,4 +1,6 @@
 import { env } from "../config/env";
+import { fetchWithTimeout } from "../utils/retry";
+import { TTLCache } from "../utils/cache";
 
 const WEEK_DAYS: Record<string, number> = {
   sunday: 0,
@@ -9,6 +11,8 @@ const WEEK_DAYS: Record<string, number> = {
   friday: 5,
   saturday: 6,
 };
+
+const CACHE_TTL_MS = 30 * 60 * 1000;
 
 export type PopularityHourData = {
   hour: number;
@@ -28,9 +32,19 @@ export type PlacePopularityResult = {
 };
 
 export class SerpApiService {
-  async getPlacePopularity(placeId: string): Promise<PlacePopularityResult | null> {
-    const url = new URL("https://serpapi.com/search.json");
+  private cache = new TTLCache<string, PlacePopularityResult | null>();
 
+  async getPlacePopularity(placeId: string): Promise<PlacePopularityResult | null> {
+    const cached = this.cache.get(placeId);
+    if (cached !== null) return cached;
+
+    const result = await this.fetchPopularity(placeId);
+    this.cache.set(placeId, result, CACHE_TTL_MS);
+    return result;
+  }
+
+  private async fetchPopularity(placeId: string): Promise<PlacePopularityResult | null> {
+    const url = new URL("https://serpapi.com/search.json");
     url.searchParams.set("engine", "google_maps");
     url.searchParams.set("type", "place");
     url.searchParams.set("place_id", placeId);
@@ -38,20 +52,18 @@ export class SerpApiService {
     url.searchParams.set("hl", "pt-BR");
     url.searchParams.set("gl", "br");
 
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url);
 
     if (!response.ok) {
       throw new Error(`Erro ao consultar SerpAPI: ${response.status}`);
     }
 
     const result = await response.json();
-    
+
     const place = result.place_results ?? {};
     const popular = place.popular_times ?? {};
 
-    if (!popular || Object.keys(popular).length === 0) {
-      return null;
-    }
+    if (!popular || Object.keys(popular).length === 0) return null;
 
     const currentDay = popular.current_day ?? null;
     const currentDayInt = currentDay ? WEEK_DAYS[currentDay] ?? null : null;
@@ -69,13 +81,8 @@ export class SerpApiService {
       for (const hourData of todayGraph) {
         const time = hourData.time ?? "";
         const hour = Number(time.split(":")[0]) || 0;
-
         const isCurrent = Boolean(hourData.current);
-
-        const score =
-          hourData.live_busyness_score ??
-          hourData.busyness_score ??
-          null;
+        const score = hourData.live_busyness_score ?? hourData.busyness_score ?? null;
 
         if (isCurrent && typeof score === "number") {
           liveBusynessScore = score;
@@ -92,12 +99,9 @@ export class SerpApiService {
 
       if (liveBusynessScore === null) {
         const currentHourData = hoursData.find((item) => item.hour === currentHour);
-
         if (currentHourData) {
           liveBusynessScore =
-            currentHourData.live_busyness_score ??
-            currentHourData.busyness_score ??
-            null;
+            currentHourData.live_busyness_score ?? currentHourData.busyness_score ?? null;
         }
       }
     }

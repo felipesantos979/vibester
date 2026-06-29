@@ -24,22 +24,31 @@ vi.mock('../../src/config/redis', async () => {
   };
 });
 
-const { mockUserProfile, mockUserFollow } = vi.hoisted(() => ({
-  mockUserProfile: {
+const { mockUserProfile, mockUserFollow, mockTransaction } = vi.hoisted(() => {
+  const mockUserProfile = {
     create: vi.fn(),
     findUnique: vi.fn(),
     update: vi.fn(),
     findUniqueOrThrow: vi.fn(),
-  },
-  mockUserFollow: {
+  };
+  const mockUserFollow = {
     create: vi.fn(),
     delete: vi.fn(),
     findMany: vi.fn(),
-  },
-}));
+  };
+  const mockTransaction = vi.fn().mockImplementation((fn: Function) =>
+    fn({ userProfile: mockUserProfile, userFollow: mockUserFollow })
+  );
+  return { mockUserProfile, mockUserFollow, mockTransaction };
+});
 
 vi.mock('../../src/prisma/index', () => ({
-  default: { userProfile: mockUserProfile, userFollow: mockUserFollow },
+  default: {
+    userProfile: mockUserProfile,
+    userFollow: mockUserFollow,
+    $transaction: mockTransaction,
+    $queryRaw: vi.fn().mockResolvedValue([{ '?column?': 1 }]),
+  },
 }));
 
 const { mockProducerSend } = vi.hoisted(() => ({ mockProducerSend: vi.fn() }));
@@ -50,7 +59,6 @@ vi.mock('../../src/kafka/producer', () => ({
 import { buildServer } from '../helpers/fastify.test.helper';
 import { redis } from '../../src/config/redis';
 
-// UUIDs RFC 4122 válidos: versão 4 (grupo 3 começa com '4') e variante 8/9/a/b (grupo 4 começa com [89ab])
 const USER_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
 const PROFILE_ID = 'b1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
 const FOLLOWER_ID = 'c1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
@@ -81,6 +89,9 @@ describe('user-service — HTTP Integration', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    mockTransaction.mockImplementation((fn: Function) =>
+      fn({ userProfile: mockUserProfile, userFollow: mockUserFollow })
+    );
     await redis.flushall();
   });
 
@@ -159,7 +170,6 @@ describe('user-service — HTTP Integration', () => {
       });
       expect(res.statusCode).toBe(200);
 
-      // Cache invalidado: próximo GET chama banco novamente
       mockUserProfile.findUnique.mockResolvedValue(updated);
       await app.inject({ method: 'GET', url: `/users/profile/${USER_ID}` });
       expect(mockUserProfile.findUnique).toHaveBeenCalledTimes(2);
@@ -182,12 +192,13 @@ describe('user-service — HTTP Integration', () => {
     });
   });
 
-  describe('POST /users/profile/followers/increase — Kafka', () => {
-    it('registra follow, atualiza contadores e emite user.followed no Kafka', async () => {
-      const updated = makeProfile({ followers: 1 });
+  describe('POST /users/profile/followers/increase — transação atômica + Kafka', () => {
+    it('registra follow em transação, atualiza contadores e emite user.followed', async () => {
+      const updatedFollowingProfile = makeProfile({ followers: 1 });
       mockUserFollow.create.mockResolvedValue({});
-      mockUserProfile.update.mockResolvedValue(updated);
-      mockUserProfile.findUniqueOrThrow.mockResolvedValue(updated);
+      mockUserProfile.update
+        .mockResolvedValueOnce(updatedFollowingProfile)
+        .mockResolvedValueOnce(makeProfile({ userID: FOLLOWER_ID, following: 1 }));
 
       const res = await app.inject({
         method: 'POST',
@@ -197,6 +208,7 @@ describe('user-service — HTTP Integration', () => {
 
       expect(res.statusCode).toBe(200);
       expect(JSON.parse(res.payload).followers).toBe(1);
+      expect(mockTransaction).toHaveBeenCalledTimes(1);
       expect(mockProducerSend).toHaveBeenCalledWith(
         expect.objectContaining({
           topic: 'user.followed',
@@ -210,12 +222,13 @@ describe('user-service — HTTP Integration', () => {
     });
   });
 
-  describe('POST /users/profile/followers/decrease', () => {
-    it('remove follow, atualiza contadores e retorna 200', async () => {
-      const updated = makeProfile({ followers: 0 });
+  describe('POST /users/profile/followers/decrease — transação atômica', () => {
+    it('remove follow em transação, atualiza contadores e retorna 200', async () => {
+      const updatedFollowingProfile = makeProfile({ followers: 0 });
       mockUserFollow.delete.mockResolvedValue({});
-      mockUserProfile.update.mockResolvedValue(updated);
-      mockUserProfile.findUniqueOrThrow.mockResolvedValue(updated);
+      mockUserProfile.update
+        .mockResolvedValueOnce(updatedFollowingProfile)
+        .mockResolvedValueOnce(makeProfile({ userID: FOLLOWER_ID, following: 0 }));
 
       const res = await app.inject({
         method: 'POST',
@@ -224,6 +237,8 @@ describe('user-service — HTTP Integration', () => {
       });
 
       expect(res.statusCode).toBe(200);
+      expect(JSON.parse(res.payload).followers).toBe(0);
+      expect(mockTransaction).toHaveBeenCalledTimes(1);
     });
   });
 
