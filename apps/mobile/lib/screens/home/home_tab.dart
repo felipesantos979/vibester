@@ -5,12 +5,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/screens/feed/feed_screen.dart';
 import 'package:mobile/screens/highlights/highlights_section_screen.dart';
 import 'package:mobile/screens/places/hot_places_screen.dart';
+import 'package:mobile/service/location/location_service.dart';
 import 'package:mobile/utils/colors.dart';
+import 'package:mobile/utils/location_satate.dart';
 
 class HomeTab extends StatefulWidget {
   //serve só pra passar o valor atual da barra pra tela do feed
   final ValueNotifier<bool> navbarVisibleNotifier;
-  final VoidCallback onTabChanged; // volta com a barra ao trocar de aba
+  // volta com a barra ao trocar de aba
+  final VoidCallback onTabChanged; 
 
   const HomeTab({
     super.key,
@@ -24,6 +27,10 @@ class HomeTab extends StatefulWidget {
 
 class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final _locationService = LocationService();
+
+  // Indice da aba destaques pra função de localização
+  static const int _abaDestaquesIndex = 1;
 
   @override
   void initState() {
@@ -32,7 +39,24 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
     // Escuta qualquer troca de aba, serve para fazer a barra voltar ao trocar de aba
     _tabController.addListener(() {
       widget.onTabChanged();
+
+      // Atualiza a localização sempre que a aba Destaques se torna ativa
+      if (_tabController.index == _abaDestaquesIndex &&
+          !_tabController.indexIsChanging) {
+        _atualizarLocalizacao();
+      }
     });
+  }
+
+  Future<void> _atualizarLocalizacao() async {
+    try {
+      final posicao = await _locationService.getCurrentPosition();
+      latitudeAtual = posicao.latitude;
+      longitudeAtual = posicao.longitude;
+      debugPrint('Localização: lat=$latitudeAtual, lng=$longitudeAtual');
+    } catch (e) {
+      debugPrint('Erro ao obter localização: $e');
+    }
   }
 
   @override

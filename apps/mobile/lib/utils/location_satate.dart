@@ -1,0 +1,2 @@
+double? latitudeAtual;
+double? longitudeAtual;
