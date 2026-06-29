@@ -123,12 +123,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
                   SizedBox(height: 12),
 
-                  Text(
-                    '${user.nome}',
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        '${user.nome}',
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 35,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
 
