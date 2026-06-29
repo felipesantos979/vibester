@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
-    include: ["src/**/*.test.ts", "tests/integration/**/*.spec.ts"],
+    include: ["src/**/*.test.ts"],
     setupFiles: ["tests/setup/vitest.setup.ts"],
     coverage: {
       provider: "v8",
@@ -13,7 +13,5 @@ export default defineConfig({
       thresholds: { lines: 70, functions: 70, branches: 60 },
     },
     reporters: ["verbose"],
-    testTimeout: 30000,
-    hookTimeout: 30000,
   },
 });

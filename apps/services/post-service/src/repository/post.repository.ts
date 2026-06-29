@@ -172,14 +172,15 @@ export class PostRepository extends BaseRepository {
         };
     }
 
-    async findByUser(userId: string): Promise<Post[]> {
+    async findByUser(userId: string, limit = 50): Promise<Post[]> {
         const result = await this.execute(
             `
                 SELECT *
                 FROM posts_by_user
-                WHERE user_id = ?;
+                WHERE user_id = ?
+                LIMIT ?;
             `,
-            [userId]
+            [userId, limit]
         );
 
         return result.rows.map((row) => ({
@@ -203,14 +204,15 @@ export class PostRepository extends BaseRepository {
         }));
     }
 
-    async findByEstablishment(establishmentId: string): Promise<Post[]> {
+    async findByEstablishment(establishmentId: string, limit = 50): Promise<Post[]> {
         const result = await this.execute(
             `
                 SELECT *
                 FROM posts_by_establishment
-                WHERE establishment_id = ?;
+                WHERE establishment_id = ?
+                LIMIT ?;
             `,
-            [establishmentId]
+            [establishmentId, limit]
         );
 
         return result.rows.map((row) => ({

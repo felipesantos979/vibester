@@ -12,28 +12,47 @@ import { CreatePostInput, UpdatePostInput } from "../types/post.types";
 
 export class PostController {
 
-    private readonly uploadService = new UploadService();
-
-    constructor(private readonly postService: PostService) { }
+    constructor(
+        private readonly postService: PostService,
+        private readonly uploadService: UploadService,
+    ) {}
 
     async create(
         request: FastifyRequest<{
             Body: {
                 userId: string;
+                userUsername?: string;
+                userProfilePicture?: string;
+                userVerified?: boolean;
                 imageUrls: string[];
                 caption?: string;
+                tags?: string[];
                 establishmentId?: string;
+                establishmentName?: string;
+                establishmentLogo?: string;
+                establishmentCategory?: string;
             };
         }>,
         reply: FastifyReply
     ) {
-        const { userId, imageUrls, caption, establishmentId } = request.body;
+        const {
+            userId, imageUrls, caption, establishmentId,
+            userUsername, userProfilePicture, userVerified,
+            establishmentName, establishmentLogo, establishmentCategory, tags,
+        } = request.body;
 
         const data: CreatePostInput = {
             userId,
+            userUsername,
+            userProfilePicture,
+            userVerified,
             imageUrls,
             caption: caption ?? '',
             establishmentId,
+            establishmentName,
+            establishmentLogo,
+            establishmentCategory,
+            tags,
         };
 
         const post = await this.postService.create(data);
@@ -51,9 +70,7 @@ export class PostController {
         const post = await this.postService.findById(postId);
 
         if (!post) {
-            return reply.status(404).send({
-                message: "Post not found"
-            });
+            return reply.status(404).send({ message: "Post not found" });
         }
 
         return reply.status(200).send(post);
@@ -62,11 +79,13 @@ export class PostController {
     async findByUser(
         request: FastifyRequest<{
             Params: { userId: string; };
+            Querystring: { limit?: number };
         }>,
         reply: FastifyReply
     ) {
         const { userId } = userIdParamsSchema.parse(request.params);
-        const posts = await this.postService.findByUser(userId);
+        const limit = request.query.limit ?? 50;
+        const posts = await this.postService.findByUser(userId, limit);
 
         return reply.status(200).send(posts);
     }
@@ -74,11 +93,13 @@ export class PostController {
     async findByEstablishment(
         request: FastifyRequest<{
             Params: { establishmentId: string; };
+            Querystring: { limit?: number };
         }>,
         reply: FastifyReply
     ) {
         const { establishmentId } = establishmentIdParamsSchema.parse(request.params);
-        const posts = await this.postService.findByEstablishment(establishmentId);
+        const limit = request.query.limit ?? 50;
+        const posts = await this.postService.findByEstablishment(establishmentId, limit);
 
         return reply.status(200).send(posts);
     }
@@ -93,10 +114,7 @@ export class PostController {
         const { postId } = postIdParamsSchema.parse(request.params);
         const { caption } = updatePostSchema.parse(request.body);
 
-        const updateInput: UpdatePostInput = {
-            postId: postId,
-            caption: caption
-        };
+        const updateInput: UpdatePostInput = { postId, caption };
 
         const post = await this.postService.updateCaption(updateInput);
 

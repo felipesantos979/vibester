@@ -1,67 +1,114 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
+import helmet from "@fastify/helmet";
+import compress from "@fastify/compress";
+import rateLimit from "@fastify/rate-limit";
+import multipart from "@fastify/multipart";
 import { getCassandraClient } from "./config/cassandra";
+import { redis } from "./config/redis";
 import { routes } from "./routes";
 import { registerSwagger } from "./config/swagger";
 import { ZodError } from "zod";
-import multipart from "@fastify/multipart";
 import { producer } from "./kafka/producer";
 import { env } from "./config/env";
 import { HttpError } from "./errors/http.error";
 
-const app = Fastify();
-
-app.register(multipart, {
-  limits: {
-    fileSize: 10 * 1024 * 1024,
-    files: 20,
-  },
+const app = Fastify({
+    logger: {
+        level: "info",
+        serializers: {
+            req(req) { return { method: req.method, url: req.url }; },
+        },
+    },
+    bodyLimit: 1 * 1024 * 1024,
+    requestTimeout: 30000,
 });
 
-app.setErrorHandler((error, request, reply) => {
-  if (error instanceof ZodError) {
-    return reply.status(400).send({
-      message: "Validation error",
-      errors: error.issues.map((issue) => ({
-        field: issue.path.join("."),
-        message: issue.message,
-      })),
+app.register(cors, { origin: true });
+
+app.register(helmet, {
+    contentSecurityPolicy: false,
+});
+
+app.register(compress, { global: true });
+
+app.register(rateLimit, {
+    global: true,
+    max: 200,
+    timeWindow: "1 minute",
+    errorResponseBuilder: (_req, context) => ({
+        message: `Rate limit excedido. Tente novamente em ${Math.ceil(context.ttl / 1000)}s.`,
+    }),
+});
+
+app.register(multipart, {
+    limits: {
+        fileSize: 10 * 1024 * 1024,
+        files: 20,
+    },
+});
+
+app.setErrorHandler((error, _request, reply) => {
+    if (error instanceof ZodError) {
+        return reply.status(400).send({
+            message: "Validation error",
+            errors: error.issues.map((issue) => ({
+                field: issue.path.join("."),
+                message: issue.message,
+            })),
+        });
+    }
+
+    if (error instanceof HttpError) {
+        return reply.status(error.statusCode).send({ message: error.message });
+    }
+
+    const fastifyError = error as { statusCode?: number; message?: string };
+    if (typeof fastifyError.statusCode === "number" && fastifyError.statusCode < 500) {
+        return reply.status(fastifyError.statusCode).send({ message: fastifyError.message });
+    }
+
+    app.log.error({ err: error }, "Unhandled error");
+    return reply.status(500).send({
+        message: "Internal server error",
     });
-  }
-
-  // Erros de negócio com código HTTP explícito
-  if (error instanceof HttpError) {
-    return reply.status(error.statusCode).send({ message: error.message });
-  }
-
-  // Erros de validação do schema AJV do Fastify (ex: campo obrigatório ausente)
-  const fastifyError = error as { statusCode?: number; message?: string };
-  if (typeof fastifyError.statusCode === "number" && fastifyError.statusCode < 500) {
-    return reply.status(fastifyError.statusCode).send({ message: fastifyError.message });
-  }
-
-  return reply.status(500).send({
-    message: error instanceof Error ? error.message : "Internal server error",
-  });
 });
 
 async function start() {
-  try {
-    await producer.connect();
-    await getCassandraClient().connect();
+    try {
+        await redis.connect();
+        await producer.connect();
+        await getCassandraClient().connect();
 
-    await registerSwagger(app);
-    await app.register(routes);
+        await registerSwagger(app);
+        await app.register(routes);
 
-    process.on('SIGTERM', async () => { await producer.disconnect(); });
+        await app.listen({
+            port: Number(env.port) || 3000,
+            host: "0.0.0.0",
+        });
 
-    await app.listen({
-      port: Number(env.port) || 3000,
-      host: "0.0.0.0",
-    });
-  } catch (error) {
-    console.error(error);
-    process.exit(1);
-  }
+        async function gracefulShutdown(signal: string) {
+            app.log.info({ signal }, "Iniciando shutdown gracioso");
+            try {
+                await app.close();
+                await producer.disconnect();
+                await getCassandraClient().shutdown();
+                await redis.quit();
+                app.log.info("Shutdown concluído");
+                process.exit(0);
+            } catch (err) {
+                app.log.error({ err }, "Erro durante shutdown");
+                process.exit(1);
+            }
+        }
+
+        process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+        process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+    } catch (error) {
+        app.log.error({ err: error }, "Falha ao iniciar o servidor");
+        process.exit(1);
+    }
 }
 
 start();

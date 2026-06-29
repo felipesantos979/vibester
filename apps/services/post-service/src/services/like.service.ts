@@ -62,13 +62,11 @@ export class LikeService {
 
         if (!existingLike) { throw new HttpError("Like not found", 404); }
 
-        let totalLikes = post.totalLikes;
-
-        if (totalLikes > 0) {
-            totalLikes = totalLikes - 1;
-        } else {
-            throw new Error("Post has zero likes!");
+        if (post.totalLikes <= 0) {
+            throw new HttpError("Inconsistent like count", 400);
         }
+
+        const totalLikes = post.totalLikes - 1;
 
         await Promise.all([
             this.likeRepository.deleteLikeByPost(postId, userId),
@@ -83,11 +81,11 @@ export class LikeService {
         }
     }
 
-    async findLikesByUser(userId: string): Promise<PostLike[]> {
-        return this.likeRepository.findLikesByUser(userId);
+    async findLikesByUser(userId: string, limit = 50): Promise<PostLike[]> {
+        return this.likeRepository.findLikesByUser(userId, limit);
     }
 
-    async findLikesByPost(postId: string): Promise<PostLike[]> {
-        return this.likeRepository.findLikesByPost(postId);
+    async findLikesByPost(postId: string, limit = 50): Promise<PostLike[]> {
+        return this.likeRepository.findLikesByPost(postId, limit);
     }
 }

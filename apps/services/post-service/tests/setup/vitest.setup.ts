@@ -14,5 +14,6 @@ vi.mock('../../src/config/env', () => ({
     r2_secret_access_key: 'test-r2-secret',
     r2_bucket_name: 'test-bucket',
     r2_public_url: 'https://test.r2.dev',
+    redis_url: 'redis://localhost:6379',
   },
 }));

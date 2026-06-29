@@ -235,17 +235,11 @@ describe("CommentService", () => {
       await expect(svc.softDelete("cmt-1", "user-2")).rejects.toThrow("Post deleted");
     });
 
-    it("should not decrement totalComments below zero (stays at 0)", async () => {
-      // When totalComments is 0, the `if (totalComments && ...)` guard is falsy,
-      // so the counter stays at 0 and no error is thrown.
+    it("should throw HttpError 400 when totalComments is zero (inconsistent state)", async () => {
       (commentRepo.findById as any).mockResolvedValue(makeComment());
       (postRepo.findById as any).mockResolvedValue(makePost({ totalComments: 0 }));
 
-      await svc.softDelete("cmt-1", "user-2");
-
-      expect(commentRepo.softDeleteCommentById).toHaveBeenCalledOnce();
-      // totalComments should be passed as 0 (not -1)
-      expect(postRepo.updateTotalCommentsById).toHaveBeenCalledWith(0, "post-1");
+      await expect(svc.softDelete("cmt-1", "user-2")).rejects.toThrow("Inconsistent comment count");
     });
   });
 });
