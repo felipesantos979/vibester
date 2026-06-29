@@ -44,4 +44,7 @@ class ApiEndpoints {
   //Post
   static String posts() => '$baseUrl/post/posts';
   static String postsUploadUrl() => '$baseUrl/post/posts/upload-url';
+
+  //Feed
+  static String feed(String userId) => '$baseUrl/feed/feed/$userId';
 }

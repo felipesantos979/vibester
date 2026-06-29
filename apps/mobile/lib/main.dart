@@ -28,6 +28,7 @@ import 'package:mobile/screens/search/search_screen.dart';
 import 'package:mobile/screens/settings/account_management_settings_screen.dart';
 import 'package:mobile/screens/settings/personal_information_settings_screen.dart';
 import 'package:mobile/screens/settings/settings_screen.dart';
+import 'package:mobile/screens/user/other_users_profile_screen.dart';
 import 'package:mobile/screens/user/profile_editing_screen.dart';
 import 'package:mobile/screens/user/user_interests_screen.dart';
 import 'package:mobile/screens/user/user_profile_screen.dart';
@@ -98,7 +99,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        //Chama a classe da propriedade de scroll 
+        //Chama a classe da propriedade de scroll
         scrollBehavior: _NoBounceScrollBehavior(),
         theme: ThemeData(
           textTheme: GoogleFonts.interTextTheme(),
@@ -174,6 +175,12 @@ class MyApp extends StatelessWidget {
               return _slideRoute(const ProfileEditingScreen(), settings);
             case AppRoutes.userInterests:
               return _slideRoute(const UserInterestsScreen(), settings);
+            case AppRoutes.otherProfile:
+              final accountid = settings.arguments as String;
+              return _slideRoute(
+                OtherUsersProfileScreen(accountId: accountid),
+                settings,
+              );
 
             // FEED
             case AppRoutes.feed:

@@ -33,6 +33,7 @@ class AppRoutes {
   static const profile = '/profile';
   static const profileEditing = '/profile-edit';
   static const userInterests = '/user-interests';
+  static const otherProfile = '/other-profile';
 
   //FEED
   static const feed = '/feed';
