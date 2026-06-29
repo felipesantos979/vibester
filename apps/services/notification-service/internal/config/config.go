@@ -9,9 +9,8 @@ import (
 )
 
 func LoadEnv() {
-	err := godotenv.Load("../../.env")
-	if err != nil {
-		log.Fatal("Erro ao carregar .env")
+	if err := godotenv.Load(); err != nil {
+		log.Println("[config] .env não encontrado, usando variáveis de ambiente do sistema")
 	}
 }
 

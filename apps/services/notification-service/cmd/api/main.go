@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"notification-service/internal/config"
 	"notification-service/internal/database"
 	"notification-service/internal/handlers"
@@ -38,6 +39,10 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
 
 	router.POST(
 		"/notifications/email",
