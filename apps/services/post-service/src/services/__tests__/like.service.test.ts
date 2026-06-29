@@ -132,10 +132,10 @@ describe("LikeService", () => {
       await expect(svc.unlikePost("post-1", "u")).rejects.toThrow("Like not found");
     });
 
-    it("should throw when totalLikes is zero (cannot go negative)", async () => {
+    it("should throw HttpError 400 when totalLikes is zero (inconsistent state)", async () => {
       (postRepo.findById as any).mockResolvedValue(makePost({ totalLikes: 0 }));
       (likeRepo.findLikeByPostAndUser as any).mockResolvedValue(makeLike());
-      await expect(svc.unlikePost("post-1", "user-2")).rejects.toThrow("Post has zero likes!");
+      await expect(svc.unlikePost("post-1", "user-2")).rejects.toThrow("Inconsistent like count");
     });
   });
 

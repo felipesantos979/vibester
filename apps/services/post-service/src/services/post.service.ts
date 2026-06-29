@@ -45,9 +45,7 @@ export class PostService {
             await this.postRepository.createPostByEstablishment(post);
         }
 
-        const keys = [`post:user:${post.userId}`];
-        if (post.establishmentId) keys.push(`post:establishment:${post.establishmentId}`);
-        await redis.del(...keys).catch(() => {});
+        await this.invalidatePostCaches(post.userId, post.establishmentId, post.postId);
 
         return post;
     }
@@ -58,14 +56,16 @@ export class PostService {
         );
     }
 
-    async findByUser(userId: string) {
-        return cacheAside(`post:user:${userId}`, 120, () =>
-            this.postRepository.findByUser(userId)
+    async findByUser(userId: string, limit = 50) {
+        return cacheAside(`post:user:${userId}:${limit}`, 120, () =>
+            this.postRepository.findByUser(userId, limit)
         );
     }
 
-    async findByEstablishment(establishmentId: string) {
-        return this.postRepository.findByEstablishment(establishmentId);
+    async findByEstablishment(establishmentId: string, limit = 50) {
+        return cacheAside(`post:establishment:${establishmentId}:${limit}`, 120, () =>
+            this.postRepository.findByEstablishment(establishmentId, limit)
+        );
     }
 
     async updateCaption(input: UpdatePostInput): Promise<Post> {
@@ -86,12 +86,7 @@ export class PostService {
             await this.postRepository.updateCaptionByEstablishment(post.establishmentId, post.createdAt, input.postId, input.caption, updatedAt);
         }
 
-        const keys = [
-            `post:id:${input.postId}`,
-            `post:user:${post.userId}`,
-        ];
-        if (post.establishmentId) keys.push(`post:establishment:${post.establishmentId}`);
-        await redis.del(...keys).catch(() => {});
+        await this.invalidatePostCaches(post.userId, post.establishmentId, input.postId);
 
         return {
             ...post,
@@ -114,11 +109,24 @@ export class PostService {
             await this.postRepository.softDeleteByEstablishment(post.establishmentId, post.createdAt, post.postId);
         }
 
+        await this.invalidatePostCaches(post.userId, post.establishmentId, postId);
+    }
+
+    private async invalidatePostCaches(userId: string, establishmentId: string | undefined, postId: string) {
         const keys = [
             `post:id:${postId}`,
-            `post:user:${post.userId}`,
+            `post:user:${userId}:50`,
+            `post:user:${userId}:100`,
         ];
-        if (post.establishmentId) keys.push(`post:establishment:${post.establishmentId}`);
-        await redis.del(...keys).catch(() => {});
+        if (establishmentId) {
+            keys.push(`post:establishment:${establishmentId}:50`);
+            keys.push(`post:establishment:${establishmentId}:100`);
+        }
+        try {
+            await redis.del(...keys);
+        } catch (err) {
+            const msg = err instanceof Error ? err.message : String(err);
+            console.error(JSON.stringify({ level: "warn", service: "post-service", op: "cache-invalidate", msg }));
+        }
     }
 }

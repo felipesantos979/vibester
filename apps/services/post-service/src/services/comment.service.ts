@@ -59,12 +59,12 @@ export class CommentService {
         return comment;
     }
 
-    async findByPost(postId: string): Promise<Comment[]> {
-        return this.commentRepository.findByPost(postId);
+    async findByPost(postId: string, limit = 50): Promise<Comment[]> {
+        return this.commentRepository.findByPost(postId, limit);
     }
 
-    async findByUser(userId: string): Promise<Comment[]> {
-        return this.commentRepository.findByUser(userId);
+    async findByUser(userId: string, limit = 50): Promise<Comment[]> {
+        return this.commentRepository.findByUser(userId, limit);
     }
 
     async findById(commentId: string): Promise<Comment | null> {
@@ -85,10 +85,10 @@ export class CommentService {
         await Promise.all([
             this.commentRepository.updateCommentById(comment.commentId, input.content, updatedAt),
 
-            this.commentRepository.updateCommentByPost(comment.postId, comment.createdAt, comment.commentId, 
+            this.commentRepository.updateCommentByPost(comment.postId, comment.createdAt, comment.commentId,
                 input.content, updatedAt),
 
-            this.commentRepository.updateCommentByUser(comment.userId, comment.createdAt, comment.commentId, 
+            this.commentRepository.updateCommentByUser(comment.userId, comment.createdAt, comment.commentId,
                 input.content, updatedAt)
         ]);
 
@@ -115,12 +115,10 @@ export class CommentService {
 
         if (post?.isDeleted) { throw new HttpError("Post deleted", 404); }
 
-        let totalComments = post?.totalComments ?? 0;
+        const totalComments = Math.max(0, (post?.totalComments ?? 0) - 1);
 
-        if (totalComments && totalComments > 0){
-            totalComments = totalComments - 1;
-        } else if (totalComments && totalComments <= 0){
-            throw new Error("Post has zero comments!");
+        if ((post?.totalComments ?? 0) <= 0) {
+            throw new HttpError("Inconsistent comment count", 400);
         }
 
         await Promise.all([

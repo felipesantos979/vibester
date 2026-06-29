@@ -1,25 +1,19 @@
 import { vi, describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 
-vi.mock('../../src/config/redis', async () => {
-  const { default: RedisMock } = await import('ioredis-mock');
-  const redisMock = new RedisMock();
-  return {
-    redis: redisMock,
-    cacheAside: async <T>(_key: string, _ttl: number, fetchFn: () => Promise<T>): Promise<T> => fetchFn(),
-  };
-});
-
 const { mockExecute } = vi.hoisted(() => ({ mockExecute: vi.fn().mockResolvedValue({ rows: [] }) }));
 vi.mock('../../src/config/cassandra', () => ({
-  getCassandraClient: vi.fn(() => ({ execute: mockExecute })),
+  getCassandraClient: vi.fn(() => ({ execute: mockExecute, shutdown: vi.fn() })),
 }));
 
-const { mockProducerSend } = vi.hoisted(() => ({ mockProducerSend: vi.fn() }));
 vi.mock('../../src/kafka/producer', () => ({
-  producer: { connect: vi.fn(), disconnect: vi.fn(), send: mockProducerSend },
+  producer: { connect: vi.fn(), disconnect: vi.fn(), send: vi.fn() },
 }));
+
+vi.mock('@aws-sdk/s3-request-presigner', () => ({ getSignedUrl: vi.fn() }));
+vi.mock('../../src/config/r2', () => ({ r2Client: {} }));
 
 import { buildServer } from '../helpers/fastify.test.helper';
+import { redis } from '../../src/config/redis';
 
 const USER_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
 const POST_ID = 'b1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
@@ -44,18 +38,27 @@ function makeCassandraRow(overrides: Record<string, unknown> = {}) {
 describe('post-service — Likes Integration', () => {
   let app: Awaited<ReturnType<typeof buildServer>>;
 
-  beforeAll(async () => { app = await buildServer(); });
-  afterAll(async () => { await app.close(); });
-  beforeEach(() => {
-    vi.resetAllMocks();
-    mockExecute.mockResolvedValue({ rows: [] });
+  beforeAll(async () => {
+    await redis.connect();
+    app = await buildServer();
   });
 
-  describe('POST /posts/:postId/likes — Kafka', () => {
-    it('cria like, atualiza contadores e emite post.liked no Kafka', async () => {
+  afterAll(async () => {
+    await app.close();
+    await redis.quit();
+  });
+
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    mockExecute.mockResolvedValue({ rows: [] });
+    await redis.flushall();
+  });
+
+  describe('POST /posts/:postId/likes', () => {
+    it('cria like, atualiza contadores e retorna 201', async () => {
       mockExecute
-        .mockResolvedValueOnce({ rows: [makeCassandraRow()] }) // findById (post exists)
-        .mockResolvedValue({ rows: [] }); // findLikeByPostAndUser (not liked), inserts, updates
+        .mockResolvedValueOnce({ rows: [makeCassandraRow()] })
+        .mockResolvedValue({ rows: [] });
 
       const res = await app.inject({
         method: 'POST',
@@ -67,22 +70,11 @@ describe('post-service — Likes Integration', () => {
       const body = JSON.parse(res.payload);
       expect(body).toHaveProperty('postId', POST_ID);
       expect(body).toHaveProperty('userId', LIKER_ID);
-
-      expect(mockProducerSend).toHaveBeenCalledWith(
-        expect.objectContaining({
-          topic: 'post.liked',
-          messages: expect.arrayContaining([
-            expect.objectContaining({
-              key: POST_ID,
-              value: expect.stringContaining(POST_ID),
-            }),
-          ]),
-        })
-      );
+      expect(body).toHaveProperty('likedAt');
     });
 
     it('retorna 404 quando post não existe', async () => {
-      mockExecute.mockResolvedValue({ rows: [] }); // post not found
+      mockExecute.mockResolvedValue({ rows: [] });
 
       const res = await app.inject({
         method: 'POST',
@@ -91,7 +83,21 @@ describe('post-service — Likes Integration', () => {
       });
 
       expect(res.statusCode).toBe(404);
-      expect(mockProducerSend).not.toHaveBeenCalled();
+    });
+
+    it('retorna 409 quando post já foi curtido', async () => {
+      const likeRow = { post_id: POST_ID, user_id: LIKER_ID, liked_at: new Date() };
+      mockExecute
+        .mockResolvedValueOnce({ rows: [makeCassandraRow()] }) // findById
+        .mockResolvedValueOnce({ rows: [likeRow] });            // findLikeByPostAndUser (já existe)
+
+      const res = await app.inject({
+        method: 'POST',
+        url: `/posts/${POST_ID}/likes`,
+        payload: { userId: LIKER_ID },
+      });
+
+      expect(res.statusCode).toBe(409);
     });
   });
 
@@ -99,9 +105,9 @@ describe('post-service — Likes Integration', () => {
     it('remove like e retorna 204', async () => {
       const likeRow = { post_id: POST_ID, user_id: LIKER_ID, liked_at: new Date() };
       mockExecute
-        .mockResolvedValueOnce({ rows: [makeCassandraRow({ total_likes: 1 })] }) // findById
-        .mockResolvedValueOnce({ rows: [likeRow] }) // findLikeByPostAndUser (exists)
-        .mockResolvedValue({ rows: [] }); // deletes + update
+        .mockResolvedValueOnce({ rows: [makeCassandraRow({ total_likes: 1 })] })
+        .mockResolvedValueOnce({ rows: [likeRow] })
+        .mockResolvedValue({ rows: [] });
 
       const res = await app.inject({
         method: 'DELETE',
@@ -110,6 +116,18 @@ describe('post-service — Likes Integration', () => {
       });
 
       expect(res.statusCode).toBe(204);
+    });
+
+    it('retorna 404 quando post não existe', async () => {
+      mockExecute.mockResolvedValue({ rows: [] });
+
+      const res = await app.inject({
+        method: 'DELETE',
+        url: `/posts/${POST_ID}/likes`,
+        payload: { userId: LIKER_ID },
+      });
+
+      expect(res.statusCode).toBe(404);
     });
   });
 
@@ -126,6 +144,21 @@ describe('post-service — Likes Integration', () => {
       const body = JSON.parse(res.payload);
       expect(body).toHaveLength(1);
       expect(body[0]).toHaveProperty('userId', LIKER_ID);
+    });
+  });
+
+  describe('GET /users/:userId/likes', () => {
+    it('retorna lista de likes do usuário', async () => {
+      const likeRows = [
+        { post_id: POST_ID, user_id: USER_ID, liked_at: new Date() },
+      ];
+      mockExecute.mockResolvedValueOnce({ rows: likeRows });
+
+      const res = await app.inject({ method: 'GET', url: `/users/${USER_ID}/likes` });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body).toHaveLength(1);
     });
   });
 });

@@ -1,6 +1,7 @@
 import Redis from "ioredis";
+import { env } from "./env";
 
-export const redis = new Redis(process.env.REDIS_URL ?? "redis://localhost:6379", {
+export const redis = new Redis(env.redis_url, {
     lazyConnect: true,
     maxRetriesPerRequest: 2,
     enableOfflineQueue: false,
@@ -8,7 +9,7 @@ export const redis = new Redis(process.env.REDIS_URL ?? "redis://localhost:6379"
 });
 
 redis.on("error", (err: Error) => {
-    console.error("[Redis] connection error:", err.message);
+    console.error(JSON.stringify({ level: "error", service: "redis", msg: err.message }));
 });
 
 export async function cacheAside<T>(
@@ -19,13 +20,19 @@ export async function cacheAside<T>(
     try {
         const cached = await redis.get(key);
         if (cached !== null) return JSON.parse(cached) as T;
-    } catch { /* Redis indisponível — vai direto ao banco */ }
+    } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(JSON.stringify({ level: "warn", service: "redis", op: "get", key, msg }));
+    }
 
     const data = await fetchFn();
 
     try {
         await redis.set(key, JSON.stringify(data), "EX", ttlSeconds);
-    } catch { /* ignora falha ao gravar no cache */ }
+    } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(JSON.stringify({ level: "warn", service: "redis", op: "set", key, msg }));
+    }
 
     return data;
 }
