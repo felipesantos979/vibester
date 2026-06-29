@@ -135,30 +135,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Copy k8s manifests to VPS
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: "apps/services/auth-service/k8s"
-          target: "/tmp/vibester-auth-service"
-          strip_components: 3
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.VPS_KUBECONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            kubectl apply -f /tmp/vibester-auth-service/k8s/
-            kubectl set image deployment/auth-service \
-              auth-service=ghcr.io/${{ github.repository_owner }}/vibester-auth-service:${{ github.sha }}
-            kubectl rollout status deployment/auth-service --timeout=300s || {
-              echo "--- Pod describe ---"
-              kubectl describe pod -l app=auth-service
-              echo "--- Pod logs ---"
-              kubectl logs -l app=auth-service --tail=50 --previous 2>/dev/null || kubectl logs -l app=auth-service --tail=50
-              exit 1
-            }
+      - name: Deploy
+        run: |
+          kubectl apply -f apps/services/auth-service/k8s/
+          kubectl set image deployment/auth-service \
+            auth-service=ghcr.io/${{ github.repository_owner }}/vibester-auth-service:${{ github.sha }}
+          kubectl rollout status deployment/auth-service --timeout=300s || {
+            echo "--- Pod describe ---"
+            kubectl describe pod -l app=auth-service
+            echo "--- Pod logs ---"
+            kubectl logs -l app=auth-service --tail=50 --previous 2>/dev/null || kubectl logs -l app=auth-service --tail=50
+            exit 1
+          }
