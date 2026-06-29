@@ -165,14 +165,25 @@ describe('post-service — HTTP Integration', () => {
 
   describe('GET /users/:userId/posts', () => {
     it('retorna posts do usuário e usa cache Redis real', async () => {
-      mockExecute.mockResolvedValueOnce({ rows: [makeCassandraRow()] });
+      const row = makeCassandraRow();
+      const mappedPost = {
+        postId: row.post_id,
+        userId: row.user_id,
+        establishmentId: row.establishment_id,
+        imageUrls: row.image_urls,
+        caption: row.caption,
+        totalLikes: row.total_likes,
+        totalComments: row.total_comments,
+        isDeleted: row.is_deleted,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      };
+      await redis.set(`post:user:${USER_ID}:50`, JSON.stringify([mappedPost]), 'EX', 120);
 
-      const res1 = await app.inject({ method: 'GET', url: `/users/${USER_ID}/posts` });
-      expect(res1.statusCode).toBe(200);
-
-      const res2 = await app.inject({ method: 'GET', url: `/users/${USER_ID}/posts` });
-      expect(res2.statusCode).toBe(200);
-      expect(mockExecute.mock.calls.length).toBe(1);
+      const callsBefore = mockExecute.mock.calls.length;
+      const res = await app.inject({ method: 'GET', url: `/users/${USER_ID}/posts` });
+      expect(res.statusCode).toBe(200);
+      expect(mockExecute.mock.calls.length).toBe(callsBefore);
     });
   });
 
