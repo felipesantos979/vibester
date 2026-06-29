@@ -84,3 +84,9 @@ export interface PaginatedResponse<T> {
   data: T[];
   pagination: PaginationMeta;
 }
+
+export interface ListEstablishmentsInput {
+  latitude: number;
+  longitude: number;
+  radiusKm?: number;
+}

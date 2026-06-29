@@ -6,6 +6,10 @@ import {
 } from "../types/establishment.types";
 import { z } from "zod";
 import { UploadService } from "../services/upload.service";
+import { ListEstablishmentsService } from "../services/listEstablishment.service";
+import { cacheAside, nearbyEstablishmentKey } from "../config/redis";
+
+const listEstablishmentsNearbyService = new ListEstablishmentsService();
 
 const getEstablishmentParamsSchema = z.object({
   id: z.string().uuid(),
@@ -215,6 +219,32 @@ export async function uploadProfilePictureController(
     }
 
     console.error("Upload profile picture error:", error);
+    return reply.status(500).send({ message: "Internal server error" });
+  }
+}
+
+export async function listNearbyEstablishmentsController(
+  request: FastifyRequest<{ Querystring: { latitude: string; longitude: string; radiusKm?: string } }>,
+  reply: FastifyReply
+) {
+  const latitude = Number(request.query.latitude);
+  const longitude = Number(request.query.longitude);
+  const radiusKm = request.query.radiusKm ? Number(request.query.radiusKm) : 10;
+
+  if (isNaN(latitude) || isNaN(longitude) || isNaN(radiusKm)) {
+    return reply.status(400).send({
+      message: "latitude, longitude e radiusKm devem ser números válidos",
+    });
+  }
+
+  try {
+    const key = nearbyEstablishmentKey(latitude, longitude, radiusKm);
+    const establishments = await cacheAside(key, 90, () =>
+      listEstablishmentsNearbyService.listEstablishments({ latitude, longitude, radiusKm }),
+    );
+    return reply.status(200).send(establishments);
+  } catch (error) {
+    console.error("List nearby establishments error:", error);
     return reply.status(500).send({ message: "Internal server error" });
   }
 }
