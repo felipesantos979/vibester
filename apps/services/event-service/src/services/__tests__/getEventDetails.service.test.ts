@@ -1,73 +1,78 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { GetEventDetailsService } from "../getEventDetails.service";
 
+vi.mock("../../config/redis", () => ({
+    redis: { get: vi.fn().mockResolvedValue(null), set: vi.fn().mockResolvedValue("OK") },
+    cacheAside: async <T>(_k: string, _t: number, fn: () => Promise<T>): Promise<T> => fn(),
+}));
+
 const { mockFindUnique } = vi.hoisted(() => ({
-  mockFindUnique: vi.fn(),
+    mockFindUnique: vi.fn(),
 }));
 
 vi.mock("../../prisma/index", () => ({
-  default: {
-    event: {
-      findUnique: mockFindUnique,
+    default: {
+        event: {
+            findUnique: mockFindUnique,
+        },
     },
-  },
 }));
 
 function makeDbEvent(overrides: Partial<{
-  id: string;
-  name: string;
-  organizer: string;
-  location: string;
-  totalConfirmed: number;
-  ticketLink: string | null;
+    id: string;
+    name: string;
+    organizer: string;
+    location: string;
+    totalConfirmed: number;
+    ticketLink: string | null;
 }> = {}) {
-  return {
-    id: "event-id-1",
-    name: "Festival de Verão",
-    organizer: "Organizer LTDA",
-    location: "São Paulo, SP",
-    totalConfirmed: 42,
-    ticketLink: "https://example.com/tickets",
-    ...overrides,
-  };
+    return {
+        id: "event-id-1",
+        name: "Festival de Verão",
+        organizer: "Organizer LTDA",
+        location: "São Paulo, SP",
+        totalConfirmed: 42,
+        ticketLink: "https://example.com/tickets",
+        ...overrides,
+    };
 }
 
 describe("GetEventDetailsService", () => {
-  let service: GetEventDetailsService;
+    let service: GetEventDetailsService;
 
-  beforeEach(() => {
-    service = new GetEventDetailsService();
-    vi.clearAllMocks();
-  });
+    beforeEach(() => {
+        service = new GetEventDetailsService();
+        vi.clearAllMocks();
+    });
 
-  it("should return event details when event exists", async () => {
-    const event = makeDbEvent();
-    mockFindUnique.mockResolvedValue(event);
+    it("should return event details when event exists", async () => {
+        const event = makeDbEvent();
+        mockFindUnique.mockResolvedValue(event);
 
-    const result = await service.get("event-id-1");
+        const result = await service.get("event-id-1");
 
-    expect(mockFindUnique).toHaveBeenCalledWith({ where: { id: "event-id-1" } });
-    expect(result).toEqual(event);
-  });
+        expect(mockFindUnique).toHaveBeenCalledWith({ where: { id: "event-id-1" } });
+        expect(result).toEqual(event);
+    });
 
-  it("should return ticketLink as null when not set", async () => {
-    const event = makeDbEvent({ ticketLink: null });
-    mockFindUnique.mockResolvedValue(event);
+    it("should return ticketLink as null when not set", async () => {
+        const event = makeDbEvent({ ticketLink: null });
+        mockFindUnique.mockResolvedValue(event);
 
-    const result = await service.get("event-id-1");
+        const result = await service.get("event-id-1");
 
-    expect(result.ticketLink).toBeNull();
-  });
+        expect(result.ticketLink).toBeNull();
+    });
 
-  it("should throw when event is not found", async () => {
-    mockFindUnique.mockResolvedValue(null);
+    it("should throw when event is not found", async () => {
+        mockFindUnique.mockResolvedValue(null);
 
-    await expect(service.get("non-existent-id")).rejects.toThrow("Evento não encontrado");
-  });
+        await expect(service.get("non-existent-id")).rejects.toThrow("Evento não encontrado");
+    });
 
-  it("should throw when prisma fails", async () => {
-    mockFindUnique.mockRejectedValue(new Error("Database error"));
+    it("should throw when prisma fails", async () => {
+        mockFindUnique.mockRejectedValue(new Error("Database error"));
 
-    await expect(service.get("event-id-1")).rejects.toThrow("Database error");
-  });
+        await expect(service.get("event-id-1")).rejects.toThrow("Database error");
+    });
 });

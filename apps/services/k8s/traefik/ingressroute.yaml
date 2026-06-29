@@ -42,6 +42,8 @@ spec:
       middlewares:
         - name: strip-event-prefix
           namespace: default
+        - name: event-rate-limit
+          namespace: default
       services:
         - name: event-service
           port: 3334
@@ -127,7 +129,7 @@ spec:
       kind: Rule
       middlewares:
         - name: redirect-to-https
-          namespace: gateway
+          namespace: default
       services:
         # Serviço placeholder exigido pelo CRD; o middleware redireciona antes de chegar aqui.
         - name: auth-service
