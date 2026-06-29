@@ -35,7 +35,9 @@ class _PersonalInformationSettingsScreenState
 
   void _mostrarErro(String mensagem) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(mensagem)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(mensagem)));
   }
 
   Future<void> _salvarNome(String novoNome) async {
@@ -97,8 +99,9 @@ class _PersonalInformationSettingsScreenState
   void _editarCampo(
     String titulo,
     String valorAtual,
-    Function(String) onSalvar,
-  ) {
+    Function(String) onSalvar, {
+    int? maxCaracteres, // ← parâmetro opcional
+  }) {
     final controller = TextEditingController(text: valorAtual);
     final focusNode = FocusNode();
     showDialog(
@@ -142,6 +145,7 @@ class _PersonalInformationSettingsScreenState
                   controller: controller,
                   focusNode: focusNode,
                   autofocus: true,
+                  maxLength: maxCaracteres,
                   style: TextStyle(color: Colors.white),
                   cursorColor: Color(colorAmbar),
                   decoration: InputDecoration(
@@ -151,6 +155,7 @@ class _PersonalInformationSettingsScreenState
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Color(colorAmbar)),
                     ),
+                    counterStyle: TextStyle(color: Colors.white38),
                   ),
                 ),
               ),
@@ -316,7 +321,7 @@ class _PersonalInformationSettingsScreenState
                   GestureDetector(
                     onTap: () => _editarCampo("Nome", user.nome, (valor) {
                       _salvarNome(valor);
-                    }),
+                    }, maxCaracteres: 30),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
@@ -369,6 +374,7 @@ class _PersonalInformationSettingsScreenState
                       (valor) {
                         _salvarUsername(valor);
                       },
+                      maxCaracteres: 30,
                     ),
                     child: Row(
                       children: [
@@ -418,7 +424,7 @@ class _PersonalInformationSettingsScreenState
                   GestureDetector(
                     onTap: () => _editarCampo("Bio", user.bio, (valor) {
                       _salvarBio(valor);
-                    }),
+                    }, maxCaracteres: 150,),
                     child: Row(
                       children: [
                         SizedBox(width: 10),
