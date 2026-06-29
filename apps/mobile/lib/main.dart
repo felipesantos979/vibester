@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
+import 'package:mobile/models/highlights/highlight_model.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
 import 'package:mobile/providers/feed/publication_list_provider.dart';
@@ -32,6 +33,7 @@ import 'package:mobile/screens/user/other_users_profile_screen.dart';
 import 'package:mobile/screens/user/profile_editing_screen.dart';
 import 'package:mobile/screens/user/user_interests_screen.dart';
 import 'package:mobile/screens/user/user_profile_screen.dart';
+import 'package:mobile/widgets/cards/highlights/post_detail_screen.dart';
 import 'package:provider/provider.dart';
 
 PageRouteBuilder _slideRoute(Widget page, RouteSettings settings) {
@@ -187,6 +189,12 @@ class MyApp extends StatelessWidget {
               return _slideRoute(const FeedScreen(), settings);
             case AppRoutes.newPublication:
               return _scaleRoute(const NewPublicationScreen(), settings);
+            case AppRoutes.postDetail:
+              final highlight = settings.arguments as HighlightModel;
+              return _scaleRoute(
+                PostDetailScreen(highlight: highlight),
+                settings,
+              );
 
             default:
               return null;

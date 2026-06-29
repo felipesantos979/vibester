@@ -38,4 +38,5 @@ class AppRoutes {
   //FEED
   static const feed = '/feed';
   static const newPublication = '/new-publication';
+  static const postDetail = '/post-detail';
 }
