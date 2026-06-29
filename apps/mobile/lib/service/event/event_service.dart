@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/service/api_client.dart';
 import 'package:mobile/service/api_endpoints.dart';
@@ -12,6 +13,17 @@ class EventService {
     final List data = response.data;
     events = data.map((json) => EventModel.fromJson(json)).toList();
     return events;
+  }
+
+  Future<List<EventModel>> getEventsWeek({DateTime? date}) async {
+    final dataFormatada = DateFormat('yyyy-MM-dd').format(date ?? DateTime.now());
+
+    final response = await ApiClient.dio.get(
+      ApiEndpoints.eventsWeek(dataFormatada),
+    );
+
+    final List data = response.data;
+    return data.map((json) => EventModel.fromJson(json)).toList();
   }
 
   Future<List<EventModel>> getEventsNearby({

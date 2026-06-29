@@ -6,6 +6,7 @@ import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/models/place/exclusive_offers_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
 import 'package:mobile/screens/highlights/category_highlights_section.dart';
+import 'package:mobile/service/event/event_service.dart';
 import 'package:mobile/service/location/location_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/location_satate.dart';
@@ -36,6 +37,22 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
   // Controla o icone de refresh
   bool _atualizandoLocalizacao = false;
 
+  final _eventService = EventService();
+  List<EventModel> _eventosDaSemana = [];
+  bool _carregandoEventosDaSemana = true;
+
+  Future<void> _buscarEventosDaSemana() async {
+    try {
+      final eventos = await _eventService.getEventsWeek();
+      if (!mounted) return;
+      setState(() => _eventosDaSemana = eventos);
+    } catch (e) {
+      debugPrint('Erro ao buscar eventos da semana: $e');
+    } finally {
+      if (mounted) setState(() => _carregandoEventosDaSemana = false);
+    }
+  }
+
   Future<void> _atualizarLocalizacaoManualmente() async {
     setState(() {
       _atualizandoLocalizacao = true;
@@ -60,13 +77,14 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
     _pageController = PageController(viewportFraction: 0.95);
     _offersController = PageController(viewportFraction: 0.95);
 
+    _buscarEventosDaSemana();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EventsListProvider>().fetchEvents();
 
       _timer = Timer.periodic(const Duration(seconds: 4), (_) {
-        final atual = context.read<EventsListProvider>().events;
-        if (atual.isEmpty) return;
-        _currentPage = (_currentPage + 1) % atual.length;
+        if (_eventosDaSemana.isEmpty) return;
+        _currentPage = (_currentPage + 1) % _eventosDaSemana.length;
         _pageController.animateToPage(
           _currentPage,
           duration: const Duration(milliseconds: 700),
@@ -202,16 +220,34 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                   padding: const EdgeInsets.only(top: 20),
                   child: SizedBox(
                     height: 270,
-                    child: PageView.builder(
-                      padEnds: false,
-                      controller: _pageController,
-                      onPageChanged: (index) =>
-                          setState(() => _currentPage = index),
-                      itemCount: event.length,
-                      itemBuilder: (context, index) {
-                        return WeeklyEvents(evento: event[index]);
-                      },
-                    ),
+                    child: _carregandoEventosDaSemana
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: Color(colorAmbar),
+                            ),
+                          )
+                        : _eventosDaSemana.isEmpty
+                            ? const Center(
+                                child: Text(
+                                  'Nenhum evento esta semana',
+                                  style: TextStyle(
+                                    color: Colors.white38,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              )
+                            : PageView.builder(
+                                padEnds: false,
+                                controller: _pageController,
+                                onPageChanged: (index) =>
+                                    setState(() => _currentPage = index),
+                                itemCount: _eventosDaSemana.length,
+                                itemBuilder: (context, index) {
+                                  return WeeklyEvents(
+                                    evento: _eventosDaSemana[index],
+                                  );
+                                },
+                              ),
                   ),
                 ),
 

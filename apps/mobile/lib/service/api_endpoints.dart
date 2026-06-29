@@ -22,6 +22,8 @@ class ApiEndpoints {
   static String events() => '$baseUrl/event/events';
   static String eventNearby() => '$baseUrl/event/events/nearby';
   static String eventDetail(String eventId) => '$baseUrl/event/events/$eventId';
+  static String eventsWeek(String date) =>
+      '$baseUrl/event/events/week?date=$date';
   static String establishmentsNearby({
     required double latitude,
     required double longitude,
