@@ -14,8 +14,8 @@ for (const key of REQUIRED_VARS) {
 (async () => {
     const app = Fastify({ ajv: { customOptions: { keywords: ['example'] } } });
     try {
-        const { registerSwagger } = await import('./config/swagger');
-        const { routes } = await import('./routes');
+        const { registerSwagger } = await import('./config/swagger.js');
+        const { routes } = await import('./routes.js');
         await registerSwagger(app);
         await app.register(routes);
         await app.ready();
