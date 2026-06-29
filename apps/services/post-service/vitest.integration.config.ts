@@ -7,6 +7,7 @@ export default defineConfig({
     include: ["tests/integration/**/*.spec.ts"],
     setupFiles: ["tests/setup/vitest.setup.ts"],
     reporters: ["verbose"],
+    fileParallelism: false,
     testTimeout: 30000,
     hookTimeout: 30000,
   },
