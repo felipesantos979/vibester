@@ -58,25 +58,16 @@ jobs:
           name: openapi-${{ github.sha }}
           path: apps/services
 
-      - name: Copy openapi.json to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          source: "apps/services/openapi.json"
-          target: "/tmp/"
+      - name: Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.VPS_KUBECONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
 
       - name: Update ConfigMap and restart Swagger UI
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            kubectl create configmap swagger-ui-spec \
-              --from-file=openapi.json=/tmp/apps/services/openapi.json \
-              --dry-run=client -o yaml | kubectl apply -f -
-            rm -rf /tmp/apps
-            kubectl rollout restart deployment/swagger-ui
-            kubectl rollout status deployment/swagger-ui --timeout=120s
+        run: |
+          kubectl create configmap swagger-ui-spec \
+            --from-file=openapi.json=apps/services/openapi.json \
+            --dry-run=client -o yaml | kubectl apply -f -
+          kubectl rollout restart deployment/swagger-ui
+          kubectl rollout status deployment/swagger-ui --timeout=120s
