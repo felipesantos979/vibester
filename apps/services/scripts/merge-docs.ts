@@ -26,6 +26,7 @@ const services: ServiceConfig[] = [
     name: 'establishment-service',
     prefix: '/establishment',
     env: {
+      JWT_SECRET: 'ci-secret',
       DATABASE_URL: 'postgresql://u:p@localhost:5432/db',
       SERP_API_KEY: 'ci-dummy',
       r2_account_id: 'ci-dummy',
