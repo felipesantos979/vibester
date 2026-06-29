@@ -1,6 +1,5 @@
-import 'package:mobile/providers/user/user_provider.dart';
-import 'package:mobile/routes/app_routes.dart';
-import 'package:provider/provider.dart';
+import 'package:mobile/models/user/user_model.dart';
+import 'package:mobile/service/user/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/screens/events/favorites_events_screen.dart';
@@ -9,18 +8,24 @@ import 'package:mobile/screens/places/favorite_places_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:mobile/utils/editable_text_field.dart';
+import 'package:mobile/widgets/buttons/primary_button.dart';
 import 'package:mobile/widgets/cards/users/profile_avatar.dart';
 
-class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({super.key});
+class OtherUsersProfileScreen extends StatefulWidget {
+  final String accountId;
+
+  const OtherUsersProfileScreen({super.key, required this.accountId});
 
   @override
-  State<UserProfileScreen> createState() => _UserProfileScreenState();
+  State<OtherUsersProfileScreen> createState() =>
+      _OtherUsersProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen>
+class _OtherUsersProfileScreenState extends State<OtherUsersProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  final UserService _userService = UserService();
+  late Future<UserModel> _userFuture;
 
   bool _showAppBarAvatar = false;
 
@@ -28,6 +33,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _userFuture = _loadUser();
+  }
+
+  Future<UserModel> _loadUser() async {
+    final data = await _userService.getProfile(widget.accountId);
+    return UserModel.fromProfileJson(data, accountId: widget.accountId);
   }
 
   @override
@@ -38,18 +49,44 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    final user = context.watch<UserProvider>().user;
+    return FutureBuilder<UserModel>(
+      future: _userFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            backgroundColor: Color(colorNoturno),
+            body: Center(
+              child: CircularProgressIndicator(color: Color(colorBrasa)),
+            ),
+          );
+        }
 
-    if (user == null) {
-      return Scaffold(
-        backgroundColor: Color(colorNoturno),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
+        if (snapshot.hasError) {
+          return Scaffold(
+            backgroundColor: Color(colorNoturno),
+            appBar: AppBar(
+              backgroundColor: Color(colorNavy),
+              foregroundColor: Colors.white,
+            ),
+            body: Center(
+              child: Text(
+                snapshot.error.toString(),
+                style: const TextStyle(color: Colors.white54),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        }
 
+        return _buildProfile(context, snapshot.data!);
+      },
+    );
+  }
+
+  Widget _buildProfile(BuildContext context, UserModel otherUser) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        actions: const [SizedBox(width: 48)],
         backgroundColor: Color(colorNavy),
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
@@ -65,33 +102,29 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             ],
           ),
         ),
-        title: SizedBox(
-          width: double.infinity,
-          child: Stack(
-            alignment: Alignment.center,
+        title: Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              AnimatedOpacity(
-                duration: Duration(milliseconds: 300),
-                opacity: _showAppBarAvatar ? 1.0 : 0.0,
-                child: AnimatedSlide(
-                  duration: Duration(milliseconds: 300),
-                  offset: _showAppBarAvatar ? Offset(-1.2, 0) : Offset(-1.2, 0),
-                  child: CircleAvatar(
-                    radius: 16,
-                    backgroundImage: NetworkImage(user.fotoPerfil),
-                  ),
-                ),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                child: _showAppBarAvatar
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundImage: NetworkImage(otherUser.fotoPerfil),
+                        ),
+                      )
+                    : const SizedBox.shrink(),
               ),
-              AnimatedSlide(
-                duration: Duration(milliseconds: 300),
-                offset: _showAppBarAvatar ? Offset(0.19, 0) : Offset(0, 0),
-                child: Text(
-                  user.nomeUsuario,
-                  style: GoogleFonts.inter(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+              Text(
+                otherUser.nomeUsuario,
+                style: GoogleFonts.inter(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
             ],
@@ -118,13 +151,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 children: [
                   Padding(
                     padding: EdgeInsets.only(top: 30.0),
-                    child: ProfileAvatar(imageUrl: user.fotoPerfil),
+                    child: ProfileAvatar(
+                      imageUrl: otherUser.fotoPerfil,
+                      editable: false,
+                    ),
                   ),
 
                   SizedBox(height: 12),
 
                   Text(
-                    '${user.nome}',
+                    otherUser.nome,
                     style: GoogleFonts.inter(
                       color: Colors.white,
                       fontSize: 40,
@@ -135,7 +171,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   SizedBox(height: 12),
 
                   EditableTextField(
-                    label: user.nomeUsuario,
+                    label: otherUser.nomeUsuario,
                     height: 30,
                     width: 150,
                   ),
@@ -143,7 +179,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   SizedBox(height: 20),
 
                   Text(
-                    user.bio,
+                    otherUser.bio,
                     style: GoogleFonts.inter(
                       color: Colors.white70,
                       fontWeight: FontWeight.bold,
@@ -158,7 +194,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       Column(
                         children: [
                           Text(
-                            user.seguidores.toString(),
+                            otherUser.seguidores.toString(),
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -181,7 +217,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       Column(
                         children: [
                           Text(
-                            user.seguindo.toString(),
+                            otherUser.seguindo.toString(),
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -204,7 +240,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       Column(
                         children: [
                           Text(
-                            user.eventosVisitados.toString(),
+                            otherUser.eventosVisitados.toString(),
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -228,55 +264,10 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Material(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(50),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.pushNamed(context, AppRoutes.settings);
-                          },
-                          borderRadius: BorderRadius.circular(50),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.white, width: 1),
-                              borderRadius: BorderRadius.circular(50),
-                            ),
-                            height: 30,
-                            width: 150,
-                            child: Center(
-                              child: Text(
-                                'Configurações',
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
+                      PrimaryButton(label: "Seguir", onPressed: () {}),
                       SizedBox(width: 14),
-
-                      Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white, width: 1),
-                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                        ),
-                        height: 30,
-                        width: 150,
-                        child: Center(
-                          child: Text(
-                            'Compartilhar perfil',
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
 
@@ -325,8 +316,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   children: [
                     Center(
                       child: PropertyHighlightsScreen(
-                        // Precisa do ? pq usuario pede ser null, inclusive começa como null, assim não estora erro
-                        accountId: user?.accountId ?? '',
+                        accountId: otherUser.accountId ?? widget.accountId,
                       ),
                     ),
                     Center(child: FavoritePlacesScreen()),

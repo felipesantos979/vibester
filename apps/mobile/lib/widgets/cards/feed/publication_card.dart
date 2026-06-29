@@ -45,7 +45,13 @@ class PublicationCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 InkWell(
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+                  onTap: publication.authorId != null
+                      ? () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.otherProfile,
+                          arguments: publication.authorId,
+                        )
+                      : null,
                   child: CircleAvatar(
                     radius: 27,
                     backgroundImage: NetworkImage(

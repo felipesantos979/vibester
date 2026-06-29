@@ -5,8 +5,14 @@ import 'package:mobile/utils/colors.dart';
 class ProfileAvatar extends StatelessWidget {
   final String? imageUrl;
   final VoidCallback? onTap;
+  final bool editable;
 
-  const ProfileAvatar({super.key, this.imageUrl, this.onTap});
+  const ProfileAvatar({
+    super.key,
+    this.imageUrl,
+    this.onTap,
+    this.editable = true,
+  });
 
   ImageProvider? get _imageProvider {
     if (imageUrl == null) return null;
@@ -19,7 +25,7 @@ class ProfileAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: editable ? onTap : null,
       child: Stack(
         children: [
           Container(
@@ -51,36 +57,37 @@ class ProfileAvatar extends StatelessWidget {
                   : null,
             ),
           ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.amberAccent.withAlpha(80),
-                    blurRadius: 8,
-                    spreadRadius: 2,
+          if (editable)
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.amberAccent.withAlpha(80),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                    BoxShadow(
+                      color: Colors.amberAccent.withAlpha(40),
+                      blurRadius: 20,
+                      spreadRadius: 6,
+                    ),
+                  ],
+                ),
+                child: CircleAvatar(
+                  radius: 48 * 0.28,
+                  backgroundColor: Colors.black,
+                  child: Icon(
+                    Icons.add_circle_outlined,
+                    size: 48 * 0.50,
+                    color: Colors.white,
                   ),
-                  BoxShadow(
-                    color: Colors.amberAccent.withAlpha(40),
-                    blurRadius: 20,
-                    spreadRadius: 6,
-                  ),
-                ],
-              ),
-              child: CircleAvatar(
-                radius: 48 * 0.28,
-                backgroundColor: Colors.black,
-                child: Icon(
-                  Icons.add_circle_outlined,
-                  size: 48 * 0.50,
-                  color: Colors.white,
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
