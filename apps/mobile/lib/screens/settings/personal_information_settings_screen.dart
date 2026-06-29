@@ -1,11 +1,13 @@
-import 'package:mobile/providers/user/user_provider.dart';
-import 'package:provider/provider.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/user/user_model.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/users/editing_avatar.dart';
+import 'package:provider/provider.dart';
 
 class PersonalInformationSettingsScreen extends StatefulWidget {
   const PersonalInformationSettingsScreen({super.key});
@@ -18,18 +20,16 @@ class PersonalInformationSettingsScreen extends StatefulWidget {
 class _PersonalInformationSettingsScreenState
     extends State<PersonalInformationSettingsScreen> {
   final _userService = UserService();
+  bool _isLoadingAvatar = false;
 
-  // Repopula o provider com o resultado da API, preservando o token
   void _atualizarProviderComResposta(Map<String, dynamic> response) {
     final tokenAtual = context.read<UserProvider>().user?.token;
     final accountId = context.read<UserProvider>().user?.accountId ?? '';
-
     final usuarioAtualizado = UserModel.fromProfileJson(
       response,
       accountId: accountId,
       token: tokenAtual,
     );
-
     context.read<UserProvider>().setUser(usuarioAtualizado);
   }
 
@@ -40,10 +40,39 @@ class _PersonalInformationSettingsScreenState
     ).showSnackBar(SnackBar(content: Text(mensagem)));
   }
 
+  Future<void> _salvarAvatar(File image) async {
+    final user = context.read<UserProvider>().user;
+    final accountId = user?.accountId ?? '';
+    final tokenAtual = user?.token;
+
+    if (accountId.isEmpty) return;
+
+    setState(() => _isLoadingAvatar = true);
+
+    try {
+      final response = await _userService.updateAvatar(
+        accountId: accountId,
+        image: image,
+      );
+
+      if (!mounted) return;
+
+      final usuarioAtualizado = UserModel.fromProfileJson(
+        response,
+        accountId: accountId,
+        token: tokenAtual,
+      );
+      context.read<UserProvider>().setUser(usuarioAtualizado);
+    } catch (e) {
+      _mostrarErro('Não foi possível atualizar o avatar.');
+    } finally {
+      if (mounted) setState(() => _isLoadingAvatar = false);
+    }
+  }
+
   Future<void> _salvarNome(String novoNome) async {
     final user = context.read<UserProvider>().user;
     final accountId = user?.accountId ?? '';
-
     try {
       final response = await _userService.updateName(
         accountId: accountId,
@@ -60,13 +89,10 @@ class _PersonalInformationSettingsScreenState
   Future<void> _salvarUsername(String novoUsername) async {
     final user = context.read<UserProvider>().user;
     final accountId = user?.accountId ?? '';
-
-    // Normaliza: sem espaços, e sempre começando com @.
     var usernameFormatado = novoUsername.replaceAll(' ', '');
     if (!usernameFormatado.startsWith('@')) {
       usernameFormatado = '@$usernameFormatado';
     }
-
     try {
       final response = await _userService.updateName(
         accountId: accountId,
@@ -83,7 +109,6 @@ class _PersonalInformationSettingsScreenState
   Future<void> _salvarBio(String novaBio) async {
     final user = context.read<UserProvider>().user;
     final accountId = user?.accountId ?? '';
-
     try {
       final response = await _userService.updateBio(
         accountId: accountId,
@@ -100,7 +125,7 @@ class _PersonalInformationSettingsScreenState
     String titulo,
     String valorAtual,
     Function(String) onSalvar, {
-    int? maxCaracteres, // ← parâmetro opcional
+    int? maxCaracteres,
   }) {
     final controller = TextEditingController(text: valorAtual);
     final focusNode = FocusNode();
@@ -116,20 +141,19 @@ class _PersonalInformationSettingsScreenState
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // cabeçalho com cor diferente
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 decoration: BoxDecoration(
                   color: Color(colorNavy).withAlpha(230),
-                  borderRadius: BorderRadius.only(
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16),
                     topRight: Radius.circular(16),
                   ),
                 ),
                 child: Text(
                   'Alterar $titulo',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -137,32 +161,31 @@ class _PersonalInformationSettingsScreenState
                   textAlign: TextAlign.center,
                 ),
               ),
-
-              // corpo com o campo
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
+                ),
                 child: TextField(
                   controller: controller,
                   focusNode: focusNode,
                   autofocus: true,
                   maxLength: maxCaracteres,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                   cursorColor: Color(colorAmbar),
                   decoration: InputDecoration(
-                    enabledBorder: UnderlineInputBorder(
+                    enabledBorder: const UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.white38),
                     ),
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Color(colorAmbar)),
                     ),
-                    counterStyle: TextStyle(color: Colors.white38),
+                    counterStyle: const TextStyle(color: Colors.white38),
                   ),
                 ),
               ),
-
-              // botões
               Padding(
-                padding: EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -175,7 +198,7 @@ class _PersonalInformationSettingsScreenState
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 12,
                         ),
@@ -188,7 +211,7 @@ class _PersonalInformationSettingsScreenState
                         style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     TextButton(
                       onPressed: () {
                         focusNode.unfocus();
@@ -197,7 +220,7 @@ class _PersonalInformationSettingsScreenState
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.redAccent,
                         foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 12,
                         ),
@@ -220,6 +243,52 @@ class _PersonalInformationSettingsScreenState
     );
   }
 
+  Widget _buildRow(String label, String valor, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.inter(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  valor,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(
+                    color: Colors.white60,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(Icons.edit_outlined, color: Colors.white38, size: 18),
+          const SizedBox(width: 5),
+        ],
+      ),
+    );
+  }
+
+  Widget _divider() => Container(
+    margin: const EdgeInsets.only(left: 5, right: 5),
+    color: Colors.white38,
+    width: double.infinity,
+    height: 1,
+  );
+
   @override
   Widget build(BuildContext context) {
     final user = context.watch<UserProvider>().user;
@@ -228,7 +297,7 @@ class _PersonalInformationSettingsScreenState
       return Scaffold(
         backgroundColor: Color(colorNoturno),
         appBar: AppBar(
-          title: Text('Informações pessoais'),
+          title: const Text('Informações pessoais'),
           backgroundColor: Color(colorNoturno),
           foregroundColor: Colors.white,
         ),
@@ -236,7 +305,7 @@ class _PersonalInformationSettingsScreenState
       );
     }
 
-    final Color _color = Color(colorDarkGrey);
+    final Color cardColor = Color(colorDarkGrey);
 
     return Scaffold(
       appBar: AppBar(
@@ -251,48 +320,54 @@ class _PersonalInformationSettingsScreenState
       body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             Container(
-              margin: EdgeInsets.only(left: 16, right: 16),
+              margin: const EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 240,
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _color,
+                color: cardColor,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white38, width: 1),
               ),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   EditableAvatar(
                     radius: 64,
-                    imageUrl:
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCNBLmnNWfkgI83S1NuVF2k6dMjISlhRVMKQ&s',
+                    imageUrl: user.fotoPerfil.isNotEmpty
+                        ? user.fotoPerfil
+                        : null,
+                    onImageChanged: _salvarAvatar,
                   ),
+                  if (_isLoadingAvatar)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: CircularProgressIndicator(),
+                    ),
+                  const SizedBox(height: 8),
                   Text(
                     user.nome,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                 ],
               ),
             ),
 
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             Container(
-              margin: EdgeInsets.only(left: 30),
+              margin: const EdgeInsets.only(left: 30),
               child: Row(
                 children: [
                   Text(
-                    "DADOS",
+                    'DADOS',
                     style: GoogleFonts.inter(
                       color: Colors.white54,
                       fontSize: 16,
@@ -303,231 +378,78 @@ class _PersonalInformationSettingsScreenState
               ),
             ),
 
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             Container(
-              margin: EdgeInsets.only(left: 16, right: 16),
+              margin: const EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 320,
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _color,
+                color: cardColor,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white38, width: 1),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
-                    onTap: () => _editarCampo("Nome", user.nome, (valor) {
-                      _salvarNome(valor);
-                    }, maxCaracteres: 30),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Nome",
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                user.nome,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white60,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: Colors.white38,
-                          size: 18,
-                        ),
-                        SizedBox(width: 5),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 5, right: 5),
-                    color: Colors.white38,
-                    width: double.infinity,
-                    height: 1,
-                  ),
-                  SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () => _editarCampo(
-                      "Nome de Usuário",
-                      user.nomeUsuario,
-                      (valor) {
-                        _salvarUsername(valor);
-                      },
+                  _buildRow(
+                    'Nome',
+                    user.nome,
+                    () => _editarCampo(
+                      'Nome',
+                      user.nome,
+                      _salvarNome,
                       maxCaracteres: 30,
                     ),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Nome de usuário",
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                user.nomeUsuario,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white60,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: Colors.white38,
-                          size: 18,
-                        ),
-                        SizedBox(width: 5),
-                      ],
+                  ),
+                  _divider(),
+                  const SizedBox(height: 12),
+                  _buildRow(
+                    'Nome de usuário',
+                    user.nomeUsuario,
+                    () => _editarCampo(
+                      'Nome de Usuário',
+                      user.nomeUsuario,
+                      _salvarUsername,
+                      maxCaracteres: 30,
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 5, right: 5),
-                    color: Colors.white38,
-                    width: double.infinity,
-                    height: 1,
-                  ),
-                  SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () => _editarCampo("Bio", user.bio, (valor) {
-                      _salvarBio(valor);
-                    }, maxCaracteres: 150,),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Bio",
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                user.bio,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white60,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: Colors.white38,
-                          size: 18,
-                        ),
-                        SizedBox(width: 5),
-                      ],
+                  _divider(),
+                  const SizedBox(height: 12),
+                  _buildRow(
+                    'Bio',
+                    user.bio,
+                    () => _editarCampo(
+                      'Bio',
+                      user.bio,
+                      _salvarBio,
+                      maxCaracteres: 150,
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 5, right: 5),
-                    color: Colors.white38,
-                    width: double.infinity,
-                    height: 1,
-                  ),
-                  SizedBox(height: 12),
-                  GestureDetector(
-                    onTap: () =>
-                        _editarCampo("Interesses", user.interesses, (valor) {
-                          context.read<UserProvider>().atualizarCampo(
-                            'interesses',
-                            valor,
-                          );
-                        }),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Interesses",
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                user.interesses,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  color: Colors.white60,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: Colors.white38,
-                          size: 18,
-                        ),
-                        SizedBox(width: 5),
-                      ],
-                    ),
+                  _divider(),
+                  const SizedBox(height: 12),
+                  _buildRow(
+                    'Interesses',
+                    user.interesses,
+                    () => _editarCampo('Interesses', user.interesses, (valor) {
+                      context.read<UserProvider>().atualizarCampo(
+                        'interesses',
+                        valor,
+                      );
+                    }),
                   ),
                 ],
               ),
             ),
 
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             Container(
-              margin: EdgeInsets.only(left: 30),
+              margin: const EdgeInsets.only(left: 30),
               child: Row(
                 children: [
                   Text(
-                    "INFORMAÇÕES DA CONTA",
+                    'INFORMAÇÕES DA CONTA',
                     style: GoogleFonts.inter(
                       color: Colors.white54,
                       fontSize: 16,
@@ -538,127 +460,47 @@ class _PersonalInformationSettingsScreenState
               ),
             ),
 
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
 
             Container(
-              margin: EdgeInsets.only(left: 16, right: 16),
+              margin: const EdgeInsets.only(left: 16, right: 16),
               width: double.infinity,
-              height: 320,
-              padding: EdgeInsets.all(12),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _color,
+                color: cardColor,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: Colors.white38, width: 1),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  GestureDetector(
-                    onTap: () => _editarCampo("E-mail", user.email, (valor) {
+                  _buildRow(
+                    'E-mail',
+                    user.email,
+                    () => _editarCampo('E-mail', user.email, (valor) {
                       context.read<UserProvider>().atualizarCampo(
                         'email',
                         valor,
                       );
                     }),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "E-mail",
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                user.email,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white60,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: Colors.white38,
-                          size: 18,
-                        ),
-                        SizedBox(width: 5),
-                      ],
-                    ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 5, right: 5),
-                    color: Colors.white38,
-                    width: double.infinity,
-                    height: 1,
+                  _divider(),
+                  _buildRow(
+                    'Telefone',
+                    user.telefone,
+                    () => _editarCampo('Telefone', user.telefone, (valor) {
+                      context.read<UserProvider>().atualizarCampo(
+                        'telefone',
+                        valor,
+                      );
+                    }),
                   ),
-                  GestureDetector(
-                    onTap: () =>
-                        _editarCampo("Telefone", user.telefone, (valor) {
-                          context.read<UserProvider>().atualizarCampo(
-                            'telefone',
-                            valor,
-                          );
-                        }),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Telefone",
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                user.telefone,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white60,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: Colors.white38,
-                          size: 18,
-                        ),
-                        SizedBox(width: 5),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(left: 5, right: 5),
-                    color: Colors.white38,
-                    width: double.infinity,
-                    height: 1,
-                  ),
-                  GestureDetector(
-                    onTap: () => _editarCampo(
-                      "Data de Nascimento",
+                  _divider(),
+                  _buildRow(
+                    'Data de nascimento',
+                    user.dataNascimento,
+                    () => _editarCampo(
+                      'Data de Nascimento',
                       user.dataNascimento,
                       (valor) {
                         context.read<UserProvider>().atualizarCampo(
@@ -667,100 +509,23 @@ class _PersonalInformationSettingsScreenState
                         );
                       },
                     ),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Data de nascimento",
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                user.dataNascimento,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white60,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: Colors.white38,
-                          size: 18,
-                        ),
-                        SizedBox(width: 5),
-                      ],
-                    ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(left: 5, right: 5),
-                    color: Colors.white38,
-                    width: double.infinity,
-                    height: 1,
-                  ),
-                  GestureDetector(
-                    onTap: () => _editarCampo("Cidade", user.cidade, (valor) {
+                  _divider(),
+                  _buildRow(
+                    'Cidade',
+                    user.cidade,
+                    () => _editarCampo('Cidade', user.cidade, (valor) {
                       context.read<UserProvider>().atualizarCampo(
                         'cidade',
                         valor,
                       );
                     }),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Cidade",
-                                style: GoogleFonts.inter(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                user.cidade,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: GoogleFonts.inter(
-                                  color: Colors.white60,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.edit_outlined,
-                          color: Colors.white38,
-                          size: 18,
-                        ),
-                        SizedBox(width: 5),
-                      ],
-                    ),
                   ),
                 ],
               ),
             ),
 
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
           ],
         ),
       ),
