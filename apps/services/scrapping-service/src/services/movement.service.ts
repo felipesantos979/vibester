@@ -1,6 +1,8 @@
 import { EstablishmentClient } from "../clients/establishment.client";
 import { prisma } from "../prisma/index";
 import { SerpApiService, PopularityHourData } from "./serpapi.service";
+import { TTLCache } from "../utils/cache";
+import { type AppLogger, consoleLogger } from "../utils/logger";
 
 type MovementLevelValue =
   | "VERY_LOW"
@@ -10,40 +12,41 @@ type MovementLevelValue =
   | "VERY_HIGH"
   | "UNAVAILABLE";
 
+const MOVEMENT_CACHE_TTL_MS = 5 * 60 * 1000;
+
 export class MovementService {
+  private movementCache = new TTLCache<string, object | null>();
+
   constructor(
     private establishmentClient = new EstablishmentClient(),
-    private serpApiService = new SerpApiService()
-  ) { }
+    private serpApiService = new SerpApiService(),
+    private logger: AppLogger = consoleLogger
+  ) {}
 
   async updateMovementLevelsFromSavedEstablishments() {
     await this.cleanOldPopularTimesDaily();
 
     const establishments = await this.establishmentClient.listOpenEstablishments();
 
-    console.log(`Estabelecimentos encontrados: ${establishments.length}`);
+    this.logger.info(`Estabelecimentos encontrados: ${establishments.length}`);
 
     for (const establishment of establishments) {
       if (!establishment.googlePlaceId) {
-        console.log(`[SKIP] ${establishment.name} sem googlePlaceId`);
+        this.logger.info(`[SKIP] ${establishment.name} sem googlePlaceId`);
         continue;
       }
 
       try {
-        console.log(`[SERPAPI] Consultando ${establishment.name}`);
+        this.logger.info(`[SERPAPI] Consultando ${establishment.name}`);
 
         const data = await this.serpApiService.getPlacePopularity(
           establishment.googlePlaceId
         );
 
         if (!data || data.liveBusynessScore === null) {
-          console.log(`[SEM MOVIMENTO AO VIVO] ${establishment.name}`);
+          this.logger.info(`[SEM MOVIMENTO AO VIVO] ${establishment.name}`);
 
-          if (
-            data &&
-            data.currentDayInt !== null &&
-            data.hoursData.length > 0
-          ) {
+          if (data && data.currentDayInt !== null && data.hoursData.length > 0) {
             await this.savePopularTimesDaily({
               establishmentId: establishment.id,
               googlePlaceId: establishment.googlePlaceId,
@@ -70,7 +73,7 @@ export class MovementService {
               isEstimated: true,
             });
 
-            console.log(
+            this.logger.info(
               `[FALLBACK] ${establishment.name}: ${fallbackScore}% → ${level}`
             );
 
@@ -112,24 +115,27 @@ export class MovementService {
           });
         }
 
-        console.log(`[OK] ${establishment.name}: ${score}% → ${level}`);
+        this.movementCache.delete(establishment.id);
+
+        this.logger.info(`[OK] ${establishment.name}: ${score}% → ${level}`);
       } catch (error) {
-        console.error(
-          `[ERRO] Falha ao atualizar ${establishment.name}:`,
-          error
-        );
+        this.logger.error(`[ERRO] Falha ao atualizar ${establishment.name}`, error);
       }
     }
 
-    console.log("Atualização de movement levels finalizada.");
+    this.logger.info("Atualização de movement levels finalizada.");
   }
 
   async getMovementByEstablishmentId(establishmentId: string) {
-    return prisma.currentPopularity.findUnique({
-      where: {
-        establishmentId,
-      },
+    const cached = this.movementCache.get(establishmentId);
+    if (cached !== null) return cached;
+
+    const result = await prisma.currentPopularity.findUnique({
+      where: { establishmentId },
     });
+
+    this.movementCache.set(establishmentId, result, MOVEMENT_CACHE_TTL_MS);
+    return result;
   }
 
   private async saveCurrentPopularity(data: {
@@ -142,11 +148,9 @@ export class MovementService {
     isEstimated: boolean;
   }) {
     const source = data.isEstimated ? "ESTIMATED" : "SERPAPI";
-    
+
     await prisma.currentPopularity.upsert({
-      where: {
-        establishmentId: data.establishmentId,
-      },
+      where: { establishmentId: data.establishmentId },
       update: {
         googlePlaceId: data.googlePlaceId,
         level: data.level,
@@ -180,12 +184,8 @@ export class MovementService {
 
     await prisma.$transaction([
       prisma.popularTimesDaily.deleteMany({
-        where: {
-          establishmentId: data.establishmentId,
-          capturedDate: today,
-        },
+        where: { establishmentId: data.establishmentId, capturedDate: today },
       }),
-
       prisma.popularTimesDaily.createMany({
         data: data.hoursData.map((hour) => ({
           establishmentId: data.establishmentId,
@@ -207,19 +207,21 @@ export class MovementService {
   ): Promise<number | null> {
     const currentHour = new Date().getHours();
 
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - 7);
+    cutoffDate.setHours(0, 0, 0, 0);
+
     const result = await prisma.popularTimesDaily.aggregate({
       where: {
         establishmentId,
         dayOfWeek,
         hour: currentHour,
+        capturedDate: { gte: cutoffDate },
       },
-      _avg: {
-        busynessScore: true,
-      },
+      _avg: { busynessScore: true },
     });
 
     const averageScore = result._avg.busynessScore;
-
     return averageScore !== null ? Math.round(averageScore) : null;
   }
 
@@ -228,7 +230,6 @@ export class MovementService {
     if (score <= 40) return "LOW";
     if (score <= 60) return "MEDIUM";
     if (score <= 80) return "HIGH";
-
     return "VERY_HIGH";
   }
 
@@ -238,14 +239,10 @@ export class MovementService {
     limitDate.setHours(0, 0, 0, 0);
 
     const result = await prisma.popularTimesDaily.deleteMany({
-      where: {
-        capturedDate: {
-          lt: limitDate,
-        },
-      },
+      where: { capturedDate: { lt: limitDate } },
     });
 
-    console.log(
+    this.logger.info(
       `[CLEANUP] ${result.count} registros antigos removidos de popularTimesDaily`
     );
   }

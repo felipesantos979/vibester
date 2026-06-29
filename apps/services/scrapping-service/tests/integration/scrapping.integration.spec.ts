@@ -27,18 +27,23 @@ vi.mock('../../src/services/google-places.service', () => ({
 
 vi.mock('../../src/prisma/index', () => ({
   prisma: {
+    $queryRaw: vi.fn().mockResolvedValue([]),
     currentPopularity: { findUnique: vi.fn(), upsert: vi.fn(), deleteMany: vi.fn() },
   },
 }));
 
-import { buildServer } from '../helpers/fastify.test.helper';
+import { buildServer, signTestToken } from '../helpers/fastify.test.helper';
 
 const ESTAB_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
 
 describe('scrapping-service — HTTP Integration', () => {
   let app: Awaited<ReturnType<typeof buildServer>>;
+  let token: string;
 
-  beforeAll(async () => { app = await buildServer(); });
+  beforeAll(async () => {
+    app = await buildServer();
+    token = signTestToken(app);
+  });
   afterAll(async () => { await app.close(); });
   beforeEach(() => {
     vi.resetAllMocks();
@@ -47,15 +52,32 @@ describe('scrapping-service — HTTP Integration', () => {
     mockSearchNearby.mockResolvedValue([]);
   });
 
+  const authHeaders = () => ({ Authorization: `Bearer ${token}` });
+
   describe('GET /health', () => {
     it('retorna 200 ok', async () => {
       const res = await app.inject({ method: 'GET', url: '/health' });
       expect(res.statusCode).toBe(200);
       expect(JSON.parse(res.payload)).toHaveProperty('status', 'ok');
     });
+
+    it('retorna 503 quando banco está inacessível', async () => {
+      const { prisma } = await import('../../src/prisma/index');
+      vi.mocked(prisma.$queryRaw).mockRejectedValueOnce(new Error('connection refused'));
+
+      const res = await app.inject({ method: 'GET', url: '/health' });
+
+      expect(res.statusCode).toBe(503);
+      expect(JSON.parse(res.payload)).toHaveProperty('status', 'error');
+    });
   });
 
   describe('GET /places/:placeId/popularity', () => {
+    it('retorna 401 sem token', async () => {
+      const res = await app.inject({ method: 'GET', url: '/places/ChIJplace123/popularity' });
+      expect(res.statusCode).toBe(401);
+    });
+
     it('retorna popularidade quando SerpAPI responde com dados', async () => {
       const popularityData = {
         currentDay: 'friday',
@@ -67,7 +89,11 @@ describe('scrapping-service — HTTP Integration', () => {
       };
       mockGetPopularity.mockResolvedValue(popularityData);
 
-      const res = await app.inject({ method: 'GET', url: '/places/ChIJplace123/popularity' });
+      const res = await app.inject({
+        method: 'GET',
+        url: '/places/ChIJplace123/popularity',
+        headers: authHeaders(),
+      });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
@@ -78,7 +104,11 @@ describe('scrapping-service — HTTP Integration', () => {
     it('retorna 404 quando popularidade não está disponível', async () => {
       mockGetPopularity.mockResolvedValue(null);
 
-      const res = await app.inject({ method: 'GET', url: '/places/ChIJplace123/popularity' });
+      const res = await app.inject({
+        method: 'GET',
+        url: '/places/ChIJplace123/popularity',
+        headers: authHeaders(),
+      });
 
       expect(res.statusCode).toBe(404);
     });
@@ -86,13 +116,22 @@ describe('scrapping-service — HTTP Integration', () => {
     it('retorna 500 quando SerpAPI lança exceção', async () => {
       mockGetPopularity.mockRejectedValue(new Error('SerpAPI unavailable'));
 
-      const res = await app.inject({ method: 'GET', url: '/places/ChIJplace123/popularity' });
+      const res = await app.inject({
+        method: 'GET',
+        url: '/places/ChIJplace123/popularity',
+        headers: authHeaders(),
+      });
 
       expect(res.statusCode).toBe(500);
     });
   });
 
   describe('GET /movements/:establishmentId', () => {
+    it('retorna 401 sem token', async () => {
+      const res = await app.inject({ method: 'GET', url: `/movements/${ESTAB_ID}` });
+      expect(res.statusCode).toBe(401);
+    });
+
     it('retorna nível de movimento do estabelecimento', async () => {
       const movementData = {
         id: 1,
@@ -109,7 +148,11 @@ describe('scrapping-service — HTTP Integration', () => {
       };
       mockGetMovement.mockResolvedValue(movementData);
 
-      const res = await app.inject({ method: 'GET', url: `/movements/${ESTAB_ID}` });
+      const res = await app.inject({
+        method: 'GET',
+        url: `/movements/${ESTAB_ID}`,
+        headers: authHeaders(),
+      });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
@@ -120,13 +163,22 @@ describe('scrapping-service — HTTP Integration', () => {
     it('retorna 404 quando estabelecimento não tem dados de movimento', async () => {
       mockGetMovement.mockResolvedValue(null);
 
-      const res = await app.inject({ method: 'GET', url: `/movements/${ESTAB_ID}` });
+      const res = await app.inject({
+        method: 'GET',
+        url: `/movements/${ESTAB_ID}`,
+        headers: authHeaders(),
+      });
 
       expect(res.statusCode).toBe(404);
     });
   });
 
   describe('GET /places/nearby', () => {
+    it('retorna 401 sem token', async () => {
+      const res = await app.inject({ method: 'GET', url: '/places/nearby' });
+      expect(res.statusCode).toBe(401);
+    });
+
     it('retorna lista de lugares próximos', async () => {
       const places = [
         { placeId: 'ChIJplace1', name: 'Bar do João', lat: -23.42, lng: -51.93, rating: 4.5 },
@@ -137,6 +189,7 @@ describe('scrapping-service — HTTP Integration', () => {
       const res = await app.inject({
         method: 'GET',
         url: '/places/nearby?lat=-23.4205&lng=-51.9333&radius=1000&types=bar',
+        headers: authHeaders(),
       });
 
       expect(res.statusCode).toBe(200);
@@ -148,7 +201,11 @@ describe('scrapping-service — HTTP Integration', () => {
     it('retorna lista vazia quando não há lugares no raio', async () => {
       mockSearchNearby.mockResolvedValue([]);
 
-      const res = await app.inject({ method: 'GET', url: '/places/nearby' });
+      const res = await app.inject({
+        method: 'GET',
+        url: '/places/nearby',
+        headers: authHeaders(),
+      });
 
       expect(res.statusCode).toBe(200);
       expect(JSON.parse(res.payload)).toHaveLength(0);
@@ -157,7 +214,11 @@ describe('scrapping-service — HTTP Integration', () => {
     it('retorna 500 quando Google Places API falha', async () => {
       mockSearchNearby.mockRejectedValue(new Error('Google API error'));
 
-      const res = await app.inject({ method: 'GET', url: '/places/nearby' });
+      const res = await app.inject({
+        method: 'GET',
+        url: '/places/nearby',
+        headers: authHeaders(),
+      });
 
       expect(res.statusCode).toBe(500);
     });

@@ -1,8 +1,13 @@
 import Fastify from "fastify";
+import cors from "@fastify/cors";
+import jwt from "@fastify/jwt";
+import rateLimit from "@fastify/rate-limit";
 import { env } from "./config/env";
 import { routes } from "./routes";
 import { registerSwagger } from "./config/swagger";
 import { startMovementJob } from "./jobs/movement.job";
+import { prisma } from "./prisma/index";
+import type { AppLogger } from "./utils/logger";
 
 const app = Fastify({
   logger: true,
@@ -10,11 +15,38 @@ const app = Fastify({
 });
 
 const start = async () => {
+  await app.register(cors, { origin: env.corsOrigin });
+
+  await app.register(jwt, { secret: env.jwtSecret });
+
+  await app.register(rateLimit, {
+    max: env.rateLimitMax,
+    timeWindow: env.rateLimitTimeWindow,
+  });
+
   await registerSwagger(app);
   await app.register(routes);
+
+  const appLogger: AppLogger = {
+    info: (msg) => app.log.info(msg),
+    warn: (msg) => app.log.warn(msg),
+    error: (msg, cause) => app.log.error({ err: cause }, msg),
+  };
+
+  const stopJob = startMovementJob(appLogger);
+
+  const shutdown = async () => {
+    app.log.info("Recebendo sinal de encerramento, aguardando tarefas...");
+    stopJob();
+    await app.close();
+    await prisma.$disconnect();
+    process.exit(0);
+  };
+
+  process.on("SIGTERM", shutdown);
+  process.on("SIGINT", shutdown);
+
   await app.listen({ port: Number(env.port) || 3000, host: "0.0.0.0" });
-  startMovementJob();
 };
 
 start();
-
