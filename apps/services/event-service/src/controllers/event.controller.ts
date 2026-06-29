@@ -8,6 +8,7 @@ import { ToggleFeaturedService } from "../services/toggleFeatured.service.js";
 import { GetEventsByEstablishmentService } from "../services/getEventsByEstablishment.service.js";
 import { cacheAside, nearbyKey } from "../config/redis.js";
 import { GetFeaturedEventsService } from "../services/getFeaturedEvents.service.js";
+import { GetEventsByWeekService } from "../services/getEventsByWeek.service.js";
 
 const toggleFeaturedService = new ToggleFeaturedService();
 const eventService = new CreateEventService();
@@ -15,6 +16,7 @@ const listEventsService = new ListEventsService();
 const detailsService = new GetEventDetailsService();
 const byEstablishmentService = new GetEventsByEstablishmentService();
 const featuredEventsService = new GetFeaturedEventsService();
+const eventsByWeekService = new GetEventsByWeekService();
 
 async function authenticate(request: FastifyRequest, reply: FastifyReply) {
     try {
@@ -96,6 +98,10 @@ const nearbyEventSchema = z.object({
 
 const toggleFeaturedBodySchema = z.object({
     isFeatured: z.boolean(),
+});
+
+const weekQuerySchema = z.object({
+    date: z.string().date(), // formato YYYY-MM-DD
 });
 
 export async function eventRoutes(app: FastifyInstance) {
@@ -252,6 +258,28 @@ export async function eventRoutes(app: FastifyInstance) {
         } catch (error) {
             request.log.error(error);
             return reply.status(500).send({ message: "Error listing featured events" });
+        }
+    });
+
+    router.get("/week", {
+        schema: {
+            tags: ["Events"],
+            summary: "Eventos da semana",
+            description: "Retorna todos os eventos que irão acontecer nos 7 dias a partir da data informada.",
+            querystring: weekQuerySchema,
+            response: {
+                200: z.array(eventDetailsSchema),
+                400: errorSchema,
+                500: errorSchema,
+            },
+        },
+    }, async (request, reply) => {
+        try {
+            const events = await eventsByWeekService.get(request.query.date);
+            return reply.status(200).send(events);
+        } catch (error) {
+            request.log.error(error);
+            return reply.status(500).send({ message: "Error listing events by week" });
         }
     });
 }
