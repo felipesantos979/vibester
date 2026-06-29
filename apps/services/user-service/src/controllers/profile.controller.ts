@@ -6,11 +6,13 @@ import { EditProfileService } from "../services/editProfile.service.js";
 import { GetProfileService } from "../services/getProfile.service.js";
 import { GetFollowersService } from "../services/getFollowers.service.js";
 import type { UserProfile as UserProfileModel } from "@prisma/client";
+import { CheckFollowService } from "../services/checkFollow.service.js";
 
 const profileService = new CreateProfileService();
 const editProfileService = new EditProfileService();
 const getProfileService = new GetProfileService();
 const getFollowersService = new GetFollowersService();
+const checkFollowService = new CheckFollowService();
 
 const errorSchema = z.object({ message: z.string() });
 
@@ -74,6 +76,11 @@ const followerEntrySchema = z.object({
 const followingEntrySchema = z.object({
   followingId: z.string().uuid(),
   createdAt: z.date(),
+});
+
+const isFollowingSchema = z.object({
+  followerId: z.string().uuid(),
+  followingId: z.string().uuid(),
 });
 
 export async function profileRoutes(app: FastifyInstance) {
@@ -265,6 +272,28 @@ export async function profileRoutes(app: FastifyInstance) {
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({ message: "Error listing following" });
+    }
+  });
+
+  router.get("/:followerId/follows/:followingId", {
+    schema: {
+      tags: ["Profile"],
+      summary: "Verificar se segue",
+      description: "Retorna se followerId segue followingId.",
+      params: isFollowingSchema,
+      response: {
+        200: z.object({ isFollowing: z.boolean() }),
+        500: errorSchema,
+      },
+    },
+  }, async (request, reply) => {
+    try {
+      const { followerId, followingId } = request.params;
+      const isFollowing = await checkFollowService.isFollowing(followerId, followingId);
+      return reply.status(200).send({ isFollowing });
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ message: "Error checking follow status" });
     }
   });
 }
