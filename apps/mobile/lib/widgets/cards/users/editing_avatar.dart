@@ -5,7 +5,7 @@ import 'package:mobile/utils/colors.dart';
 
 class EditableAvatar extends StatefulWidget {
   final String? imageUrl;
-  final ValueChanged<File>? onImageChanged;
+  final Future<void> Function(File)? onImageChanged;
   final double radius;
 
   const EditableAvatar({
@@ -22,15 +22,25 @@ class EditableAvatar extends StatefulWidget {
 class _EditableAvatarState extends State<EditableAvatar> {
   File? _image;
 
+  @override
+  void initState() {
+    super.initState();
+    debugPrint(
+      '>>> EditableAvatar onImageChanged é null? ${widget.onImageChanged == null}',
+    );
+  }
+
   Future<void> _pick(ImageSource source) async {
     final picked = await ImagePicker().pickImage(
       source: source,
       imageQuality: 85,
     );
     if (picked == null) return;
+    if (!mounted) return;
     final file = File(picked.path);
     setState(() => _image = file);
-    widget.onImageChanged?.call(file);
+    debugPrint('>>> chamando onImageChanged');
+    await widget.onImageChanged?.call(file);
   }
 
   void _showOptions() {
@@ -85,7 +95,7 @@ class _EditableAvatarState extends State<EditableAvatar> {
               radius: widget.radius > 0 ? widget.radius : 48,
               backgroundImage: _provider,
               child: _provider == null
-                  ? Icon(Icons.camera_alt, color: Colors.white, size: 50)
+                  ? const Icon(Icons.camera_alt, color: Colors.white, size: 50)
                   : null,
             ),
           ),

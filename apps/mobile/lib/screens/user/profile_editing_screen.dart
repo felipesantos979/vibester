@@ -82,7 +82,9 @@ class _ProfileEditingScreenState extends State<ProfileEditingScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Não foi possível atualizar o perfil. Tente novamente.'),
+          content: Text(
+            'Não foi possível atualizar o perfil. Tente novamente.',
+          ),
         ),
       );
     } finally {

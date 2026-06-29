@@ -1,7 +1,28 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:mobile/service/api_client.dart';
 import 'package:mobile/service/api_endpoints.dart';
+
+class UploadUrlResult {
+  final String uploadUrl;
+  final String key;
+  final String publicUrl;
+
+  UploadUrlResult({
+    required this.uploadUrl,
+    required this.key,
+    required this.publicUrl,
+  });
+
+  factory UploadUrlResult.fromJson(Map<String, dynamic> json) {
+    return UploadUrlResult(
+      uploadUrl: json['uploadUrl'] ?? '',
+      key: json['key'] ?? '',
+      publicUrl: json['publicUrl'] ?? '',
+    );
+  }
+}
 
 class UserService {
   Future<void> register({
@@ -73,11 +94,7 @@ class UserService {
     try {
       final response = await ApiClient.dio.put(
         ApiEndpoints.updateInfo(),
-        data: {
-          'accountId': accountId,
-          'name': name,
-          'username': username,
-        },
+        data: {'accountId': accountId, 'name': name, 'username': username},
       );
       return response.data;
     } on DioException catch (e) {
@@ -101,5 +118,137 @@ class UserService {
       final mensagem = e.response?.data?['message'] ?? 'Erro ao atualizar bio';
       throw Exception(mensagem);
     }
+  }
+
+  Future<Map<String, dynamic>> updateAvatar({
+    required String accountId,
+    required File image,
+  }) async {
+    try {
+      final imageUrls = await _uploadImages(userId: accountId, images: [image]);
+
+      final avatarUrl = imageUrls.first;
+
+      final response = await ApiClient.dio.put(
+        ApiEndpoints.updateAvatar(),
+        data: {'accountId': accountId, 'avatarUrl': avatarUrl},
+      );
+
+      return response.data;
+    } on DioException catch (e) {
+      final mensagem =
+          e.response?.data?['message'] ?? 'Erro ao atualizar avatar';
+
+      throw Exception(mensagem);
+    }
+  }
+
+  Future<void> followUser({
+    required String followerId,
+    required String followingId,
+  }) async {
+    try {
+      await ApiClient.dio.post(
+        ApiEndpoints.increaseFollowers(),
+        data: {'followerId': followerId, 'followingId': followingId},
+      );
+    } on DioException catch (e) {
+      final mensagem = e.response?.data?['message'] ?? 'Erro ao seguir usuário';
+      throw Exception(mensagem);
+    }
+  }
+
+  Future<bool> isFollowing({
+    required String followerId,
+    required String followingId,
+  }) async {
+    try {
+      final response = await ApiClient.dio.get(
+        ApiEndpoints.checkFollowing(followerId, followingId),
+      );
+      return response.data['isFollowing'] ?? false;
+    } on DioException catch (e) {
+      final mensagem =
+          e.response?.data?['message'] ?? 'Erro ao verificar status de seguir';
+      throw Exception(mensagem);
+    }
+  }
+
+  Future<void> unfollowUser({
+    required String followerId,
+    required String followingId,
+  }) async {
+    try {
+      await ApiClient.dio.post(
+        ApiEndpoints.decreaseFollowers(),
+        data: {'followerId': followerId, 'followingId': followingId},
+      );
+    } on DioException catch (e) {
+      final mensagem =
+          e.response?.data?['message'] ?? 'Erro ao deixar de seguir usuário';
+      throw Exception(mensagem);
+    }
+  }
+
+  Future<List<UploadUrlResult>> _getUploadUrls({
+    required String userId,
+    required int count,
+  }) async {
+    try {
+      final response = await ApiClient.dio.post(
+        ApiEndpoints.postsUploadUrl(),
+        data: {'userId': userId, 'count': count},
+      );
+      final List data = response.data;
+      return data.map((json) => UploadUrlResult.fromJson(json)).toList();
+    } on DioException catch (e) {
+      final mensagem =
+          e.response?.data?['message'] ?? 'Erro ao gerar URLs de upload';
+      throw Exception(mensagem);
+    }
+  }
+
+  Future<void> _uploadToR2(String uploadUrl, File file) async {
+    final dio = Dio(); // instância separada: sem Authorization da sua API
+    final bytes = await file.readAsBytes();
+    final extensao = file.path.split('.').last.toLowerCase();
+    final contentType = extensao == 'png' ? 'image/png' : 'image/jpeg';
+
+    await dio.put(
+      uploadUrl,
+      data: bytes,
+      options: Options(
+        headers: {
+          Headers.contentLengthHeader: bytes.length,
+          'Content-Type': contentType,
+        },
+      ),
+    );
+  }
+
+  Future<List<String>> _uploadImages({
+    required String userId,
+    required List<File> images,
+  }) async {
+    if (images.isEmpty) return [];
+
+    final uploadUrls = await _getUploadUrls(
+      userId: userId,
+      count: images.length,
+    );
+
+    final publicUrls = <String>[];
+    for (var i = 0; i < images.length; i++) {
+      await _uploadToR2(uploadUrls[i].uploadUrl, images[i]);
+      publicUrls.add(_normalizeUrl(uploadUrls[i].publicUrl));
+    }
+    return publicUrls;
+  }
+
+  String _normalizeUrl(String url) {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    return 'https://$url';
   }
 }

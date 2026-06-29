@@ -10,11 +10,13 @@ class ApiEndpoints {
   static String getProfileById(String id) => '$baseUrl/user/users/profile/$id';
   static String updateInfo() => '$baseUrl/user/users/profile/info';
   static String updateBio() => '$baseUrl/user/users/profile/bio';
-  static String updateAvatar() => '$baseUrl/api/users/profile/avatar';
+  static String updateAvatar() => '$baseUrl/user/users/profile/avatar';
   static String increaseFollowers() =>
-      '$baseUrl/api/users/profile/followers/increase';
+      '$baseUrl/user/users/profile/followers/increase';
   static String decreaseFollowers() =>
-      '$baseUrl/api/users/profile/followers/decrease';
+      '$baseUrl/user/users/profile/followers/decrease';
+  static String checkFollowing(String followerId, String followingId) =>
+      '$baseUrl/user/users/$followerId/follows/$followingId';
 
   // Events
   static String events() => '$baseUrl/event/events';

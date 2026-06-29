@@ -1,4 +1,5 @@
 import 'package:mobile/models/user/user_model.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/service/user/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,6 +11,7 @@ import 'package:mobile/utils/divider.dart';
 import 'package:mobile/utils/editable_text_field.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
 import 'package:mobile/widgets/cards/users/profile_avatar.dart';
+import 'package:provider/provider.dart';
 
 class OtherUsersProfileScreen extends StatefulWidget {
   final String accountId;
@@ -28,6 +30,8 @@ class _OtherUsersProfileScreenState extends State<OtherUsersProfileScreen>
   late Future<UserModel> _userFuture;
 
   bool _showAppBarAvatar = false;
+  bool _isFollowing = false;
+  bool _loadingFollow = false;
 
   @override
   void initState() {
@@ -37,8 +41,63 @@ class _OtherUsersProfileScreenState extends State<OtherUsersProfileScreen>
   }
 
   Future<UserModel> _loadUser() async {
-    final data = await _userService.getProfile(widget.accountId);
-    return UserModel.fromProfileJson(data, accountId: widget.accountId);
+    final currentUserId = context.read<UserProvider>().user?.accountId;
+
+    final results = await Future.wait([
+      _userService.getProfile(widget.accountId),
+      currentUserId != null
+          ? _userService.isFollowing(
+              followerId: currentUserId,
+              followingId: widget.accountId,
+            )
+          : Future.value(false),
+    ]);
+
+    final profileData = results[0] as Map<String, dynamic>;
+    final isFollowing = results[1] as bool;
+
+    if (mounted) {
+      setState(() => _isFollowing = isFollowing);
+    }
+
+    return UserModel.fromProfileJson(profileData, accountId: widget.accountId);
+  }
+
+  Future<void> _alternarSeguir(UserModel otherUser) async {
+    final currentUserId = context.read<UserProvider>().user?.accountId;
+    if (currentUserId == null || _loadingFollow) return;
+
+    setState(() => _loadingFollow = true);
+
+    try {
+      if (_isFollowing) {
+        await _userService.unfollowUser(
+          followerId: currentUserId,
+          followingId: widget.accountId,
+        );
+        setState(() {
+          _isFollowing = false;
+          otherUser.seguidores -= 1;
+        });
+      } else {
+        await _userService.followUser(
+          followerId: currentUserId,
+          followingId: widget.accountId,
+        );
+        setState(() {
+          _isFollowing = true;
+          otherUser.seguidores += 1;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    } finally {
+      if (mounted) setState(() => _loadingFollow = false);
+    }
   }
 
   @override
@@ -266,7 +325,16 @@ class _OtherUsersProfileScreenState extends State<OtherUsersProfileScreen>
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      PrimaryButton(label: "Seguir", onPressed: () {}),
+                      PrimaryButton(
+                        label: _isFollowing ? "Seguindo" : "Seguir",
+                        state: _isFollowing
+                            ? ButtonState.success
+                            : ButtonState.idle,
+                        onPressed: () {
+                          if (_loadingFollow) return;
+                          _alternarSeguir(otherUser);
+                        },
+                      ),
                       SizedBox(width: 14),
                     ],
                   ),
