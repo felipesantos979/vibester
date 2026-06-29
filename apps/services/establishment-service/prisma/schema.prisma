@@ -26,6 +26,10 @@ model Establishment {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  @@index([category])
+  @@index([averageRating])
+  @@index([latitude, longitude])
+  @@index([name])
   @@map("establishments")
 }
 
@@ -38,5 +42,7 @@ model EstablishmentOpeningHour {
 
   establishment   Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
 
+  @@index([establishmentId])
+  @@index([dayOfWeek])
   @@map("establishment_opening_hours")
 }

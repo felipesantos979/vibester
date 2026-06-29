@@ -8,33 +8,25 @@ import { z } from "zod";
 import { UploadService } from "../services/upload.service";
 
 const getEstablishmentParamsSchema = z.object({
-  id: z.string().uuid()
-});
-
-const generateUploadUrlSchema = z.object({
-  establishmentId: z.string().uuid(),
+  id: z.string().uuid(),
 });
 
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
 export async function listEstablishmentsController(
   request: FastifyRequest<{ Querystring: ListEstablishmentsQuerystring }>,
   reply: FastifyReply
 ) {
   try {
-    const {
-      latitude,
-      longitude,
-      category,
-      minRating,
-      search,
-      sortBy,
-    } = request.query;
+    const { latitude, longitude, category, minRating, search, sortBy, page, limit } =
+      request.query;
 
     let lat: number | undefined;
     let lon: number | undefined;
     let rating: number | undefined;
+    let pageNum: number | undefined;
+    let limitNum: number | undefined;
 
     const hasOnlyOneCoordinate =
       (latitude !== undefined && longitude === undefined) ||
@@ -67,18 +59,37 @@ export async function listEstablishmentsController(
       }
     }
 
-    const establishments = await EstablishmentService.listEstablishments({
+    if (page !== undefined) {
+      pageNum = parseInt(page, 10);
+      if (isNaN(pageNum) || pageNum < 1) {
+        return reply.status(400).send({ message: "page must be a positive integer" });
+      }
+    }
+
+    if (limit !== undefined) {
+      limitNum = parseInt(limit, 10);
+      if (isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+        return reply.status(400).send({ message: "limit must be between 1 and 100" });
+      }
+    }
+
+    const result = await EstablishmentService.listEstablishments({
       userLat: lat,
       userLon: lon,
       category,
       minRating: rating,
       search,
       sortBy,
+      page: pageNum,
+      limit: limitNum,
     });
 
-    return reply.status(200).send(establishments);
-  } catch (error: any) {
-    if (error.message === "Latitude and longitude are required to sort by distance") {
+    return reply.status(200).send(result);
+  } catch (error: unknown) {
+    if (
+      error instanceof Error &&
+      error.message === "Latitude and longitude are required to sort by distance"
+    ) {
       return reply.status(400).send({ message: error.message });
     }
 
@@ -88,34 +99,29 @@ export async function listEstablishmentsController(
 }
 
 export async function updateEstablishmentRatingController(
-  request: FastifyRequest<{ Params: { id: string }, Body: { rating: number } }>,
+  request: FastifyRequest,
   reply: FastifyReply
 ) {
   try {
-    const { id } = request.params;
-    const { rating } = request.body;
+    const { id } = request.params as { id: string };
+    const { rating } = request.body as { rating: number };
 
     const updatedEstablishment = await EstablishmentService.updateRating(id, rating);
 
     return reply.status(200).send(updatedEstablishment);
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof Error) {
       if (error.message === "ESTABLISHMENT_NOT_FOUND") {
-        return reply.status(404).send({
-          message: "Estabelecimento não encontrado",
-        });
+        return reply.status(404).send({ message: "Estabelecimento não encontrado" });
       }
 
       if (error.message === "INVALID_RATING") {
-        return reply.status(400).send({
-          message: "Avaliação deve estar entre 0 e 5",
-        });
+        return reply.status(400).send({ message: "Avaliação deve estar entre 0 e 5" });
       }
     }
 
-    return reply.status(500).send({
-      message: "Erro interno no servidor",
-    });
+    console.error("Update establishment rating error:", error);
+    return reply.status(500).send({ message: "Erro interno no servidor" });
   }
 }
 
@@ -130,24 +136,28 @@ export async function getEstablishmentProfileController(
       return reply.status(400).send({ message: "Invalid establishment ID" });
     }
 
-    const profile = await EstablishmentService.getEstablishmentProfile(parseResult.data.id);
+    const profile = await EstablishmentService.getEstablishmentProfile(
+      parseResult.data.id
+    );
     return reply.status(200).send(profile);
-  } catch (error: any) {
-    if (error.message === "Establishment not found") {
+  } catch (error: unknown) {
+    if (error instanceof Error && error.message === "Establishment not found") {
       return reply.status(404).send({ message: "Establishment not found" });
     }
+
+    console.error("Get establishment profile error:", error);
     return reply.status(500).send({ message: "Internal server error" });
   }
 }
 
 export async function listOpenEstablishmentsController(
-  request: FastifyRequest,
+  _request: FastifyRequest,
   reply: FastifyReply
 ) {
   try {
     const establishments = await EstablishmentService.listOpenEstablishments();
     return reply.status(200).send(establishments);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("List open establishments error:", error);
     return reply.status(500).send({ message: "Internal server error" });
   }
@@ -167,26 +177,43 @@ export async function uploadProfilePictureController(
     }
 
     if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-      return reply.status(400).send({ message: "Formato inválido. Use JPEG, PNG ou WebP" });
+      file.file.resume();
+      return reply
+        .status(400)
+        .send({ message: "Formato inválido. Use JPEG, PNG ou WebP" });
     }
 
-    const chunks: Buffer[] = [];
-    for await (const chunk of file.file) {
-      chunks.push(chunk);
-    }
-    const fileBuffer = Buffer.concat(chunks);
+    let totalSize = 0;
+    const { PassThrough } = await import("stream");
+    const passThrough = new PassThrough();
 
-    if (fileBuffer.length > MAX_FILE_SIZE) {
-      return reply.status(400).send({ message: "Arquivo muito grande. Máximo 5MB" });
-    }
+    file.file.on("data", (chunk: Buffer) => {
+      totalSize += chunk.length;
+      if (totalSize > MAX_FILE_SIZE) {
+        file.file.destroy();
+        passThrough.destroy(new Error("FILE_TOO_LARGE"));
+      }
+    });
 
-    const publicUrl = await UploadService.uploadProfilePicture(id, fileBuffer, file.mimetype);
+    file.file.pipe(passThrough);
+
+    const publicUrl = await UploadService.uploadProfilePicture(
+      id,
+      passThrough,
+      file.mimetype
+    );
 
     return reply.status(200).send({ photoUrl: publicUrl });
-  } catch (error: any) {
-    if (error.code === "P2025") {
-      return reply.status(404).send({ message: "Estabelecimento não encontrado" });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      if (error.message === "FILE_TOO_LARGE") {
+        return reply.status(400).send({ message: "Arquivo muito grande. Máximo 5MB" });
+      }
+      if ((error as NodeJS.ErrnoException).code === "P2025") {
+        return reply.status(404).send({ message: "Estabelecimento não encontrado" });
+      }
     }
+
     console.error("Upload profile picture error:", error);
     return reply.status(500).send({ message: "Internal server error" });
   }
