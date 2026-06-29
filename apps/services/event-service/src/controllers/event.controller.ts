@@ -7,12 +7,14 @@ import { GetEventDetailsService } from "../services/getEventDetails.service.js";
 import { ToggleFeaturedService } from "../services/toggleFeatured.service.js";
 import { GetEventsByEstablishmentService } from "../services/getEventsByEstablishment.service.js";
 import { cacheAside, nearbyKey } from "../config/redis.js";
+import { GetFeaturedEventsService } from "../services/getFeaturedEvents.service.js";
 
 const toggleFeaturedService = new ToggleFeaturedService();
 const eventService = new CreateEventService();
 const listEventsService = new ListEventsService();
 const detailsService = new GetEventDetailsService();
 const byEstablishmentService = new GetEventsByEstablishmentService();
+const featuredEventsService = new GetFeaturedEventsService();
 
 async function authenticate(request: FastifyRequest, reply: FastifyReply) {
     try {
@@ -230,6 +232,26 @@ export async function eventRoutes(app: FastifyInstance) {
             }
             request.log.error(error);
             return reply.status(500).send({ message: "Error updating featured status" });
+        }
+    });
+
+    router.get("/featured", {
+        schema: {
+            tags: ["Events"],
+            summary: "Eventos em destaque",
+            description: "Retorna todos os eventos marcados como destaque.",
+            response: {
+                200: z.array(eventDetailsSchema),
+                500: errorSchema,
+            },
+        },
+    }, async (request, reply) => {
+        try {
+            const events = await featuredEventsService.get();
+            return reply.status(200).send(events);
+        } catch (error) {
+            request.log.error(error);
+            return reply.status(500).send({ message: "Error listing featured events" });
         }
     });
 }
