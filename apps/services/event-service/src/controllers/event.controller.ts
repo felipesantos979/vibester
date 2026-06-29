@@ -6,6 +6,7 @@ import { ListEventsService } from "../services/listEvents.service.js";
 import { GetEventDetailsService } from "../services/getEventDetails.service.js";
 import { ToggleFeaturedService } from "../services/toggleFeatured.service.js";
 import { GetEventsByEstablishmentService } from "../services/getEventsByEstablishment.service.js";
+import { cacheAside, nearbyKey } from "../config/redis.js";
 
 const toggleFeaturedService = new ToggleFeaturedService();
 const eventService = new CreateEventService();
@@ -13,13 +14,21 @@ const listEventsService = new ListEventsService();
 const detailsService = new GetEventDetailsService();
 const byEstablishmentService = new GetEventsByEstablishmentService();
 
+async function authenticate(request: FastifyRequest, reply: FastifyReply) {
+    try {
+        await request.jwtVerify();
+    } catch {
+        return reply.status(401).send({ message: "Token de autenticação inválido ou ausente" });
+    }
+}
+
 const createEventSchema = z.object({
-    name: z.string(),
+    name: z.string().min(1).max(200),
     photoUrl: z.string().url(),
-    category: z.string(),
-    organizer: z.string(),
-    location: z.string(),
-    informacoes: z.string().optional(),
+    category: z.string().min(1).max(100),
+    organizer: z.string().min(1).max(200),
+    location: z.string().min(1).max(500),
+    informacoes: z.string().max(2000).optional(),
     startDate: z.string().datetime(),
     endDate: z.string().datetime(),
     ticketLink: z.string().url().optional(),
@@ -94,12 +103,15 @@ export async function eventRoutes(app: FastifyInstance) {
         schema: {
             tags: ["Events"],
             summary: "Criar evento",
+            security: [{ bearerAuth: [] }],
             body: createEventSchema,
             response: {
                 201: eventDetailsSchema,
+                401: errorSchema,
                 500: errorSchema,
             },
         },
+        preHandler: [authenticate],
     }, async (request, reply) => {
         try {
             const event = await eventService.createEvent(request.body);
@@ -118,19 +130,28 @@ export async function eventRoutes(app: FastifyInstance) {
             querystring: nearbyQuerySchema,
             response: {
                 200: z.array(nearbyEventSchema),
+                400: errorSchema,
                 500: errorSchema,
             },
         },
     }, async (request, reply) => {
-        try {
-            const latitude = Number(request.query.latitude);
-            const longitude = Number(request.query.longitude);
-            const radiusKm = request.query.radiusKm ? Number(request.query.radiusKm) : 10;
+        const latitude = Number(request.query.latitude);
+        const longitude = Number(request.query.longitude);
+        const radiusKm = request.query.radiusKm ? Number(request.query.radiusKm) : 10;
 
-            const events = await listEventsService.listEvents({ latitude, longitude, radiusKm });
+        if (isNaN(latitude) || isNaN(longitude) || isNaN(radiusKm)) {
+            return reply.status(400).send({
+                message: "latitude, longitude e radiusKm devem ser números válidos",
+            });
+        }
+
+        try {
+            const key = nearbyKey(latitude, longitude, radiusKm);
+            const events = await cacheAside(key, 90, () =>
+                listEventsService.listEvents({ latitude, longitude, radiusKm }),
+            );
             return reply.status(200).send(events);
         } catch (error) {
-            console.log(error);
             request.log.error(error);
             return reply.status(500).send({ message: "Error listing nearby events" });
         }
@@ -176,7 +197,7 @@ export async function eventRoutes(app: FastifyInstance) {
             if (error instanceof Error && error.message === "Evento não encontrado") {
                 return reply.status(404).send({ message: error.message });
             }
-            console.log(error);
+            request.log.error(error);
             return reply.status(500).send({ message: "Error event details" });
         }
     });
@@ -185,22 +206,29 @@ export async function eventRoutes(app: FastifyInstance) {
         schema: {
             tags: ["Events"],
             summary: "Destacar/remover destaque de evento",
+            security: [{ bearerAuth: [] }],
             params: eventIdParamsSchema,
             body: toggleFeaturedBodySchema,
             response: {
                 200: z.object({ id: z.string().uuid(), isFeatured: z.boolean() }),
+                401: errorSchema,
+                404: errorSchema,
                 500: errorSchema,
             },
         },
+        preHandler: [authenticate],
     }, async (request, reply) => {
         try {
             const event = await toggleFeaturedService.toggleFeatured(
                 request.params.eventId,
-                request.body.isFeatured
+                request.body.isFeatured,
             );
             return reply.status(200).send(event);
         } catch (error) {
-            console.log("Erro no toggleFeatured:", error);
+            if (error instanceof Error && error.message === "Evento não encontrado") {
+                return reply.status(404).send({ message: error.message });
+            }
+            request.log.error(error);
             return reply.status(500).send({ message: "Error updating featured status" });
         }
     });
