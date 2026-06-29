@@ -24,61 +24,82 @@ class HighlightsSectionScreen extends StatefulWidget {
 
 class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
   late PageController _pageController;
+  late PageController _offersController;
   late Timer _timer;
+  late Timer _offersTimer;
   int _currentPage = 0;
+  int _currentOffer = 0;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.95);
+    _offersController = PageController(viewportFraction: 0.95);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EventsListProvider>().fetchEvents();
-    });
 
-    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
-      final atual = context.read<EventsListProvider>().events;
-      if (atual.isEmpty) return;
-      _currentPage = (_currentPage + 1) % atual.length;
-      _pageController.animateToPage(
-        _currentPage,
-        duration: const Duration(milliseconds: 700),
-        curve: Curves.easeInOut,
-      );
+      _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+        final atual = context.read<EventsListProvider>().events;
+        if (atual.isEmpty) return;
+        _currentPage = (_currentPage + 1) % atual.length;
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeInOut,
+        );
+      });
+
+      _offersTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+        if (!_offersController.hasClients) return;
+        _currentOffer++;
+        _offersController.animateToPage(
+          _currentOffer,
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeInOut,
+        );
+      });
     });
   }
 
   @override
   void dispose() {
     _timer.cancel();
+    _offersTimer.cancel();
     _pageController.dispose();
+    _offersController.dispose();
     super.dispose();
   }
 
   List<ExclusiveOffersModel> get offers => [
     ExclusiveOffersModel(
+      imgURL: 'assets/img/descontoMocado/Firula.jpg',
       lugar: "Firula Bar",
       desconto: 15,
       condicao: "Novos Clientes",
     ),
     ExclusiveOffersModel(
-      lugar: "Firula Bar",
-      desconto: 15,
+      imgURL: 'assets/img/descontoMocado/Corona.jpg',
+      lugar: "Trinca Bar",
+      desconto: 20,
       condicao: "Novos Clientes",
     ),
     ExclusiveOffersModel(
-      lugar: "Firula Bar",
-      desconto: 15,
+      imgURL: 'assets/img/descontoMocado/Folks.jpg',
+      lugar: "Folks",
+      desconto: 10,
       condicao: "Novos Clientes",
     ),
     ExclusiveOffersModel(
-      lugar: "Firula Bar",
-      desconto: 15,
+      imgURL: 'assets/img/descontoMocado/Drink Obscuro.jpg',
+      lugar: "Obscuro",
+      desconto: 12,
       condicao: "Novos Clientes",
     ),
     ExclusiveOffersModel(
-      lugar: "Firula Bar",
-      desconto: 15,
+      imgURL: 'assets/img/descontoMocado/Drink Rosa.jpg',
+      lugar: "Douha",
+      desconto: 9,
       condicao: "Novos Clientes",
     ),
   ];
@@ -90,7 +111,6 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
       backgroundColor: Color(colorNoturno),
       body: ListView(
         children: [
-          // Carrossel de eventos
           Padding(
             padding: const EdgeInsets.only(top: 20),
             child: SizedBox(
@@ -108,125 +128,119 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
 
           const SizedBox(height: 20),
 
-          Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Categorias",
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Categorias",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
                     ),
-                    SizedBox(height: 20),
-                    CategoryHighlightsSection(),
-                    SizedBox(height: 30),
-
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Descubra",
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                    ),
-
-                    //Lista de line-ups
-                    const SizedBox(height: 30),
-                    LineupPlaceIndicator(),
-                    const SizedBox(height: 10),
-
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Eventos da Semana",
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: SizedBox(
-                        height: 270,
-                        child: PageView.builder(
-                          padEnds: false,
-                          controller: _pageController,
-                          onPageChanged: (index) =>
-                              setState(() => _currentPage = index),
-                          itemCount: event.length,
-                          itemBuilder: (context, index) {
-                            return WeeklyEvents(evento: event[index]);
-                          },
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Ofertas Exclusivas",
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      height: 150,
-                      child: PageView.builder(
-                        padEnds: false,
-                        controller: PageController(viewportFraction: 0.95),
-                        itemCount: offers.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: ExclusiveOffers(offer: offers[index]),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "Perto de Você",
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 22,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-                    CloseToYou(),
-                    const SizedBox(height: 10),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                CategoryHighlightsSection(),
+                const SizedBox(height: 30),
+
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Descubra",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                LineupPlaceIndicator(),
+                const SizedBox(height: 10),
+
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Eventos da Semana",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: SizedBox(
+                    height: 270,
+                    child: PageView.builder(
+                      padEnds: false,
+                      controller: _pageController,
+                      onPageChanged: (index) =>
+                          setState(() => _currentPage = index),
+                      itemCount: event.length,
+                      itemBuilder: (context, index) {
+                        return WeeklyEvents(evento: event[index]);
+                      },
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Ofertas Exclusivas",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 150,
+                  child: PageView.builder(
+                    padEnds: false,
+                    controller: _offersController,
+                    itemCount: 9999,
+                    itemBuilder: (context, index) {
+                      final offer = offers[index % offers.length];
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: ExclusiveOffers(offer: offer),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 30),
+
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Perto de Você",
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 22,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+                CloseToYou(),
+                const SizedBox(height: 10),
+              ],
+            ),
           ),
-          // Resto da tela
         ],
       ),
     );
