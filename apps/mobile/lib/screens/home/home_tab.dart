@@ -43,12 +43,15 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
       // Atualiza a localização sempre que a aba Destaques se torna ativa
       if (_tabController.index == _abaDestaquesIndex &&
           !_tabController.indexIsChanging) {
-        _atualizarLocalizacao();
+        localizacaoFuture = _atualizarLocalizacao();
       }
     });
   }
 
   Future<void> _atualizarLocalizacao() async {
+    latitudeAtual = null;
+    longitudeAtual = null;
+
     try {
       final posicao = await _locationService.getCurrentPosition();
       latitudeAtual = posicao.latitude;

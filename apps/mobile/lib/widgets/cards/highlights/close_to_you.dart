@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/routes/app_routes.dart';
+import 'package:mobile/service/highlights/close_to_you_service.dart';
 import 'package:mobile/utils/colors.dart';
+import 'package:mobile/utils/location_satate.dart';
 
 class CloseToYou extends StatefulWidget {
   const CloseToYou({super.key});
@@ -11,149 +13,105 @@ class CloseToYou extends StatefulWidget {
 }
 
 class _CloseToYouState extends State<CloseToYou> {
-  List<PlaceModel> get places => [
-    PlaceModel(
-      nome: "Trinca Bar",
-      avaliacao: 4.5,
-      distancia: 800,
-      nivelMovimento: 2,
-      categoria: "Bar",
-      nivelPrecoMedio: "1",
-      bio: "Bar descolado no centro",
-      endereco: "Rua das Flores, 123",
-      qtdAvaliacoes: 200,
-      distribuicao: [0.1, 0.2, 0.3, 0.3, 0.1],
-    ),
-    PlaceModel(
-      nome: "Trinca Bar",
-      avaliacao: 4.5,
-      distancia: 800,
-      nivelMovimento: 2,
-      categoria: "Bar",
-      nivelPrecoMedio: "2",
-      bio: "Bar descolado no centro",
-      endereco: "Rua das Flores, 123",
-      qtdAvaliacoes: 200,
-      distribuicao: [0.1, 0.2, 0.3, 0.3, 0.1],
-    ),
-    PlaceModel(
-      nome: "Café do Parque",
-      avaliacao: 4.2,
-      distancia: 350,
-      nivelMovimento: 1,
-      categoria: "Café",
-      nivelPrecoMedio: "1",
-      bio: "Café tranquilo com vista para o parque",
-      endereco: "Av. das Árvores, 45",
-      qtdAvaliacoes: 120,
-      distribuicao: [0.05, 0.1, 0.2, 0.4, 0.25],
-    ),
-    PlaceModel(
-      nome: "Restaurante Bella Italia",
-      avaliacao: 4.7,
-      distancia: 1200,
-      nivelMovimento: 3,
-      categoria: "Restaurante",
-      nivelPrecoMedio: "3",
-      bio: "Culinária italiana autêntica",
-      endereco: "Rua Roma, 88",
-      qtdAvaliacoes: 540,
-      distribuicao: [0.02, 0.05, 0.1, 0.3, 0.53],
-    ),
-    PlaceModel(
-      nome: "Boteco do Zé",
-      avaliacao: 3.9,
-      distancia: 500,
-      nivelMovimento: 3,
-      categoria: "Bar",
-      nivelPrecoMedio: "1",
-      bio: "Boteco tradicional de bairro",
-      endereco: "Rua Sete, 12",
-      qtdAvaliacoes: 89,
-      distribuicao: [0.1, 0.2, 0.3, 0.25, 0.15],
-    ),
-    PlaceModel(
-      nome: "Sushi Zen",
-      avaliacao: 4.8,
-      distancia: 2000,
-      nivelMovimento: 2,
-      categoria: "Restaurante",
-      nivelPrecoMedio: "3",
-      bio: "Sushi fresquinho todo dia",
-      endereco: "Rua do Oriente, 200",
-      qtdAvaliacoes: 310,
-      distribuicao: [0.01, 0.04, 0.1, 0.35, 0.5],
-    ),
-    PlaceModel(
-      nome: "Padaria Pão Quente",
-      avaliacao: 4.4,
-      distancia: 150,
-      nivelMovimento: 2,
-      categoria: "Padaria",
-      nivelPrecoMedio: "1",
-      bio: "Pão fresquinho saindo do forno",
-      endereco: "Rua da Farinha, 7",
-      qtdAvaliacoes: 430,
-      distribuicao: [0.02, 0.08, 0.15, 0.45, 0.3],
-    ),
-    PlaceModel(
-      nome: "Rooftop Sky",
-      avaliacao: 4.6,
-      distancia: 1800,
-      nivelMovimento: 2,
-      categoria: "Bar",
-      nivelPrecoMedio: "3",
-      bio: "Bar no topo com vista incrível da cidade",
-      endereco: "Av. Alto, 900",
-      qtdAvaliacoes: 260,
-      distribuicao: [0.02, 0.05, 0.13, 0.4, 0.4],
-    ),
-    PlaceModel(
-      nome: "Hamburgueria 404",
-      avaliacao: 4.3,
-      distancia: 700,
-      nivelMovimento: 3,
-      categoria: "Lanchonete",
-      nivelPrecoMedio: "2",
-      bio: "Hambúrgueres artesanais",
-      endereco: "Rua do Byte, 404",
-      qtdAvaliacoes: 180,
-      distribuicao: [0.05, 0.1, 0.2, 0.35, 0.3],
-    ),
-    PlaceModel(
-      nome: "Vino & Cia",
-      avaliacao: 4.5,
-      distancia: 950,
-      nivelMovimento: 1,
-      categoria: "Bar",
-      nivelPrecoMedio: "3",
-      bio: "Adega e bar de vinhos selecionados",
-      endereco: "Rua das Uvas, 33",
-      qtdAvaliacoes: 145,
-      distribuicao: [0.02, 0.08, 0.15, 0.4, 0.35],
-    ),
-    PlaceModel(
-      nome: "Tapiocaria da Dona Maria",
-      avaliacao: 4.1,
-      distancia: 400,
-      nivelMovimento: 2,
-      categoria: "Lanchonete",
-      nivelPrecoMedio: "1",
-      bio: "Tapiocas artesanais e sucos naturais",
-      endereco: "Rua do Nordeste, 56",
-      qtdAvaliacoes: 95,
-      distribuicao: [0.05, 0.15, 0.25, 0.35, 0.2],
-    ),
-  ];
+  final CloseToYouService _closeToYouService = CloseToYouService();
+
+  List<PlaceModel> _places = [];
+  bool _isLoading = true;
+  String? _erro;
+
+  @override
+  void initState() {
+    super.initState();
+    _buscarEstabelecimentosProximos();
+  }
+
+  Future<void> _buscarEstabelecimentosProximos() async {
+    setState(() {
+      _isLoading = true;
+      _erro = null;
+    });
+
+    if (latitudeAtual == null || longitudeAtual == null) {
+      setState(() {
+        _erro =
+            'Não foi possível acessar sua localização. Verifique se o GPS '
+            'está ativado e se o app tem permissão.';
+        _isLoading = false;
+      });
+      return;
+    }
+
+    try {
+      final places = await _closeToYouService.getEstablishmentsNearby(
+        latitude: latitudeAtual!,
+        longitude: longitudeAtual!,
+      );
+      setState(() {
+        _places = places;
+      });
+    } catch (e) {
+      setState(() {
+        _erro = 'Não foi possível carregar os estabelecimentos próximos.';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24),
+          child: CircularProgressIndicator(color: Color(colorAmbar)),
+        ),
+      );
+    }
+
+    if (_erro != null) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.location_off, color: Colors.white38, size: 40),
+          const SizedBox(height: 12),
+          Text(
+            _erro!,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white38, fontSize: 14),
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: _buscarEstabelecimentosProximos,
+            child: Text(
+              'Tentar novamente',
+              style: TextStyle(color: Color(colorAmbar)),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (_places.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24),
+          child: Text(
+            'Nenhum estabelecimento encontrado perto de você',
+            style: TextStyle(color: Colors.white38, fontSize: 14),
+          ),
+        ),
+      );
+    }
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      itemCount: places.length,
+      itemCount: _places.length,
       itemBuilder: (context, index) {
-        final place = places[index];
+        final place = _places[index];
 
         return Container(
           margin: EdgeInsets.symmetric(vertical: 8),
@@ -202,7 +160,27 @@ class _CloseToYouState extends State<CloseToYou> {
                             child: SizedBox(
                               height: 50,
                               width: 50,
-                              child: Placeholder(),
+                              child: place.profileImage.isEmpty
+                                  ? Container(
+                                      color: Colors.white12,
+                                      child: const Icon(
+                                        Icons.storefront,
+                                        color: Colors.white38,
+                                      ),
+                                    )
+                                  : Image.network(
+                                      place.profileImage,
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (context, error, stack) {
+                                        return Container(
+                                          color: Colors.white12,
+                                          child: const Icon(
+                                            Icons.storefront,
+                                            color: Colors.white38,
+                                          ),
+                                        );
+                                      },
+                                    ),
                             ),
                           ),
                         ),
@@ -246,7 +224,7 @@ class _CloseToYouState extends State<CloseToYou> {
                                   ),
                                   SizedBox(width: 8),
                                   Text(
-                                    '${place.distancia!.toStringAsFixed(0)}m',
+                                    '${place.distancia?.toStringAsFixed(0) ?? "?"}m',
                                     style: TextStyle(
                                       color: Colors.white54,
                                       fontSize: 15,
