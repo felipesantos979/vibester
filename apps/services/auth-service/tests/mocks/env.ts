@@ -6,8 +6,10 @@ export const env = {
   databaseUrl: 'postgresql://user:pass@localhost:5432/db',
   profileServiceUrl: 'http://localhost:3002',
   kafkaBrokers: 'localhost:9092',
+  redisUrl: 'redis://localhost:6379',
   corsOrigin: false as false,
   fetchTimeoutMs: 5000,
   rateLimitMax: 60,
+  emailVerificationTtlSeconds: 600,
 };
 export default env;

@@ -13,14 +13,14 @@ export class RegisterController {
         const { name, username, email, password, bornAt } = request.body;
 
         try {
-            const account = await this.registerService.register({
+            await this.registerService.register({
                 name,
                 username,
                 email,
                 password,
                 bornAt: new Date(bornAt),
             });
-            return reply.status(201).send(account);
+            return reply.status(202).send({ message: "Código de verificação enviado para seu email" });
         } catch (error: any) {
             if (error instanceof AppError) {
                 return reply.status(error.statusCode).send({ error: error.message });
