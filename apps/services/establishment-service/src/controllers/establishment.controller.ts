@@ -5,10 +5,18 @@ import {
   GetEstablishmentParams,
 } from "../types/establishment.types";
 import { z } from "zod";
+import { UploadService } from "../services/upload.service";
 
 const getEstablishmentParamsSchema = z.object({
   id: z.string().uuid()
 });
+
+const generateUploadUrlSchema = z.object({
+  establishmentId: z.string().uuid(),
+});
+
+const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export async function listEstablishmentsController(
   request: FastifyRequest<{ Querystring: ListEstablishmentsQuerystring }>,
@@ -88,7 +96,7 @@ export async function updateEstablishmentRatingController(
     const { rating } = request.body;
 
     const updatedEstablishment = await EstablishmentService.updateRating(id, rating);
-    
+
     return reply.status(200).send(updatedEstablishment);
   } catch (error) {
     if (error instanceof Error) {
@@ -141,6 +149,45 @@ export async function listOpenEstablishmentsController(
     return reply.status(200).send(establishments);
   } catch (error) {
     console.error("List open establishments error:", error);
+    return reply.status(500).send({ message: "Internal server error" });
+  }
+}
+
+export async function uploadProfilePictureController(
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply
+) {
+  try {
+    const { id } = request.params;
+
+    const file = await request.file();
+
+    if (!file) {
+      return reply.status(400).send({ message: "Nenhum arquivo enviado" });
+    }
+
+    if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+      return reply.status(400).send({ message: "Formato inválido. Use JPEG, PNG ou WebP" });
+    }
+
+    const chunks: Buffer[] = [];
+    for await (const chunk of file.file) {
+      chunks.push(chunk);
+    }
+    const fileBuffer = Buffer.concat(chunks);
+
+    if (fileBuffer.length > MAX_FILE_SIZE) {
+      return reply.status(400).send({ message: "Arquivo muito grande. Máximo 5MB" });
+    }
+
+    const publicUrl = await UploadService.uploadProfilePicture(id, fileBuffer, file.mimetype);
+
+    return reply.status(200).send({ photoUrl: publicUrl });
+  } catch (error: any) {
+    if (error.code === "P2025") {
+      return reply.status(404).send({ message: "Estabelecimento não encontrado" });
+    }
+    console.error("Upload profile picture error:", error);
     return reply.status(500).send({ message: "Internal server error" });
   }
 }

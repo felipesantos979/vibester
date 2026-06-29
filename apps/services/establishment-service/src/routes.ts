@@ -3,7 +3,8 @@ import {
   listEstablishmentsController,
   updateEstablishmentRatingController,
   getEstablishmentProfileController,
-  listOpenEstablishmentsController
+  listOpenEstablishmentsController,
+  uploadProfilePictureController
 } from "./controllers/establishment.controller";
 
 const movementLevelSchema = {
@@ -22,35 +23,67 @@ const establishmentSchema = {
     id: { type: "string", format: "uuid" },
     googlePlaceId: { type: "string", nullable: true },
     name: { type: "string" },
+    bio: { type: "string", nullable: true },
+    endereco: { type: "string", nullable: true },
     photoUrl: { type: "string", nullable: true },
     bannerUrl: { type: "string", nullable: true },
     category: { type: "string" },
     priceIndicator: { type: "string", nullable: true },
     averageRating: { type: "number" },
+    qtdAvaliacoes: { type: "number" },
+    distribuicao: { type: "array", items: { type: "number" } },
+    nivelMovimento: { type: "number" },
     latitude: { type: "number" },
     longitude: { type: "number" },
-    movementLevel: movementLevelSchema,
-    distanceTo: { type: "number" },
+    openingHours: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          dayOfWeek: { type: "number" },
+          openTime: { type: "string" },
+          closeTime: { type: "string" },
+        },
+      },
+    },
+    createdAt: { type: "string", format: "date-time" },
+    updatedAt: { type: "string", format: "date-time" },
   },
 };
 
 const establishmentProfileSchema = {
   type: "object",
   properties: {
-    icon: { type: "string", nullable: true },
+    id: { type: "string", format: "uuid" },
+    googlePlaceId: { type: "string", nullable: true },
     name: { type: "string" },
-    banner: { type: "string", nullable: true },
-    location: {
-      type: "object",
-      properties: {
-        latitude: { type: "number" },
-        longitude: { type: "number" },
-      },
-    },
+    bio: { type: "string", nullable: true },
+    endereco: { type: "string", nullable: true },
+    photoUrl: { type: "string", nullable: true },
+    bannerUrl: { type: "string", nullable: true },
     category: { type: "string" },
     priceIndicator: { type: "string", nullable: true },
-    rating: { type: "number" },
-    movementLevel: movementLevelSchema,
+    averageRating: { type: "number" },
+    qtdAvaliacoes: { type: "number" },
+    distribuicao: { type: "array", items: { type: "number" } },
+    nivelMovimento: { type: "number" },
+    latitude: { type: "number" },
+    longitude: { type: "number" },
+    openingHours: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          dayOfWeek: { type: "number" },
+          openTime: { type: "string" },
+          closeTime: { type: "string" },
+        },
+      },
+    },
+    createdAt: { type: "string", format: "date-time" },
+    updatedAt: { type: "string", format: "date-time" },
   },
 };
 
@@ -147,4 +180,31 @@ export async function establishmentRoutes(fastify: FastifyInstance, options: Fas
       },
     },
   }, updateEstablishmentRatingController);
+
+  fastify.post("/establishments/:id/photo", {
+    schema: {
+      tags: ["Establishments"],
+      summary: "Upload de foto de perfil",
+      description: "Recebe uma imagem (multipart/form-data), faz upload para o R2 e salva a URL no banco.",
+      consumes: ["multipart/form-data"],
+      params: {
+        type: "object",
+        required: ["id"],
+        properties: {
+          id: { type: "string", format: "uuid" },
+        },
+      },
+      response: {
+        200: {
+          type: "object",
+          properties: {
+            photoUrl: { type: "string" },
+          },
+        },
+        400: errorSchema,
+        404: errorSchema,
+        500: errorSchema,
+      },
+    },
+  }, uploadProfilePictureController);
 }

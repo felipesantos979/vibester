@@ -161,29 +161,14 @@ export class EstablishmentService {
     return cacheAside(`establishment:profile:${id}`, 300, async () => {
       const establishment = await prismaClient.establishment.findUnique({
         where: { id },
+        include: { openingHours: true },
       });
 
       if (!establishment) {
         throw new Error("Establishment not found");
       }
 
-      return {
-        icon: establishment.photoUrl,
-        name: establishment.name,
-        bio: establishment.bio,
-        endereco: establishment.endereco,
-        banner: establishment.bannerUrl,
-        location: {
-          latitude: establishment.latitude,
-          longitude: establishment.longitude,
-        },
-        category: establishment.category,
-        priceIndicator: establishment.priceIndicator,
-        rating: establishment.averageRating,
-        qtdAvaliacoes: establishment.qtdAvaliacoes,
-        distribuicao: establishment.distribuicao,
-        nivelMovimento: establishment.nivelMovimento,
-      };
+      return establishment;
     });
   }
 

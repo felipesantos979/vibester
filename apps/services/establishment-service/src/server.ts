@@ -1,7 +1,7 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { establishmentRoutes } from "./routes";
-import { env } from "./config/env";
+import multipart from "@fastify/multipart";
 import { registerSwagger } from "./config/swagger";
 
 const app = Fastify({
@@ -12,6 +12,7 @@ const app = Fastify({
 app.register(cors, {
   origin: "*",
 });
+app.register(multipart);
 
 const start = async () => {
   try {

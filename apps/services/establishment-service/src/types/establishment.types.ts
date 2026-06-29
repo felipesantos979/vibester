@@ -33,23 +33,10 @@ export interface GetEstablishmentParams {
   id: string;
 }
 
-export interface EstablishmentProfileResponse {
-  icon: string | null;
-  name: string;
-  bio: string | null;
-  endereco: string | null;
-  banner: string | null;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
-  category: string;
-  priceIndicator: string | null;
-  rating: number;
-  qtdAvaliacoes: number;
-  distribuicao: number[];
-  nivelMovimento: number;
-  movementLevel?: MovementLevelResponse | null;
+export interface EstablishmentProfileResponse extends EstablishmentInterface {
+    openingHours: OpeningHour[];
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface MovementLevelResponse {
