@@ -25,7 +25,15 @@ const services: ServiceConfig[] = [
   {
     name: 'establishment-service',
     prefix: '/establishment',
-    env: { DATABASE_URL: 'postgresql://u:p@localhost:5432/db' },
+    env: {
+      DATABASE_URL: 'postgresql://u:p@localhost:5432/db',
+      SERP_API_KEY: 'ci-dummy',
+      r2_account_id: 'ci-dummy',
+      r2_access_key_id: 'ci-dummy',
+      r2_secret_access_key: 'ci-dummy',
+      r2_bucket_name: 'ci-dummy',
+      r2_public_url: 'http://ci-dummy',
+    },
   },
   {
     name: 'event-service',
