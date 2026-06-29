@@ -1,10 +1,13 @@
 import { FastifyInstance, FastifyPluginOptions, FastifyReply, FastifyRequest } from "fastify";
 import { LoginInputInterface, RegisterInputInterface } from "./types/register.types";
+import { VerifyEmailInputInterface } from "./types/email-verification.types";
 import { RegisterController } from "./controllers/register.controller";
 import { LoginController } from "./controllers/login.controller";
+import { EmailVerificationController } from "./controllers/email-verification.controller";
 
 const registerController = new RegisterController();
 const loginController = new LoginController();
+const emailVerificationController = new EmailVerificationController();
 
 export async function authRoutes(instance: FastifyInstance, options: FastifyPluginOptions) {
 
@@ -27,8 +30,8 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
     instance.post("/register", {
         schema: {
             tags: ["Auth"],
-            summary: "Registrar conta",
-            description: "Cria uma nova conta de usuário.",
+            summary: "Iniciar registro de conta",
+            description: "Inicia o cadastro enviando um código de verificação para o email informado.",
             body: {
                 type: "object",
                 required: ["username", "name", "email", "password", "bornAt"],
@@ -38,6 +41,49 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
                     email: { type: "string", format: "email", example: "joao@email.com" },
                     password: { type: "string", minLength: 6, example: "senha123" },
                     bornAt: { type: "string", format: "date", example: "1998-05-20" },
+                },
+            },
+            response: {
+                202: {
+                    description: "Código de verificação enviado",
+                    type: "object",
+                    properties: {
+                        message: { type: "string" },
+                    },
+                },
+                400: {
+                    description: "Dados inválidos",
+                    type: "object",
+                    properties: { error: { type: "string" } },
+                },
+                409: {
+                    description: "Email ou username já está em uso",
+                    type: "object",
+                    properties: { error: { type: "string" } },
+                },
+            },
+        },
+        config: {
+            rateLimit: { max: 5, timeWindow: '1 minute' },
+        },
+    }, async (
+        request: FastifyRequest<{ Body: RegisterInputInterface }>,
+        reply: FastifyReply) => {
+            return registerController.register(request, reply);
+        }
+    );
+
+    instance.post("/verify-email", {
+        schema: {
+            tags: ["Auth"],
+            summary: "Verificar email e concluir cadastro",
+            description: "Valida o código enviado por email e conclui a criação da conta.",
+            body: {
+                type: "object",
+                required: ["email", "code"],
+                properties: {
+                    email: { type: "string", format: "email", example: "joao@email.com" },
+                    code: { type: "string", minLength: 6, maxLength: 6, example: "482931" },
                 },
             },
             response: {
@@ -60,8 +106,18 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
                     type: "object",
                     properties: { error: { type: "string" } },
                 },
+                404: {
+                    description: "Nenhuma verificação pendente ou código expirado",
+                    type: "object",
+                    properties: { error: { type: "string" } },
+                },
                 409: {
                     description: "Email ou username já está em uso",
+                    type: "object",
+                    properties: { error: { type: "string" } },
+                },
+                422: {
+                    description: "Código inválido",
                     type: "object",
                     properties: { error: { type: "string" } },
                 },
@@ -76,9 +132,9 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
             rateLimit: { max: 10, timeWindow: '1 minute' },
         },
     }, async (
-        request: FastifyRequest<{ Body: RegisterInputInterface }>,
+        request: FastifyRequest<{ Body: VerifyEmailInputInterface }>,
         reply: FastifyReply) => {
-            return registerController.register(request, reply);
+            return emailVerificationController.verify(request, reply);
         }
     );
 

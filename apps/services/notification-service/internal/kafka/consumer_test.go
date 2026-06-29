@@ -119,3 +119,37 @@ func TestPostLikedEventMissingFields(t *testing.T) {
 		t.Error("expected empty strings for missing JSON fields")
 	}
 }
+
+func TestEmailVerificationEventParsing(t *testing.T) {
+	payload := []byte(`{
+		"email": "joao@vibester.com.br",
+		"name": "João Silva",
+		"code": "482931"
+	}`)
+
+	var event emailVerificationEvent
+	if err := json.Unmarshal(payload, &event); err != nil {
+		t.Fatalf("expected no JSON error, got %v", err)
+	}
+
+	if event.Email != "joao@vibester.com.br" {
+		t.Errorf("Email: want joao@vibester.com.br, got %s", event.Email)
+	}
+	if event.Name != "João Silva" {
+		t.Errorf("Name: want 'João Silva', got %s", event.Name)
+	}
+	if event.Code != "482931" {
+		t.Errorf("Code: want 482931, got %s", event.Code)
+	}
+}
+
+func TestEmailVerificationEventMissingCode(t *testing.T) {
+	payload := []byte(`{"email": "joao@vibester.com.br", "name": "João"}`)
+	var event emailVerificationEvent
+	if err := json.Unmarshal(payload, &event); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if event.Code != "" {
+		t.Errorf("expected empty code for missing field, got %q", event.Code)
+	}
+}

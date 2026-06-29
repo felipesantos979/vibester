@@ -13,16 +13,42 @@ const mockReply = () => {
 describe('RegisterController', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('should call register service and return 201', async () => {
-    vi.mocked(RegisterService).prototype.register = vi.fn().mockResolvedValue({ authId: '1', profileId: 'p-1', username: 'u' });
+  it('should call register service and return 202', async () => {
+    vi.mocked(RegisterService).prototype.register = vi.fn().mockResolvedValue(undefined);
 
     const controller = new RegisterController();
-    const req: any = { body: { username: 'u', email: 'e', password: 'p', name: 'n', bornAt: new Date().toISOString() } };
+    const req: any = { body: { username: 'u', email: 'e@e.com', password: 'p123', name: 'n', bornAt: '1990-01-01' }, log: { error: vi.fn() } };
     const reply = mockReply();
 
     await controller.register(req, reply);
 
-    expect(reply.status).toHaveBeenCalledWith(201);
-    expect(reply.send).toHaveBeenCalledWith({ authId: '1', profileId: 'p-1', username: 'u' });
+    expect(reply.status).toHaveBeenCalledWith(202);
+    expect(reply.send).toHaveBeenCalledWith({ message: 'Código de verificação enviado para seu email' });
+  });
+
+  it('should return 409 when register service throws AppError', async () => {
+    const { AppError } = await import('../../src/errors/app-error');
+    vi.mocked(RegisterService).prototype.register = vi.fn().mockRejectedValue(new AppError('Email ou username já está em uso', 409));
+
+    const controller = new RegisterController();
+    const req: any = { body: { username: 'u', email: 'e@e.com', password: 'p123', name: 'n', bornAt: '1990-01-01' }, log: { error: vi.fn() } };
+    const reply = mockReply();
+
+    await controller.register(req, reply);
+
+    expect(reply.status).toHaveBeenCalledWith(409);
+    expect(reply.send).toHaveBeenCalledWith({ error: 'Email ou username já está em uso' });
+  });
+
+  it('should return 500 on unexpected error', async () => {
+    vi.mocked(RegisterService).prototype.register = vi.fn().mockRejectedValue(new Error('DB down'));
+
+    const controller = new RegisterController();
+    const req: any = { body: { username: 'u', email: 'e@e.com', password: 'p123', name: 'n', bornAt: '1990-01-01' }, log: { error: vi.fn() } };
+    const reply = mockReply();
+
+    await controller.register(req, reply);
+
+    expect(reply.status).toHaveBeenCalledWith(500);
   });
 });

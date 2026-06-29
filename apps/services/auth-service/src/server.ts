@@ -5,6 +5,7 @@ import { authRoutes } from './routes';
 import { env } from './config/env';
 import { registerSwagger } from './config/swagger';
 import { producer } from './kafka/producer';
+import { redis } from './config/redis';
 import { pool } from './prisma';
 
 const app = Fastify({
@@ -27,6 +28,7 @@ const start = async () => {
 
     try {
         await producer.connect();
+        await redis.connect();
         await app.listen({ port: env.port, host: '0.0.0.0' });
     } catch (err) {
         app.log.error(err, 'Falha ao iniciar o servidor');
@@ -38,6 +40,7 @@ const shutdown = async (signal: string) => {
     app.log.info({ signal }, 'Encerrando servidor...');
     await app.close();
     await producer.disconnect();
+    await redis.disconnect();
     await pool.end();
     process.exit(0);
 };

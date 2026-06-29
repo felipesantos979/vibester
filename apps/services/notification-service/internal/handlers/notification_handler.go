@@ -209,12 +209,22 @@ func SendTwoFactorHandler(c *gin.Context) {
 	})
 }
 
+// ValidateTwoFactorHandler godoc
+//
+//	@Summary		Validar código 2FA
+//	@Description	Valida um código de dois fatores e o marca como utilizado.
+//	@Tags			Notifications
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		models.ValidateTwoFactorRequest	true	"Email e código 2FA"
+//	@Success		200		{object}	map[string]bool					"Código válido"
+//	@Failure		400		{object}	map[string]string				"JSON inválido"
+//	@Failure		401		{object}	map[string]bool					"Código inválido ou expirado"
+//	@Failure		500		{object}	map[string]string				"Erro interno"
+//	@Router			/notifications/2fa/validate [post]
 func ValidateTwoFactorHandler(c *gin.Context) {
 
-	var request struct {
-		Email string `json:"email"`
-		Code  string `json:"code"`
-	}
+	var request models.ValidateTwoFactorRequest
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 

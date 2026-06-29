@@ -15,6 +15,20 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/health": {
+            "get": {
+                "description": "Verifica se o serviço está disponível.",
+                "produces": ["application/json"],
+                "tags": ["Health"],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "Serviço disponível",
+                        "schema": { "type": "object", "additionalProperties": { "type": "string" } }
+                    }
+                }
+            }
+        },
         "/notifications/2fa": {
             "post": {
                 "description": "Gera um código de autenticação de dois fatores, renderiza o template e enfileira o email.",
@@ -41,7 +55,43 @@ const docTemplate = `{
                         "schema": { "type": "object", "additionalProperties": { "type": "string" } }
                     },
                     "500": {
-                        "description": "Erro ao renderizar template",
+                        "description": "Erro ao renderizar template ou salvar código",
+                        "schema": { "type": "object", "additionalProperties": { "type": "string" } }
+                    }
+                }
+            }
+        },
+        "/notifications/2fa/validate": {
+            "post": {
+                "description": "Valida um código de dois fatores e o marca como utilizado.",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "tags": ["Notifications"],
+                "summary": "Validar código 2FA",
+                "parameters": [
+                    {
+                        "description": "Email e código 2FA",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": { "$ref": "#/definitions/models.ValidateTwoFactorRequest" }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Código válido",
+                        "schema": { "type": "object", "additionalProperties": { "type": "boolean" } }
+                    },
+                    "400": {
+                        "description": "JSON inválido",
+                        "schema": { "type": "object", "additionalProperties": { "type": "string" } }
+                    },
+                    "401": {
+                        "description": "Código inválido ou expirado",
+                        "schema": { "type": "object", "additionalProperties": { "type": "boolean" } }
+                    },
+                    "500": {
+                        "description": "Erro interno",
                         "schema": { "type": "object", "additionalProperties": { "type": "string" } }
                     }
                 }
@@ -144,11 +194,19 @@ const docTemplate = `{
         "models.Notification": {
             "type": "object",
             "properties": {
-                "message": { "type": "string", "example": "Conteúdo do email" },
-                "name": { "type": "string", "example": "João Silva" },
+                "message":    { "type": "string", "example": "Conteúdo do email" },
+                "name":       { "type": "string", "example": "João Silva" },
                 "reset_link": { "type": "string", "example": "https://vibester.com.br/reset/abc123" },
-                "subject": { "type": "string", "example": "Assunto do email" },
-                "to": { "type": "string", "example": "joao@email.com" }
+                "subject":    { "type": "string", "example": "Assunto do email" },
+                "to":         { "type": "string", "example": "joao@email.com" }
+            }
+        },
+        "models.ValidateTwoFactorRequest": {
+            "type": "object",
+            "required": ["email", "code"],
+            "properties": {
+                "code":  { "type": "string", "example": "482931" },
+                "email": { "type": "string", "example": "joao@email.com" }
             }
         }
     }

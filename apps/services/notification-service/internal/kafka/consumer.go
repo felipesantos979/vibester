@@ -38,10 +38,60 @@ type userFollowedEvent struct {
 	FollowingId string `json:"followingId"`
 }
 
+type emailVerificationEvent struct {
+	Email string `json:"email"`
+	Name  string `json:"name"`
+	Code  string `json:"code"`
+}
+
 func StartConsumers(brokers []string) {
 	go consumeUserRegistered(brokers)
 	go consumePostEvents(brokers)
 	go consumeUserFollowed(brokers)
+	go consumeEmailVerification(brokers)
+}
+
+func consumeEmailVerification(brokers []string) {
+	r := kafkaGo.NewReader(kafkaGo.ReaderConfig{
+		Brokers: brokers,
+		Topic:   "auth.email.verification",
+		GroupID: "notification-service-auth-group",
+	})
+	defer r.Close()
+
+	for {
+		msg, err := r.ReadMessage(context.Background())
+		if err != nil {
+			utils.Logger.Errorf("[KAFKA] Erro ao ler auth.email.verification: %v", err)
+			continue
+		}
+
+		var event emailVerificationEvent
+		if err := json.Unmarshal(msg.Value, &event); err != nil {
+			utils.Logger.Errorf("[KAFKA] Erro ao parsear auth.email.verification: %v", err)
+			continue
+		}
+
+		htmlBody, err := render.ParseTemplate(
+			helpers.GetTemplatePath("two_factor_code.html"),
+			models.TwoFactorData{
+				Name: event.Name,
+				Code: event.Code,
+			},
+		)
+		if err != nil {
+			utils.Logger.Errorf("[KAFKA] Erro ao renderizar template two_factor_code: %v", err)
+			continue
+		}
+
+		workers.EmailQueue <- models.Notification{
+			To:      event.Email,
+			Subject: "Aqui está o seu código de verificação",
+			Message: htmlBody,
+		}
+
+		utils.Logger.Infof("[KAFKA] Código de verificação enfileirado para %s", event.Email)
+	}
 }
 
 func consumeUserRegistered(brokers []string) {
