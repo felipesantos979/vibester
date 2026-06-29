@@ -9,7 +9,7 @@ const envSchema = z.object({
     R2_ACCESS_KEY_ID: z.string().min(1, "R2_ACCESS_KEY_ID é obrigatório"),
     R2_SECRET_ACCESS_KEY: z.string().min(1, "R2_SECRET_ACCESS_KEY é obrigatório"),
     R2_BUCKET_NAME: z.string().min(1, "R2_BUCKET_NAME é obrigatório"),
-    R2_PUBLIC_URL: z.string().url("R2_PUBLIC_URL deve ser uma URL válida"),
+    R2_PUBLIC_URL: z.string().min(1, "R2_PUBLIC_URL é obrigatório"),
     ASTRA_SECURE_CONNECT_BUNDLE: z.string().min(1, "ASTRA_SECURE_CONNECT_BUNDLE é obrigatório"),
     ASTRA_CLIENT_ID: z.string().min(1, "ASTRA_CLIENT_ID é obrigatório"),
     ASTRA_CLIENT_SECRET: z.string().min(1, "ASTRA_CLIENT_SECRET é obrigatório"),
