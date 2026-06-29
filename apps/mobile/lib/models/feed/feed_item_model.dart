@@ -24,6 +24,7 @@ class FeedItemModel {
   final DateTime? eventDate;
   final String? eventLocation;
   final String? eventOrganizerName;
+  final String? eventOrganizerLogo;
   final int totalConfirmed;
 
   final String? title;
