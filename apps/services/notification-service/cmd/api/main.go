@@ -34,7 +34,15 @@ func main() {
 
 	workers.StartEmailWorkers(5)
 
-	internalKafka.StartConsumers(config.GetKafkaBrokers())
+	brokers := config.GetKafkaBrokers()
+	internalKafka.EnsureTopics(brokers, []string{
+		"auth.email.verification",
+		"user.registered",
+		"user.followed",
+		"post.liked",
+		"post.commented",
+	})
+	internalKafka.StartConsumers(brokers)
 
 	router := gin.Default()
 
