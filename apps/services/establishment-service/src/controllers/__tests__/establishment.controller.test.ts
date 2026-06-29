@@ -17,6 +17,12 @@ vi.mock("../../services/establishment.service", () => ({
   },
 }));
 
+vi.mock("../../services/upload.service", () => ({
+  UploadService: {
+    uploadProfilePicture: vi.fn(),
+  },
+}));
+
 import {
   listEstablishmentsController,
   updateEstablishmentRatingController,
