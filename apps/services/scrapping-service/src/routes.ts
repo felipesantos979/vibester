@@ -79,7 +79,7 @@ export async function routes(app: FastifyInstance) {
     getPlacePopularity
   );
 
-  app.get(
+  app.get<{ Params: { establishmentId: string } }>(
     "/movements/:establishmentId",
     {
       onRequest: [authenticate],
