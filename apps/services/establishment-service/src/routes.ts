@@ -134,18 +134,20 @@ export async function establishmentRoutes(
     async (_request, reply) => {
       try {
         const { default: prismaClient } = await import("./prisma/index");
-        const { redis } = await import("./config/redis");
-
-        await Promise.all([
-          prismaClient.$queryRaw`SELECT 1`,
-          redis.ping(),
-        ]);
-
-        return reply.status(200).send({ status: "ok" });
+        await prismaClient.$queryRaw`SELECT 1`;
       } catch (error: unknown) {
-        console.error("Readiness check failed:", error);
+        console.error("Readiness check failed (DB):", error);
         return reply.status(503).send({ message: "Service unavailable" });
       }
+
+      try {
+        const { redis } = await import("./config/redis");
+        await redis.ping();
+      } catch {
+        console.warn("Readiness check: Redis not yet available");
+      }
+
+      return reply.status(200).send({ status: "ok" });
     }
   );
 

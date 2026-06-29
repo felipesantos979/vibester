@@ -7,6 +7,7 @@ metadata:
     app: establishment-service
 spec:
   replicas: 2
+  progressDeadlineSeconds: 300
   selector:
     matchLabels:
       app: establishment-service
