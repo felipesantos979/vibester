@@ -6,7 +6,7 @@ metadata:
   labels:
     app: establishment-service
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: establishment-service
@@ -37,13 +37,15 @@ spec:
               memory: "512Mi"
           readinessProbe:
             httpGet:
-              path: /health
+              path: /health/ready
               port: 3002
-            initialDelaySeconds: 10
+            initialDelaySeconds: 15
             periodSeconds: 10
+            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /health
               port: 3002
             initialDelaySeconds: 20
             periodSeconds: 30
+            failureThreshold: 3

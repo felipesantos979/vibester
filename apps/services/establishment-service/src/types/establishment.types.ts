@@ -27,6 +27,8 @@ export interface ListEstablishmentsQuerystring {
   minRating?: string;
   search?: string;
   sortBy?: SortBy;
+  page?: string;
+  limit?: string;
 }
 
 export interface GetEstablishmentParams {
@@ -34,9 +36,9 @@ export interface GetEstablishmentParams {
 }
 
 export interface EstablishmentProfileResponse extends EstablishmentInterface {
-    openingHours: OpeningHour[];
-    createdAt: Date;
-    updatedAt: Date;
+  openingHours: OpeningHour[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface MovementLevelResponse {
@@ -67,4 +69,18 @@ export interface ListEstablishmentsFilters {
   minRating?: number;
   search?: string;
   sortBy?: SortBy;
+  page?: number;
+  limit?: number;
+}
+
+export interface PaginationMeta {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: PaginationMeta;
 }

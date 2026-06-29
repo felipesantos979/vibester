@@ -11,7 +11,7 @@ env:
   IMAGE: ghcr.io/${{ github.repository_owner }}/vibester-establishment-service
 
 jobs:
-  test:
+  unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
 
@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "npm"
           cache-dependency-path: apps/services/establishment-service/package-lock.json
 
@@ -30,16 +30,78 @@ jobs:
         working-directory: apps/services/establishment-service
         env:
           DATABASE_URL: postgresql://u:p@localhost:5432/db
+          JWT_SECRET: unit-test-secret
+          SERP_API_KEY: test
+          r2_account_id: test
+          r2_access_key_id: test
+          r2_secret_access_key: test
+          r2_bucket_name: test
+          r2_public_url: https://test.r2.dev
         run: npm install
 
       - name: Run unit tests
         working-directory: apps/services/establishment-service
         run: npm test
 
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: unit-tests
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: apps/services/establishment-service/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apps/services/establishment-service
+        env:
+          DATABASE_URL: postgresql://u:p@localhost:5432/db
+          JWT_SECRET: integration-test-secret-32chars
+          SERP_API_KEY: test
+          r2_account_id: test
+          r2_access_key_id: test
+          r2_secret_access_key: test
+          r2_bucket_name: test
+          r2_public_url: https://test.r2.dev
+        run: npm install
+
+      - name: Run integration tests
+        working-directory: apps/services/establishment-service
+        env:
+          NODE_ENV: test
+          DATABASE_URL: postgresql://u:p@localhost:5432/db
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: integration-test-secret-32chars
+          SERP_API_KEY: test
+          r2_account_id: test
+          r2_access_key_id: test
+          r2_secret_access_key: test
+          r2_bucket_name: test
+          r2_public_url: https://test.r2.dev
+        run: npm run test:integration
+
   build-and-push:
     name: Build & Push
     runs-on: ubuntu-latest
-    needs: test
+    needs: [unit-tests, integration-tests]
     permissions:
       contents: read
       packages: write
@@ -80,6 +142,9 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            kubectl apply -f /opt/k8s/establishment-service/k8s/hpa.yaml
+            kubectl apply -f /opt/k8s/establishment-service/k8s/pdb.yaml
+            kubectl apply -f /opt/k8s/establishment-service/k8s/networkpolicy.yaml
             kubectl set image deployment/establishment-service \
               establishment-service=ghcr.io/${{ github.repository_owner }}/vibester-establishment-service:${{ github.sha }}
             kubectl rollout status deployment/establishment-service --timeout=120s

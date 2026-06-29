@@ -1,17 +1,17 @@
-import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
+import { env } from "../config/env";
 
-const connectionString = process.env.DATABASE_URL;
+const pool = new Pool({
+  connectionString: env.DATABASE_URL,
+  max: 10,
+  min: 2,
+  idleTimeoutMillis: 30_000,
+  connectionTimeoutMillis: 5_000,
+});
 
-if (!connectionString) {
-  throw new Error("DATABASE_URL não definida");
-}
-
-const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
-
 const prismaClient = new PrismaClient({ adapter });
 
 export default prismaClient;
