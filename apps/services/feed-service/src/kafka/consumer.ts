@@ -8,7 +8,12 @@ import { postDeletedDataSchema } from "../schema/events/post-deleted.schema";
 import { postStatsUpdatedSchema } from "../schema/events/post-stats-updated.schema";
 import { eventUnconfirmanceSchema } from "../schema/events/event-unconfirmance";
 import { eventConfirmanceSchema } from "../schema/events/event-confirmance";
+import { postLikedSchema } from "../schema/events/post-liked.schema";
+import { postUnlikedSchema } from "../schema/events/post-unliked.schema";
 import { kafka } from "./client";
+
+// tópicos cujo payload chega direto, sem o envelope kafkaEventSchema
+const DIRECT_PAYLOAD_TOPICS: Record<string, (data: unknown) => Promise<void>> = {};
 
 export class KafkaConsumer {
     private consumer: Consumer;
@@ -17,8 +22,18 @@ export class KafkaConsumer {
         "posts",
         "users",
         "establishments",
-        "events"
+        "events",
+        "post.liked",
+        "post.unliked"
     ];
+
+    private readonly directTopicHandlers: Record<string, (data: unknown) => Promise<void>> = {
+        "post.liked": async (data: unknown) =>
+            this.feedService.handlePostLiked(postLikedSchema.parse(data)),
+
+        "post.unliked": async (data: unknown) =>
+            this.feedService.handlePostUnliked(postUnlikedSchema.parse(data)),
+    };
 
     private handlers = {
         "post.created": async (data: unknown) =>
@@ -56,7 +71,6 @@ export class KafkaConsumer {
     };
 
     constructor(private readonly feedService: FeedService) {
-
         this.consumer = kafka.consumer({
             groupId: "feed-service-group",
         });
@@ -81,7 +95,7 @@ export class KafkaConsumer {
         console.log("Kafka consumer started");
     }
 
-    private async handleMessage({ message }: EachMessagePayload) {
+    private async handleMessage({ topic, message }: EachMessagePayload) {
         const value = message.value?.toString();
 
         if (!value) return;
@@ -89,8 +103,14 @@ export class KafkaConsumer {
         try {
             const rawEvent = JSON.parse(value);
 
-            const event = kafkaEventSchema.parse(rawEvent);
+            // tópicos com payload direto, sem envelope kafkaEventSchema
+            const directHandler = this.directTopicHandlers[topic];
+            if (directHandler) {
+                await directHandler(rawEvent);
+                return;
+            }
 
+            const event = kafkaEventSchema.parse(rawEvent);
             const handler = this.handlers[event.eventType as keyof typeof this.handlers];
 
             if (!handler) {

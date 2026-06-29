@@ -14,7 +14,15 @@ const AUTHOR_ID = "a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5";
 const POST_ID = "b1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5";
 const FOLLOWER_ID = "c1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5";
 const ESTAB_ID = "e1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5";
+const USER_ID = "c1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5";
 const ISO_DATE = "2024-01-15T12:00:00.000Z";
+const CREATED_AT = new Date(ISO_DATE);
+
+const LIKE_EVENT = {
+  postId: POST_ID,
+  userId: USER_ID,
+  createdAt: ISO_DATE,
+};
 
 describe("FeedService — Unitários", () => {
   let feedService: FeedService;
@@ -150,6 +158,70 @@ describe("FeedService — Unitários", () => {
       } as any);
 
       expect(mockExecute).toHaveBeenCalled();
+    });
+  });
+
+  describe("handlePostLiked", () => {
+    it("executa UPDATE is_liked = true quando a entrada existe no feed", async () => {
+      mockExecute.mockResolvedValueOnce({
+        rows: [{ post_id: POST_ID, user_id: USER_ID, created_at: CREATED_AT }],
+      });
+      mockExecute.mockResolvedValueOnce({ rows: [] });
+
+      await feedService.handlePostLiked(LIKE_EVENT);
+
+      expect(mockExecute).toHaveBeenCalledTimes(2);
+      expect(mockExecute).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining("is_liked = true"),
+        expect.arrayContaining([USER_ID, CREATED_AT, POST_ID]),
+        expect.anything()
+      );
+    });
+
+    it("não executa UPDATE quando a entrada não existe no feed", async () => {
+      mockExecute.mockResolvedValueOnce({ rows: [] });
+
+      await feedService.handlePostLiked(LIKE_EVENT);
+
+      expect(mockExecute).toHaveBeenCalledTimes(1);
+      expect(mockExecute).not.toHaveBeenCalledWith(
+        expect.stringContaining("is_liked = true"),
+        expect.anything(),
+        expect.anything()
+      );
+    });
+  });
+
+  describe("handlePostUnliked", () => {
+    it("executa UPDATE is_liked = false quando a entrada existe no feed", async () => {
+      mockExecute.mockResolvedValueOnce({
+        rows: [{ post_id: POST_ID, user_id: USER_ID, created_at: CREATED_AT }],
+      });
+      mockExecute.mockResolvedValueOnce({ rows: [] });
+
+      await feedService.handlePostUnliked(LIKE_EVENT);
+
+      expect(mockExecute).toHaveBeenCalledTimes(2);
+      expect(mockExecute).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining("is_liked = false"),
+        expect.arrayContaining([USER_ID, CREATED_AT, POST_ID]),
+        expect.anything()
+      );
+    });
+
+    it("não executa UPDATE quando a entrada não existe no feed", async () => {
+      mockExecute.mockResolvedValueOnce({ rows: [] });
+
+      await feedService.handlePostUnliked(LIKE_EVENT);
+
+      expect(mockExecute).toHaveBeenCalledTimes(1);
+      expect(mockExecute).not.toHaveBeenCalledWith(
+        expect.stringContaining("is_liked = false"),
+        expect.anything(),
+        expect.anything()
+      );
     });
   });
 });

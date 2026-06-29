@@ -41,11 +41,12 @@ export class FeedRepository extends BaseRepository {
                     total_likes,
                     total_comments,
 
+                    is_liked,
                     is_sponsored,
                     is_deleted,
                     updated_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 USING TTL ?;
             `,
             [
@@ -83,6 +84,7 @@ export class FeedRepository extends BaseRepository {
                 feedItem.totalLikes,
                 feedItem.totalComments,
 
+                feedItem.isLiked ?? false,
                 feedItem.isSponsored,
                 feedItem.isDeleted,
                 feedItem.updatedAt,
@@ -119,6 +121,32 @@ export class FeedRepository extends BaseRepository {
                     AND item_id = ?;
             `,
             [totalLikes, totalComments, userId, createdAt, postId]
+        );
+    }
+
+    async markAsLiked(userId: string, createdAt: Date, itemId: string) {
+        return this.execute(
+            `
+                UPDATE feed_keyspace.feed_by_user
+                SET is_liked = true
+                WHERE user_id = ?
+                    AND created_at = ?
+                    AND item_id = ?;
+            `,
+            [userId, createdAt, itemId]
+        );
+    }
+
+    async markAsUnliked(userId: string, createdAt: Date, itemId: string) {
+        return this.execute(
+            `
+            UPDATE feed_keyspace.feed_by_user
+            SET is_liked = false
+            WHERE user_id = ?
+                AND created_at = ?
+                AND item_id = ?;
+        `,
+            [userId, createdAt, itemId]
         );
     }
 

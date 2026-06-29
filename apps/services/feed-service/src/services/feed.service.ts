@@ -14,6 +14,8 @@ import { EventsByIdRepository } from "../repositories/events_by_id.repository";
 import { Event } from "../types/event.type";
 import { EventAttendeesRepository } from "../repositories/attendees_by_event.repository";
 import { EventsByUserRepository } from "../repositories/events_by_user.repository";
+import { PostLikedEvent } from "../schema/events/post-liked.schema";
+import { PostUnlikedEvent } from "../schema/events/post-unliked.schema";
 
 type EventFeedItemPayload = Extract<
     FeedItemPayload,
@@ -73,6 +75,22 @@ export class FeedService {
                 this.feedRepository.updatePostContent(entry.user_id, entry.created_at, event)
             )
         );
+    }
+
+    async handlePostLiked(event: PostLikedEvent) {
+        const entry = await this.feedEntriesRepository.findByItemIdAndUser(event.postId, event.userId);
+
+        if (!entry) { return; }
+
+        await this.feedRepository.markAsLiked(event.userId, entry.created_at, event.postId);
+    }
+
+    async handlePostUnliked(event: PostUnlikedEvent) {
+        const entry = await this.feedEntriesRepository.findByItemIdAndUser(event.postId, event.userId);
+
+        if (!entry) { return; }
+
+        await this.feedRepository.markAsUnliked(event.userId, entry.created_at, event.postId);
     }
 
     async handlePostStatsUpdated(event: UpdatePostStatsEvent) {
@@ -171,6 +189,7 @@ export class FeedService {
                         totalLikes: feedItem.totalLikes ?? 0,
                         totalComments: feedItem.totalComments ?? 0,
 
+                        isLiked: feedItem.isLiked,
                         isSponsored: feedItem.isSponsored,
                         isDeleted: feedItem.isDeleted,
                         updatedAt: feedItem.updatedAt,
@@ -282,6 +301,7 @@ export class FeedService {
             totalLikes: payload.totalLikes ?? 0,
             totalComments: payload.totalComments ?? 0,
 
+            isLiked: payload.isLiked,
             isSponsored: payload.isSponsored,
             isDeleted: payload.isDeleted,
 
@@ -313,6 +333,7 @@ export class FeedService {
             totalLikes: payload.totalLikes ?? 0,
             totalComments: payload.totalComments ?? 0,
 
+            isLiked: payload.isLiked,
             isSponsored: payload.isSponsored,
             isDeleted: payload.isDeleted,
 
@@ -344,6 +365,7 @@ export class FeedService {
             totalLikes: payload.totalLikes ?? 0,
             totalComments: payload.totalComments ?? 0,
 
+            isLiked: payload.isLiked,
             isSponsored: true,
             isDeleted: payload.isDeleted,
 
@@ -385,6 +407,7 @@ export class FeedService {
             totalLikes: payload.totalLikes ?? 0,
             totalComments: payload.totalComments ?? 0,
 
+            isLiked: payload.isLiked,
             isSponsored: payload.isSponsored,
             isDeleted: payload.isDeleted,
 
@@ -450,6 +473,7 @@ export class FeedService {
             totalLikes: feedItem.totalLikes ?? 0,
             totalComments: feedItem.totalComments ?? 0,
 
+            isLiked: feedItem.isLiked,
             isSponsored: feedItem.isSponsored,
             isDeleted: feedItem.isDeleted,
             updatedAt: feedItem.updatedAt,
@@ -574,6 +598,7 @@ export class FeedService {
             totalComments: post.totalComments,
 
             // controle
+            isLiked: false,
             isSponsored: false,
             isDeleted: post.isDeleted,
             updatedAt: post.updatedAt
@@ -662,7 +687,7 @@ export class FeedService {
     private async removeEventFromFeed(eventId: string, userId: string) {
         const entry = await this.feedEntriesRepository.findByItemIdAndUser(eventId, userId);
 
-        if (!entry) { return; }    
+        if (!entry) { return; }
 
         await Promise.all([
             this.feedRepository.delete(userId, entry.created_at, eventId),
@@ -701,9 +726,9 @@ export class FeedService {
     private async removeEventsFromFeedByAuthor(authorId: string, followerId: string) {
         const since = new Date();
         since.setDate(since.getDate() - 15);
-        
+
         const result = await this.eventsByUserRepository.findRecentEventsByAuthor(authorId, since);
-        
+
         await Promise.all(
             result.rows.map(async (row) => {
                 const entry = await this.feedEntriesRepository.findByItemIdAndUser(row.event_id, followerId);
@@ -765,6 +790,7 @@ export class FeedService {
             totalComments: undefined,
 
             // controle
+            isLiked: false,
             isSponsored: false,
             isDeleted: event.isDeleted,
             updatedAt: event.updatedAt
@@ -773,5 +799,5 @@ export class FeedService {
 
 
     // ver como vai ficar a distribuição baseada nas preferências do usuário
-   
+
 }

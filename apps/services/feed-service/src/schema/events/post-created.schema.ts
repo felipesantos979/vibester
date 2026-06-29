@@ -23,6 +23,7 @@ const baseSchema = z.object({
     totalLikes: z.number().default(0),
     totalComments: z.number().default(0),
 
+    isLiked: z.boolean().default(false),
     isSponsored: z.boolean().default(false),
     isDeleted: z.boolean().default(false),
 
