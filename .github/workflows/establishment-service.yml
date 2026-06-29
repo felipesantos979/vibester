@@ -135,6 +135,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Copy k8s manifests to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: "apps/services/establishment-service/k8s/"
+          target: "/opt/k8s/establishment-service"
+          strip_components: 3
+
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
         with:
@@ -147,4 +157,4 @@ jobs:
             kubectl apply -f /opt/k8s/establishment-service/k8s/networkpolicy.yaml
             kubectl set image deployment/establishment-service \
               establishment-service=ghcr.io/${{ github.repository_owner }}/vibester-establishment-service:${{ github.sha }}
-            kubectl rollout status deployment/establishment-service --timeout=120s
+            kubectl rollout status deployment/establishment-service --timeout=300s
