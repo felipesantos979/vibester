@@ -1,14 +1,20 @@
 import Fastify from 'fastify';
-import { writeFileSync } from 'fs';
+import { writeFile } from 'fs/promises';
 import { registerSwagger } from './config/swagger';
 import { routes } from './routes';
 
 const app = Fastify({ ajv: { customOptions: { keywords: ['example'] } } });
 
 (async () => {
-  await registerSwagger(app);
-  await app.register(routes);
-  await app.ready();
-  writeFileSync(process.argv[2], JSON.stringify(app.swagger()));
-  process.exit(0);
+    try {
+        await registerSwagger(app);
+        await app.register(routes);
+        await app.ready();
+        const spec = JSON.stringify(app.swagger(), null, 2);
+        await writeFile(process.argv[2], spec, 'utf8');
+        process.exit(0);
+    } catch (err) {
+        console.error('[generate-spec] Erro ao gerar swagger spec:', err);
+        process.exit(1);
+    }
 })();

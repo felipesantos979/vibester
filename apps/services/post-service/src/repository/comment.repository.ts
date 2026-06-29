@@ -55,14 +55,15 @@ export class CommentRepository extends BaseRepository {
         );
     }
 
-    async findByPost(postId: string): Promise<Comment[]> {
+    async findByPost(postId: string, limit = 50): Promise<Comment[]> {
         const result = await this.execute(
             `
                 SELECT *
                 FROM comments_by_post
-                WHERE post_id = ?;
+                WHERE post_id = ?
+                LIMIT ?;
             `,
-            [postId]
+            [postId, limit]
         );
 
         return result.rows.map((row) => ({
@@ -76,14 +77,15 @@ export class CommentRepository extends BaseRepository {
         }));
     }
 
-    async findByUser(userId: string): Promise<Comment[]> {
+    async findByUser(userId: string, limit = 50): Promise<Comment[]> {
         const result = await this.execute(
             `
                 SELECT *
                 FROM comments_by_user
-                WHERE user_id = ?;
+                WHERE user_id = ?
+                LIMIT ?;
             `,
-            [userId]
+            [userId, limit]
         );
 
         return result.rows.map((row) => ({

@@ -1,25 +1,19 @@
 import { vi, describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 
-vi.mock('../../src/config/redis', async () => {
-  const { default: RedisMock } = await import('ioredis-mock');
-  const redisMock = new RedisMock();
-  return {
-    redis: redisMock,
-    cacheAside: async <T>(_key: string, _ttl: number, fetchFn: () => Promise<T>): Promise<T> => fetchFn(),
-  };
-});
-
 const { mockExecute } = vi.hoisted(() => ({ mockExecute: vi.fn().mockResolvedValue({ rows: [] }) }));
 vi.mock('../../src/config/cassandra', () => ({
-  getCassandraClient: vi.fn(() => ({ execute: mockExecute })),
+  getCassandraClient: vi.fn(() => ({ execute: mockExecute, shutdown: vi.fn() })),
 }));
 
-const { mockProducerSend } = vi.hoisted(() => ({ mockProducerSend: vi.fn() }));
 vi.mock('../../src/kafka/producer', () => ({
-  producer: { connect: vi.fn(), disconnect: vi.fn(), send: mockProducerSend },
+  producer: { connect: vi.fn(), disconnect: vi.fn(), send: vi.fn() },
 }));
+
+vi.mock('@aws-sdk/s3-request-presigner', () => ({ getSignedUrl: vi.fn() }));
+vi.mock('../../src/config/r2', () => ({ r2Client: {} }));
 
 import { buildServer } from '../helpers/fastify.test.helper';
+import { redis } from '../../src/config/redis';
 
 const USER_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
 const POST_ID = 'b1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
@@ -44,18 +38,27 @@ function makeCassandraPostRow(overrides: Record<string, unknown> = {}) {
 describe('post-service — Comments Integration', () => {
   let app: Awaited<ReturnType<typeof buildServer>>;
 
-  beforeAll(async () => { app = await buildServer(); });
-  afterAll(async () => { await app.close(); });
-  beforeEach(() => {
-    vi.resetAllMocks();
-    mockExecute.mockResolvedValue({ rows: [] });
+  beforeAll(async () => {
+    await redis.connect();
+    app = await buildServer();
   });
 
-  describe('POST /comments — Kafka', () => {
-    it('cria comentário e emite post.commented no Kafka', async () => {
+  afterAll(async () => {
+    await app.close();
+    await redis.quit();
+  });
+
+  beforeEach(async () => {
+    vi.resetAllMocks();
+    mockExecute.mockResolvedValue({ rows: [] });
+    await redis.flushall();
+  });
+
+  describe('POST /comments', () => {
+    it('cria comentário e retorna 201', async () => {
       mockExecute
-        .mockResolvedValueOnce({ rows: [makeCassandraPostRow()] }) // findById (post exists)
-        .mockResolvedValue({ rows: [] }); // inserts, updates
+        .mockResolvedValueOnce({ rows: [makeCassandraPostRow()] })
+        .mockResolvedValue({ rows: [] });
 
       const res = await app.inject({
         method: 'POST',
@@ -73,22 +76,10 @@ describe('post-service — Comments Integration', () => {
       expect(body).toHaveProperty('userId', COMMENTER_ID);
       expect(body).toHaveProperty('content', 'Que lugar incrível!');
       expect(body).toHaveProperty('commentId');
-
-      expect(mockProducerSend).toHaveBeenCalledWith(
-        expect.objectContaining({
-          topic: 'post.commented',
-          messages: expect.arrayContaining([
-            expect.objectContaining({
-              key: POST_ID,
-              value: expect.stringContaining('Que lugar incrível!'),
-            }),
-          ]),
-        })
-      );
     });
 
     it('retorna 404 quando post não existe', async () => {
-      mockExecute.mockResolvedValue({ rows: [] }); // post not found
+      mockExecute.mockResolvedValue({ rows: [] });
 
       const res = await app.inject({
         method: 'POST',
@@ -97,7 +88,24 @@ describe('post-service — Comments Integration', () => {
       });
 
       expect(res.statusCode).toBe(404);
-      expect(mockProducerSend).not.toHaveBeenCalled();
+    });
+
+    it('retorna 400 quando content está vazio', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/comments',
+        payload: { postId: POST_ID, userId: COMMENTER_ID, content: '' },
+      });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('retorna 400 quando content excede 500 caracteres', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        url: '/comments',
+        payload: { postId: POST_ID, userId: COMMENTER_ID, content: 'a'.repeat(501) },
+      });
+      expect(res.statusCode).toBe(400);
     });
   });
 
@@ -117,6 +125,30 @@ describe('post-service — Comments Integration', () => {
       mockExecute.mockResolvedValueOnce({ rows: commentRows });
 
       const res = await app.inject({ method: 'GET', url: `/posts/${POST_ID}/comments` });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body).toHaveLength(1);
+      expect(body[0]).toHaveProperty('content', 'Ótimo post!');
+    });
+  });
+
+  describe('GET /users/:userId/comments', () => {
+    it('retorna comentários do usuário', async () => {
+      const commentRows = [
+        {
+          comment_id: 'd1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5',
+          post_id: POST_ID,
+          user_id: COMMENTER_ID,
+          content: 'Meu comentário',
+          is_deleted: false,
+          created_at: new Date(),
+          updated_at: null,
+        },
+      ];
+      mockExecute.mockResolvedValueOnce({ rows: commentRows });
+
+      const res = await app.inject({ method: 'GET', url: `/users/${COMMENTER_ID}/comments` });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);

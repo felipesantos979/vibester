@@ -12,10 +12,6 @@ import { PostService } from "../post.service";
 import { PostRepository } from "../../repository/post.repository";
 import { Post, CreatePostInput, UpdatePostInput } from "../../types/post.types";
 
-// ---------------------------------------------------------------------------
-// Mock helpers
-// ---------------------------------------------------------------------------
-
 function createMockPostRepository() {
   return {
     createPostById: vi.fn().mockResolvedValue(undefined),
@@ -53,10 +49,6 @@ function makePost(overrides: Partial<Post> = {}): Post {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-
 describe("PostService", () => {
   let service: PostService;
   let repo: ReturnType<typeof createMockPostRepository>;
@@ -67,7 +59,6 @@ describe("PostService", () => {
     service = new PostService(repo);
   });
 
-  // ======= create =======
 
   describe("create", () => {
     it("should create a post without establishmentId", async () => {
@@ -108,7 +99,6 @@ describe("PostService", () => {
     });
   });
 
-  // ======= findById =======
 
   describe("findById", () => {
     it("should return the post when found", async () => {
@@ -128,33 +118,39 @@ describe("PostService", () => {
     });
   });
 
-  // ======= findByUser =======
 
   describe("findByUser", () => {
-    it("should delegate to repository", async () => {
+    it("should delegate to repository with default limit", async () => {
       const posts = [makePost()];
       (repo.findByUser as ReturnType<typeof vi.fn>).mockResolvedValue(posts);
 
       const result = await service.findByUser("user-1");
       expect(result).toEqual(posts);
-      expect(repo.findByUser).toHaveBeenCalledWith("user-1");
+      expect(repo.findByUser).toHaveBeenCalledWith("user-1", 50);
+    });
+
+    it("should delegate to repository with custom limit", async () => {
+      const posts = [makePost()];
+      (repo.findByUser as ReturnType<typeof vi.fn>).mockResolvedValue(posts);
+
+      const result = await service.findByUser("user-1", 20);
+      expect(result).toEqual(posts);
+      expect(repo.findByUser).toHaveBeenCalledWith("user-1", 20);
     });
   });
 
-  // ======= findByEstablishment =======
 
   describe("findByEstablishment", () => {
-    it("should delegate to repository", async () => {
+    it("should delegate to repository with default limit", async () => {
       const posts = [makePost({ establishmentId: "est-1" })];
       (repo.findByEstablishment as ReturnType<typeof vi.fn>).mockResolvedValue(posts);
 
       const result = await service.findByEstablishment("est-1");
       expect(result).toEqual(posts);
-      expect(repo.findByEstablishment).toHaveBeenCalledWith("est-1");
+      expect(repo.findByEstablishment).toHaveBeenCalledWith("est-1", 50);
     });
   });
 
-  // ======= updateCaption =======
 
   describe("updateCaption", () => {
     it("should update caption when post exists and is not deleted", async () => {
@@ -197,7 +193,6 @@ describe("PostService", () => {
     });
   });
 
-  // ======= softDelete =======
 
   describe("softDelete", () => {
     it("should soft-delete a post without establishmentId", async () => {

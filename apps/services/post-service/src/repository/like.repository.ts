@@ -53,14 +53,15 @@ export class LikeRepository extends BaseRepository {
         };
     }
 
-    async findLikesByPost(postId: string): Promise<PostLike[]> {
+    async findLikesByPost(postId: string, limit = 50): Promise<PostLike[]> {
         const result = await this.execute(
             `
                 SELECT *
                 FROM likes_by_post
-                WHERE post_id = ?;
+                WHERE post_id = ?
+                LIMIT ?;
             `,
-            [postId]
+            [postId, limit]
         );
 
         return result.rows.map((row) => ({
@@ -70,14 +71,15 @@ export class LikeRepository extends BaseRepository {
         }));
     }
 
-    async findLikesByUser(userId: string): Promise<PostLike[]> {
+    async findLikesByUser(userId: string, limit = 50): Promise<PostLike[]> {
         const result = await this.execute(
             `
                 SELECT *
                 FROM likes_by_user
-                WHERE user_id = ?;
+                WHERE user_id = ?
+                LIMIT ?;
             `,
-            [userId]
+            [userId, limit]
         );
 
         return result.rows.map((row) => ({
