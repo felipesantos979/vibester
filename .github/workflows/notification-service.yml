@@ -25,6 +25,10 @@ jobs:
           go-version-file: apps/services/notification-service/go.mod
           cache-dependency-path: apps/services/notification-service/go.sum
 
+      - name: Download dependencies
+        working-directory: apps/services/notification-service
+        run: go mod download
+
       - name: Run unit tests
         working-directory: apps/services/notification-service
         run: go test ./...
@@ -58,6 +62,10 @@ jobs:
         with:
           go-version-file: apps/services/notification-service/go.mod
           cache-dependency-path: apps/services/notification-service/go.sum
+
+      - name: Download dependencies
+        working-directory: apps/services/notification-service
+        run: go mod download
 
       - name: Run integration tests
         working-directory: apps/services/notification-service
