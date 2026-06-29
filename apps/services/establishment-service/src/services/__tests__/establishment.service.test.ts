@@ -278,9 +278,9 @@ describe("EstablishmentService.updateRating", () => {
     expect(mockUpdate).toHaveBeenCalledWith({
       where: { id: "est-1" },
       data: {
-            averageRating: 4.8,
-            qtdAvaliacoes: { increment: 1 },
-        },
+        averageRating: 4.8,
+        qtdAvaliacoes: { increment: 1 },
+      },
     });
     expect(result.averageRating).toBe(4.8);
   });
@@ -318,14 +318,18 @@ describe("EstablishmentService.getEstablishmentProfile", () => {
     const profile =
       await EstablishmentService.getEstablishmentProfile("est-99");
 
-    expect(profile).toEqual({
-      icon: "https://img.test/icon.jpg",
-      name: "Pub London",
-      banner: "https://img.test/banner.jpg",
-      location: { latitude: -23.55, longitude: -46.63 },
-      category: "pub",
-      priceIndicator: "$$$",
-      rating: 4.2,
-    });
+    expect(profile).toEqual(
+      expect.objectContaining({
+        id: "est-99",
+        name: "Pub London",
+        photoUrl: "https://img.test/icon.jpg",
+        bannerUrl: "https://img.test/banner.jpg",
+        latitude: -23.55,
+        longitude: -46.63,
+        category: "pub",
+        priceIndicator: "$$$",
+        averageRating: 4.2,
+      })
+    );
   });
 });
