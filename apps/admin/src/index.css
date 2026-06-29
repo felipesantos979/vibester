@@ -36,7 +36,7 @@
 
 /* Utilities */
 .glass-panel {
-  @apply bg-black/40 backdrop-blur-md border border-white/5 shadow-xl;
+  @apply bg-bg-card border border-white/5 shadow-md;
 }
 
 .glow-text {
