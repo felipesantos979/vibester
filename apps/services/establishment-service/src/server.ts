@@ -1,4 +1,4 @@
-import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import Fastify, { FastifyInstance, FastifyRequest, FastifyReply, FastifyError } from "fastify";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
 import multipart from "@fastify/multipart";
@@ -69,7 +69,7 @@ if (env.NODE_ENV !== "test") {
   });
 }
 
-app.setErrorHandler((error, _request, reply) => {
+app.setErrorHandler((error: FastifyError, _request, reply) => {
   const statusCode = error.statusCode ?? 500;
   reply.code(statusCode).send({ message: error.message });
 });
