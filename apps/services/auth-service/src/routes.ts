@@ -4,6 +4,7 @@ import { VerifyEmailInputInterface } from "./types/email-verification.types";
 import { RegisterController } from "./controllers/register.controller";
 import { LoginController } from "./controllers/login.controller";
 import { EmailVerificationController } from "./controllers/email-verification.controller";
+import { env } from "./config/env";
 
 const registerController = new RegisterController();
 const loginController = new LoginController();
@@ -64,7 +65,7 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
             },
         },
         config: {
-            rateLimit: { max: 5, timeWindow: '1 minute' },
+            rateLimit: { max: env.rateLimitRegisterMax, timeWindow: '1 minute' },
         },
     }, async (
         request: FastifyRequest<{ Body: RegisterInputInterface }>,
@@ -129,7 +130,7 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
             },
         },
         config: {
-            rateLimit: { max: 10, timeWindow: '1 minute' },
+            rateLimit: { max: env.rateLimitVerifyEmailMax, timeWindow: '1 minute' },
         },
     }, async (
         request: FastifyRequest<{ Body: VerifyEmailInputInterface }>,
@@ -179,7 +180,7 @@ export async function authRoutes(instance: FastifyInstance, options: FastifyPlug
             },
         },
         config: {
-            rateLimit: { max: 10, timeWindow: '1 minute' },
+            rateLimit: { max: env.rateLimitLoginMax, timeWindow: '1 minute' },
         },
     }, async (
         request: FastifyRequest<{ Body: LoginInputInterface }>,

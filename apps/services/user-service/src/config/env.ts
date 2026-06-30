@@ -10,4 +10,5 @@ export const env = {
     databaseUrl: process.env.DATABASE_URL as string,
     profileServiceUrl: process.env.PROFILE_SERVICE_URL as string,
     kafkaBrokers: process.env.KAFKA_BROKERS as string,
+    rateLimitFollowMax: Number(process.env.RATE_LIMIT_FOLLOW_MAX) || 60,
 };

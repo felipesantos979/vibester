@@ -12,6 +12,7 @@ import { CommentService } from "./services/comment.service";
 import { CommentController } from "./controller/comment.controller";
 import { getCassandraClient } from "./config/cassandra";
 import { redis } from "./config/redis";
+import { env } from "./config/env";
 
 const postSchema = {
     type: "object",
@@ -150,7 +151,7 @@ export async function routes(app: FastifyInstance) {
     const commentController = new CommentController(commentService);
 
     app.post("/posts/upload-url", {
-        config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+        config: { rateLimit: { max: env.rate_limit_write_max, timeWindow: "1 minute" } },
         schema: {
             tags: ["Upload"],
             summary: "Gerar URLs pré-assinadas para upload direto ao bucket",
@@ -182,7 +183,7 @@ export async function routes(app: FastifyInstance) {
     }, postController.generateUploadUrls.bind(postController));
 
     app.post("/posts", {
-        config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+        config: { rateLimit: { max: env.rate_limit_write_max, timeWindow: "1 minute" } },
         schema: {
             tags: ["Posts"],
             summary: "Criar post",
@@ -241,7 +242,7 @@ export async function routes(app: FastifyInstance) {
     }, postController.findByEstablishment.bind(postController));
 
     app.patch("/posts/:postId", {
-        config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+        config: { rateLimit: { max: env.rate_limit_write_max, timeWindow: "1 minute" } },
         schema: {
             tags: ["Posts"],
             summary: "Atualizar legenda",
@@ -256,7 +257,7 @@ export async function routes(app: FastifyInstance) {
     }, postController.updateCaption.bind(postController));
 
     app.delete("/posts/:postId", {
-        config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+        config: { rateLimit: { max: env.rate_limit_write_max, timeWindow: "1 minute" } },
         schema: {
             tags: ["Posts"],
             summary: "Remover post (soft delete)",
@@ -266,7 +267,7 @@ export async function routes(app: FastifyInstance) {
     }, postController.softDelete.bind(postController));
 
     app.post("/posts/:postId/likes", {
-        config: { rateLimit: { max: 60, timeWindow: "1 minute" } },
+        config: { rateLimit: { max: env.rate_limit_like_max, timeWindow: "1 minute" } },
         schema: {
             tags: ["Likes"],
             summary: "Curtir post",
@@ -281,7 +282,7 @@ export async function routes(app: FastifyInstance) {
     }, likeController.likePost.bind(likeController));
 
     app.delete("/posts/:postId/likes", {
-        config: { rateLimit: { max: 60, timeWindow: "1 minute" } },
+        config: { rateLimit: { max: env.rate_limit_like_max, timeWindow: "1 minute" } },
         schema: {
             tags: ["Likes"],
             summary: "Descurtir post",
@@ -316,7 +317,7 @@ export async function routes(app: FastifyInstance) {
     }, likeController.findLikesByPost.bind(likeController));
 
     app.post("/comments", {
-        config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+        config: { rateLimit: { max: env.rate_limit_write_max, timeWindow: "1 minute" } },
         schema: {
             tags: ["Comments"],
             summary: "Criar comentário",
@@ -354,7 +355,7 @@ export async function routes(app: FastifyInstance) {
     }, commentController.findByUser.bind(commentController));
 
     app.patch("/comments/:commentId", {
-        config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+        config: { rateLimit: { max: env.rate_limit_write_max, timeWindow: "1 minute" } },
         schema: {
             tags: ["Comments"],
             summary: "Atualizar comentário",
@@ -376,7 +377,7 @@ export async function routes(app: FastifyInstance) {
     }, commentController.update.bind(commentController));
 
     app.delete("/comments/:commentId", {
-        config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+        config: { rateLimit: { max: env.rate_limit_write_max, timeWindow: "1 minute" } },
         schema: {
             tags: ["Comments"],
             summary: "Remover comentário (soft delete)",

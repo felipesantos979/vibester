@@ -97,7 +97,7 @@ export function profileReadFlow() {
 }
 
 // ── Flow misto de leitura (usado em cenários de carga) ────────────────────────
-// Simula uma sessão típica de leitura: feed → eventos → estabelecimentos
+// Simula uma sessão típica de leitura: feed → eventos → estabelecimentos → perfil
 
 export function mixedReadFlow() {
   feedReadFlow();
@@ -105,4 +105,6 @@ export function mixedReadFlow() {
   eventReadFlow();
   sleep(0.2);
   establishmentListFlow();
+  sleep(0.2);
+  profileReadFlow();
 }

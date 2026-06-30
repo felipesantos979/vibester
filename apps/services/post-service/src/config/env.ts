@@ -17,6 +17,9 @@ const envSchema = z.object({
     ASTRA_KEYSPACE: z.string().min(1, "ASTRA_KEYSPACE é obrigatório"),
     KAFKA_BROKERS: z.string().min(1, "KAFKA_BROKERS é obrigatório"),
     REDIS_URL: z.string().url("REDIS_URL deve ser uma URL válida").default("redis://localhost:6379"),
+    RATE_LIMIT_MAX: z.coerce.number().default(200),
+    RATE_LIMIT_WRITE_MAX: z.coerce.number().default(30),
+    RATE_LIMIT_LIKE_MAX: z.coerce.number().default(60),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -42,4 +45,7 @@ export const env = {
     keyspace: _env.ASTRA_KEYSPACE,
     kafka_brokers: _env.KAFKA_BROKERS,
     redis_url: _env.REDIS_URL,
+    rate_limit_max: _env.RATE_LIMIT_MAX,
+    rate_limit_write_max: _env.RATE_LIMIT_WRITE_MAX,
+    rate_limit_like_max: _env.RATE_LIMIT_LIKE_MAX,
 };

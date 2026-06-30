@@ -8,6 +8,7 @@ import { GetFollowersService } from "../services/getFollowers.service.js";
 import { SearchProfilesService } from "../services/searchProfiles.service.js";
 import type { UserProfile as UserProfileModel } from "@prisma/client";
 import { CheckFollowService } from "../services/checkFollow.service.js";
+import { env } from "../config/env.js";
 
 const profileService = new CreateProfileService();
 const editProfileService = new EditProfileService();
@@ -207,7 +208,7 @@ export async function profileRoutes(app: FastifyInstance) {
   router.post("/profile/followers/increase", {
     config: {
       rateLimit: {
-        max: 60,
+        max: env.rateLimitFollowMax,
         timeWindow: 60000,
         keyGenerator: (request: FastifyRequest) => {
           const body = request.body as { followerId?: string };
@@ -236,7 +237,7 @@ export async function profileRoutes(app: FastifyInstance) {
   router.post("/profile/followers/decrease", {
     config: {
       rateLimit: {
-        max: 60,
+        max: env.rateLimitFollowMax,
         timeWindow: 60000,
         keyGenerator: (request: FastifyRequest) => {
           const body = request.body as { followerId?: string };
