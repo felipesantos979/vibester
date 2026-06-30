@@ -2,7 +2,7 @@ import { sleep } from 'k6';
 import { SERVICES } from '../config/base.js';
 import { post, ok } from '../helpers/http.js';
 import { initVU, bearerHeaders } from '../helpers/auth.js';
-import { generatePost, generateEvent } from '../helpers/data.js';
+import { generatePost, generateEvent, SEED_ACCOUNT_ID } from '../helpers/data.js';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -68,10 +68,12 @@ export function createEventFlow() {
 }
 
 // ── Flow misto de escrita (usado em cenários de carga) ────────────────────────
-// Simula uma sessão típica de escrita: criar post → criar evento
+// Simula uma sessão típica de escrita: criar post → criar evento → seguir usuário
 
 export function mixedWriteFlow() {
   createPostFlow();
   sleep(0.3);
   createEventFlow();
+  sleep(0.3);
+  followFlow(SEED_ACCOUNT_ID);
 }

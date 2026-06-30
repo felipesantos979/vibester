@@ -16,6 +16,7 @@ const envSchema = z.object({
   r2_bucket_name: z.string(),
   r2_public_url: z.string(),
   KAFKA_BROKERS: z.string().default("kafka:9092"),
+  RATE_LIMIT_MAX: z.coerce.number().default(100),
 });
 
 const _env = envSchema.safeParse(process.env);

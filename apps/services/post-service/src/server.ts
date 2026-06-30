@@ -34,7 +34,7 @@ app.register(compress, { global: true });
 
 app.register(rateLimit, {
     global: true,
-    max: 200,
+    max: env.rate_limit_max,
     timeWindow: "1 minute",
     errorResponseBuilder: (_req, context) => ({
         message: `Rate limit excedido. Tente novamente em ${Math.ceil(context.ttl / 1000)}s.`,

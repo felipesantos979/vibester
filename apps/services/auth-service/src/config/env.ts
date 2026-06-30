@@ -14,5 +14,8 @@ export const env = {
     corsOrigin: process.env.CORS_ORIGIN || false as string | false,
     fetchTimeoutMs: Number(process.env.FETCH_TIMEOUT_MS) || 5_000,
     rateLimitMax: Number(process.env.RATE_LIMIT_MAX) || 60,
+    rateLimitRegisterMax: Number(process.env.RATE_LIMIT_REGISTER_MAX) || 5,
+    rateLimitVerifyEmailMax: Number(process.env.RATE_LIMIT_VERIFY_EMAIL_MAX) || 10,
+    rateLimitLoginMax: Number(process.env.RATE_LIMIT_LOGIN_MAX) || 10,
     emailVerificationTtlSeconds: Number(process.env.EMAIL_VERIFICATION_TTL_SECONDS) || 600,
 };

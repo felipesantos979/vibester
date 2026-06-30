@@ -51,7 +51,7 @@ app.register(multipart, {
 if (env.NODE_ENV !== "test") {
   app.register(rateLimiter, {
     global: true,
-    max: 100,
+    max: env.RATE_LIMIT_MAX,
     timeWindow: "1 minute",
     keyGenerator: (req) => {
       const auth = req.headers.authorization;

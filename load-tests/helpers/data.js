@@ -17,8 +17,8 @@ export function generateUser() {
 export function generatePost(userId) {
   return {
     userId,
-    description: `Load test post VU${__VU} iter${__ITER}`,
-    mediaType:   'image',
+    imageUrls: [`https://picsum.photos/seed/${uid()}/800/600`],
+    caption:   `Load test post VU${__VU} iter${__ITER}`,
   };
 }
 
@@ -45,3 +45,7 @@ export function generateEvent(_accountId) {
 
 // Coordenadas fixas de SP para buscas de "nearby"
 export const NEARBY_QS = 'latitude=-23.5505&longitude=-46.6333&radius=5000';
+
+// SEED_ACCOUNT_ID must exist in the database before running load tests
+// (alvo fixo para o fluxo de "seguir usuário")
+export const SEED_ACCOUNT_ID = __ENV.SEED_ACCOUNT_ID || '00000000-0000-0000-0000-000000000001';
