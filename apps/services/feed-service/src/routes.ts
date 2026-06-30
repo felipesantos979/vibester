@@ -36,6 +36,7 @@ const feedItemSchema = {
     tags: { type: "array", items: { type: "string" }, nullable: true },
     total_likes: { type: "integer", nullable: true },
     total_comments: { type: "integer", nullable: true },
+    is_liked: { type: "boolean" },
     is_sponsored: { type: "boolean" },
     is_deleted: { type: "boolean" },
     updated_at: { type: "string", format: "date-time", nullable: true },
