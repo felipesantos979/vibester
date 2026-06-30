@@ -21,6 +21,7 @@ class ApiEndpoints {
 
   // Events
   static String events() => '$baseUrl/event/events';
+  static String eventsFeatured() => '$baseUrl/event/events/featured';
   static String eventNearby() => '$baseUrl/event/events/nearby';
   static String eventDetail(String eventId) => '$baseUrl/event/events/$eventId';
   static String eventsWeek(String date) =>

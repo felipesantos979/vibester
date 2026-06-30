@@ -15,6 +15,12 @@ class EventService {
     return events;
   }
 
+  Future<List<EventModel>> getEventsFeatured() async {
+    final response = await ApiClient.dio.get(ApiEndpoints.eventsFeatured());
+    final List data = response.data;
+    return data.map((json) => EventModel.fromJson(json)).toList();
+  }
+
   Future<List<EventModel>> getEventsWeek({DateTime? date}) async {
     final dataFormatada = DateFormat('yyyy-MM-dd').format(date ?? DateTime.now());
 
