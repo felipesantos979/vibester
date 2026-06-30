@@ -222,7 +222,7 @@ describe('user-service — HTTP Integration', () => {
           topic: 'user.followed',
           messages: expect.arrayContaining([
             expect.objectContaining({
-              value: JSON.stringify({ followerId: FOLLOWER_ID, followingId: USER_ID }),
+              value: JSON.stringify({ followerId: FOLLOWER_ID, followedId: USER_ID }),
             }),
           ]),
         })
