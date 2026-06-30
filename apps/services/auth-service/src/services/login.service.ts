@@ -27,7 +27,7 @@ export class LoginService {
         }
 
         const token = jwt.sign(
-            { userId: user.id },
+            { userId: user.id, accountId: user.accountId },
             env.jwtSecret,
             { expiresIn: env.jwtExpiresIn as jwt.SignOptions["expiresIn"] }
         );
