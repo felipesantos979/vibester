@@ -37,23 +37,32 @@ const SERPAPI_TYPE_TO_CATEGORY: Record<string, string> = {
   "bar e grill": "bar",
   "bar e restaurante": "bar",
   pub: "bar",
+  "pub irlandês": "bar",
   "bar esportivo": "bar",
   "night club": "night_club",
   "clube noturno": "night_club",
+  "casa noturna": "night_club",
   boate: "night_club",
   balada: "night_club",
   restaurante: "restaurant",
   restaurant: "restaurant",
+  petiscaria: "restaurant",
   café: "cafe",
   cafe: "cafe",
   cafeteria: "cafe",
   "coffee shop": "cafe",
+  "espresso bar": "cafe",
   lanchonete: "cafe",
 };
 
-function mapSerpApiTypeToCategory(type: string | undefined): string | null {
+function mapSerpApiTypeToCategory(type: string | string[] | undefined): string | null {
   if (!type) return null;
-  return SERPAPI_TYPE_TO_CATEGORY[type.toLowerCase()] ?? null;
+  const types = Array.isArray(type) ? type : [type];
+  for (const t of types) {
+    const mapped = SERPAPI_TYPE_TO_CATEGORY[t.toLowerCase()];
+    if (mapped) return mapped;
+  }
+  return null;
 }
 
 export class SerpApiService {

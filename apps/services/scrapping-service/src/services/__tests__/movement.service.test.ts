@@ -247,6 +247,94 @@ describe("MovementService", () => {
     });
   });
 
+  describe("kafka category event", () => {
+    function getKafkaPayload(): Record<string, unknown> {
+      const call = mockKafkaProducer.send.mock.calls[0][0];
+      return JSON.parse(call.messages[0].value);
+    }
+
+    it("should include category in kafka message when serpapi returns a known type", async () => {
+      mockEstablishmentClient.listOpenEstablishments.mockResolvedValue([
+        makeEstablishment({ id: "estab-1", googlePlaceId: "gplace-1" }),
+      ]);
+      mockSerpApiService.getPlacePopularity.mockResolvedValue(
+        makePopularityResult({ liveBusynessScore: 75, category: "bar" })
+      );
+
+      await service.updateMovementLevelsFromSavedEstablishments();
+
+      const payload = getKafkaPayload();
+      expect(payload.data).toMatchObject({ category: "bar" });
+    });
+
+    it("should not include category in kafka message when serpapi returns null category", async () => {
+      mockEstablishmentClient.listOpenEstablishments.mockResolvedValue([
+        makeEstablishment({ id: "estab-1", googlePlaceId: "gplace-1" }),
+      ]);
+      mockSerpApiService.getPlacePopularity.mockResolvedValue(
+        makePopularityResult({ liveBusynessScore: 60, category: null })
+      );
+
+      await service.updateMovementLevelsFromSavedEstablishments();
+
+      const payload = getKafkaPayload();
+      expect((payload.data as Record<string, unknown>).category).toBeUndefined();
+    });
+
+    it("should include category when using fallback (estimated) path", async () => {
+      const hoursData = [
+        { hour: 14, busyness_score: 40, live_busyness_score: null, is_current: false, status_text: "" },
+      ];
+      mockEstablishmentClient.listOpenEstablishments.mockResolvedValue([
+        makeEstablishment({ id: "estab-1", googlePlaceId: "gplace-1" }),
+      ]);
+      mockSerpApiService.getPlacePopularity.mockResolvedValue(
+        makePopularityResult({ liveBusynessScore: null, currentDayInt: 5, hoursData, category: "restaurant" })
+      );
+      mockPrisma.popularTimesDaily.aggregate.mockResolvedValue({ _avg: { busynessScore: 40 } });
+
+      await service.updateMovementLevelsFromSavedEstablishments();
+
+      const payload = getKafkaPayload();
+      expect(payload.data).toMatchObject({ category: "restaurant", source: "ESTIMATED" });
+    });
+
+    it("should include category when level is UNAVAILABLE", async () => {
+      mockEstablishmentClient.listOpenEstablishments.mockResolvedValue([
+        makeEstablishment({ id: "estab-1", googlePlaceId: "gplace-1" }),
+      ]);
+      mockSerpApiService.getPlacePopularity.mockResolvedValue(
+        makePopularityResult({ liveBusynessScore: null, currentDayInt: null, hoursData: [], category: "night_club" })
+      );
+      mockPrisma.popularTimesDaily.aggregate.mockResolvedValue({ _avg: { busynessScore: null } });
+
+      await service.updateMovementLevelsFromSavedEstablishments();
+
+      const payload = getKafkaPayload();
+      expect(payload.data).toMatchObject({ level: "UNAVAILABLE", category: "night_club" });
+    });
+
+    it("should send correct kafka event structure with category", async () => {
+      mockEstablishmentClient.listOpenEstablishments.mockResolvedValue([
+        makeEstablishment({ id: "estab-1", googlePlaceId: "gplace-1" }),
+      ]);
+      mockSerpApiService.getPlacePopularity.mockResolvedValue(
+        makePopularityResult({ liveBusynessScore: 50, category: "cafe" })
+      );
+
+      await service.updateMovementLevelsFromSavedEstablishments();
+
+      const payload = getKafkaPayload();
+      expect(payload.eventType).toBe("establishment.movement.updated");
+      expect(payload.data).toMatchObject({
+        establishmentId: "estab-1",
+        level: "MEDIUM",
+        source: "SERPAPI",
+        category: "cafe",
+      });
+    });
+  });
+
   describe("mapScoreToMovementLevel (via updateMovementLevelsFromSavedEstablishments)", () => {
     const cases: [number, string][] = [
       [0, "VERY_LOW"],
