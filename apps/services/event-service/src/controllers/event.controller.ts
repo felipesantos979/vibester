@@ -9,6 +9,9 @@ import { GetEventsByEstablishmentService } from "../services/getEventsByEstablis
 import { cacheAside, nearbyKey } from "../config/redis.js";
 import { GetFeaturedEventsService } from "../services/getFeaturedEvents.service.js";
 import { GetEventsByWeekService } from "../services/getEventsByWeek.service.js";
+import { CheckInService } from "../services/checkIn.service.js";
+import { ListUserCheckInsService } from "../services/listUserCheckIns.service.js";
+import { CheckUserCheckInService } from "../services/checkUserCheckIn.service.js";
 
 const toggleFeaturedService = new ToggleFeaturedService();
 const eventService = new CreateEventService();
@@ -17,11 +20,15 @@ const detailsService = new GetEventDetailsService();
 const byEstablishmentService = new GetEventsByEstablishmentService();
 const featuredEventsService = new GetFeaturedEventsService();
 const eventsByWeekService = new GetEventsByWeekService();
+const checkInService = new CheckInService();
+const listUserCheckInsService = new ListUserCheckInsService();
+const checkUserCheckInService = new CheckUserCheckInService();
 
 async function authenticate(request: FastifyRequest, reply: FastifyReply) {
     try {
         await request.jwtVerify();
-    } catch {
+    } catch (error) {
+        request.log.error(error);
         return reply.status(401).send({ message: "Token de autenticação inválido ou ausente" });
     }
 }
@@ -102,6 +109,21 @@ const toggleFeaturedBodySchema = z.object({
 
 const weekQuerySchema = z.object({
     date: z.string().date(), // formato YYYY-MM-DD
+});
+
+const checkInBodySchema = z.object({
+    userId: z.string().uuid(),
+});
+
+const checkInResponseSchema = z.object({ checkedIn: z.boolean() });
+
+const userIdParamsSchema = z.object({
+    userId: z.string().uuid(),
+});
+
+const eventIdAndUserIdParamsSchema = z.object({
+    eventId: z.string().uuid(),
+    userId: z.string().uuid(),
 });
 
 export async function eventRoutes(app: FastifyInstance) {
@@ -280,6 +302,105 @@ export async function eventRoutes(app: FastifyInstance) {
         } catch (error) {
             request.log.error(error);
             return reply.status(500).send({ message: "Error listing events by week" });
+        }
+    });
+
+    router.post("/:eventId/checkin", {
+        schema: {
+            tags: ["Events"],
+            summary: "Marcar presença em evento",
+            params: eventIdParamsSchema,
+            body: checkInBodySchema,
+            response: {
+                200: checkInResponseSchema,
+                404: errorSchema,
+                409: errorSchema,
+                500: errorSchema,
+            },
+        },
+        
+    }, async (request, reply) => {
+        try {
+            const result = await checkInService.checkIn(request.params.eventId, request.body.userId);
+            return reply.status(200).send(result);
+        } catch (error) {
+            if (error instanceof Error && error.message === "Evento não encontrado") {
+                return reply.status(404).send({ message: error.message });
+            }
+            if (error instanceof Error && error.message === "Usuário já fez check-in neste evento") {
+                return reply.status(409).send({ message: error.message });
+            }
+            request.log.error(error);
+            return reply.status(500).send({ message: "Error checking in event" });
+        }
+    });
+
+    router.delete("/:eventId/checkin", {
+        schema: {
+            tags: ["Events"],
+            summary: "Remover presença em evento",
+            params: eventIdParamsSchema,
+            body: checkInBodySchema,
+            response: {
+                200: checkInResponseSchema,
+                404: errorSchema,
+                500: errorSchema,
+            },
+        },
+        
+    }, async (request, reply) => {
+        try {
+            const result = await checkInService.checkOut(request.params.eventId, request.body.userId);
+            return reply.status(200).send(result);
+        } catch (error) {
+            if (error instanceof Error && error.message === "Check-in não encontrado") {
+                return reply.status(404).send({ message: error.message });
+            }
+            request.log.error(error);
+            return reply.status(500).send({ message: "Error checking out event" });
+        }
+    });
+
+    router.get("/checkins/:userId", {
+        schema: {
+            tags: ["Events"],
+            summary: "Eventos que o usuário confirmou presença",
+            params: userIdParamsSchema,
+            response: {
+                200: z.array(eventDetailsSchema.extend({ checkedInAt: z.date() })),
+                500: errorSchema,
+            },
+        },
+    }, async (request, reply) => {
+        try {
+            const events = await listUserCheckInsService.list(request.params.userId);
+            return reply.status(200).send(events);
+        } catch (error) {
+            request.log.error(error);
+            return reply.status(500).send({ message: "Error listing user check-ins" });
+        }
+    });
+
+    router.get("/:eventId/checkin/:userId", {
+        schema: {
+            tags: ["Events"],
+            summary: "Verifica se o usuário fez check-in no evento",
+            params: eventIdAndUserIdParamsSchema,
+            response: {
+                200: checkInResponseSchema,
+                500: errorSchema,
+            },
+        },
+    }, async (request, reply) => {
+        try {
+            const result = await checkUserCheckInService.check(
+                request.params.eventId,
+                request.params.userId,
+            );
+            return reply.status(200).send(result);
+        } catch (error) {
+            request.log.error(error);
+            return reply.status(500).send({ message: "Error checking check-in status" });
         }
     });
 }
