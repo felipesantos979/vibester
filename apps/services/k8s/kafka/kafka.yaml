@@ -32,6 +32,8 @@ spec:
               value: "0@localhost:9093"
             - name: KAFKA_CONTROLLER_LISTENER_NAMES
               value: "CONTROLLER"
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xmx256m -Xms256m"
             - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
               value: "true"
             - name: KAFKA_LOG_DIRS
