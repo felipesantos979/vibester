@@ -5,6 +5,7 @@ import { CreateProfileService } from "../services/createProfile.service.js";
 import { EditProfileService } from "../services/editProfile.service.js";
 import { GetProfileService } from "../services/getProfile.service.js";
 import { GetFollowersService } from "../services/getFollowers.service.js";
+import { SearchProfilesService } from "../services/searchProfiles.service.js";
 import type { UserProfile as UserProfileModel } from "@prisma/client";
 import { CheckFollowService } from "../services/checkFollow.service.js";
 
@@ -13,6 +14,7 @@ const editProfileService = new EditProfileService();
 const getProfileService = new GetProfileService();
 const getFollowersService = new GetFollowersService();
 const checkFollowService = new CheckFollowService();
+const searchProfilesService = new SearchProfilesService();
 
 const errorSchema = z.object({ message: z.string() });
 
@@ -81,6 +83,27 @@ const followingEntrySchema = z.object({
 const isFollowingSchema = z.object({
   followerId: z.string().uuid(),
   followingId: z.string().uuid(),
+});
+
+const searchQuerySchema = z.object({
+  q: z.string().min(1).max(100),
+  limit: z.coerce.number().int().min(1).max(50).default(10),
+  page: z.coerce.number().int().min(1).default(1),
+});
+
+const searchResultItemSchema = z.object({
+  accountId: z.string().uuid(),
+  name: z.string().nullable(),
+  username: z.string().nullable(),
+  avatarUrl: z.string().nullable(),
+  followers: z.number().int(),
+});
+
+const searchProfilesResponseSchema = z.object({
+  data: z.array(searchResultItemSchema),
+  total: z.number().int(),
+  page: z.number().int(),
+  limit: z.number().int(),
 });
 
 export async function profileRoutes(app: FastifyInstance) {
@@ -294,6 +317,32 @@ export async function profileRoutes(app: FastifyInstance) {
     } catch (error) {
       request.log.error(error);
       return reply.status(500).send({ message: "Error checking follow status" });
+    }
+  });
+
+  router.get("/search", {
+    schema: {
+      tags: ["Profile"],
+      summary: "Pesquisar perfis",
+      description:
+        "Busca perfis de usuários em tempo real pelo nome ou username. " +
+        "Ideal para barras de pesquisa com debounce no cliente (recomendado ≥300ms). " +
+        "Os resultados são ordenados por número de seguidores (decrescente).",
+      querystring: searchQuerySchema,
+      response: {
+        200: searchProfilesResponseSchema,
+        400: errorSchema,
+        500: errorSchema,
+      },
+    },
+  }, async (request, reply) => {
+    try {
+      const { q, limit, page } = request.query;
+      const result = await searchProfilesService.search({ q, limit, page });
+      return reply.status(200).send(result);
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({ message: "Error searching profiles" });
     }
   });
 }
