@@ -1,16 +1,26 @@
 import http from 'k6/http';
 import { check } from 'k6';
 import { SERVICES } from '../config/base.js';
-import { generateUser } from './data.js';
 import { recordResponse } from './metrics.js';
 
 const CT = { 'Content-Type': 'application/json' };
 
-// Cache por VU: cada VU se registra apenas uma vez por execução
+// Contas pré-cadastradas e verificadas no ambiente de teste.
+// O fluxo real é: POST /register (202) → verificar e-mail → POST /verify-email (201).
+// Como essa etapa não pode ser automatizada, os testes usam contas já existentes.
+const TEST_ACCOUNTS = [
+  { email: 'k6_test_01@loadtest.invalid', password: 'K6Load#2024!' },
+  { email: 'k6_test_02@loadtest.invalid', password: 'K6Load#2024!' },
+  { email: 'k6_test_03@loadtest.invalid', password: 'K6Load#2024!' },
+  { email: 'k6_test_04@loadtest.invalid', password: 'K6Load#2024!' },
+  { email: 'k6_test_05@loadtest.invalid', password: 'K6Load#2024!' },
+];
+
+// Cache por VU: cada VU faz login apenas uma vez por execução
 const _vuCache = {};
 
 /**
- * Registra + faz login do VU atual e armazena { token, accountId } em cache.
+ * Autentica o VU atual com uma conta pré-cadastrada e armazena { token, accountId } em cache.
  * Chamadas subsequentes do mesmo VU retornam o cache sem novas requests.
  *
  * @returns {{ token: string, accountId: string } | null}
@@ -18,40 +28,23 @@ const _vuCache = {};
 export function initVU() {
   if (_vuCache[__VU]) return _vuCache[__VU];
 
-  const user = generateUser();
+  const creds = TEST_ACCOUNTS[(__VU - 1) % TEST_ACCOUNTS.length];
 
-  // 1. Registro
-  const regRes = http.post(
-    `${SERVICES.auth}/register`,
-    JSON.stringify(user),
-    { headers: CT, tags: { endpoint: 'register', service: 'auth', type: 'write' } },
-  );
-  recordResponse(regRes, 'write');
-  check(regRes, { 'init: register 201': (r) => r.status === 201 });
-  if (regRes.status !== 201) return null;
-
-  let accountId;
-  try { accountId = JSON.parse(regRes.body).id; } catch { return null; }
-
-  // 2. Login
   const loginRes = http.post(
     `${SERVICES.auth}/login`,
-    JSON.stringify({ email: user.email, password: user.password }),
+    JSON.stringify({ email: creds.email, password: creds.password }),
     { headers: CT, tags: { endpoint: 'login', service: 'auth', type: 'write' } },
   );
   recordResponse(loginRes, 'write');
   check(loginRes, { 'init: login 200': (r) => r.status === 200 });
   if (loginRes.status !== 200) return null;
 
-  let token;
-  try { token = JSON.parse(loginRes.body).token; } catch { return null; }
-
-  // 3. Cria perfil de usuário (necessário para feed/follow)
-  http.post(
-    `${SERVICES.user}/users/profile`,
-    JSON.stringify({ accountId, username: user.username, name: user.name }),
-    { headers: bearerHeaders(token), tags: { endpoint: 'create-profile', service: 'user', type: 'write' } },
-  );
+  let token, accountId;
+  try {
+    const body = JSON.parse(loginRes.body);
+    token = body.token;
+    accountId = body.accountId;
+  } catch { return null; }
 
   _vuCache[__VU] = { token, accountId };
   return _vuCache[__VU];

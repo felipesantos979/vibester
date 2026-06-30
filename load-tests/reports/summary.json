@@ -1,54 +1,54 @@
 {
-  "scenario": "02-load",
-  "timestamp": "2026-06-30T02:55:23.325Z",
-  "durationSec": 721,
-  "peakVUs": 50,
+  "scenario": "01-smoke",
+  "timestamp": "2026-06-30T03:35:34.998Z",
+  "durationSec": 28,
+  "peakVUs": 2,
   "sla": {
     "compliant": false,
-    "p95_ms": 125.54294364999993,
-    "p99_ms": 286.12633883999996,
-    "errorRate": 0.9533354212339492,
-    "ttfbP95_ms": 125.16291934999998
+    "p95_ms": 204.63717829999996,
+    "p99_ms": 466.8717481699999,
+    "errorRate": 0.2702702702702703,
+    "ttfbP95_ms": 204.43146529999999
   },
   "latency": {
-    "p50": 46.197024,
-    "p90": 109.7375834,
-    "p95": 125.54294364999993,
-    "p99": 286.12633883999996,
-    "mean": 68.71655195411748,
-    "max": 757.992949,
-    "ttfbP95": 125.16291934999998,
-    "ttfbAvg": 68.34059350783016
+    "p50": 47.19436,
+    "p90": 190.0119235,
+    "p95": 204.63717829999996,
+    "p99": 466.8717481699999,
+    "mean": 75.75316262612614,
+    "max": 511.373238,
+    "ttfbP95": 204.43146529999999,
+    "ttfbAvg": 75.36818420270271
   },
   "throughput": {
-    "rps": 70.82179579954216,
-    "totalReqs": 51088,
-    "writes": 18433,
-    "reads": 32655,
-    "succRate": 0.04666457876605079,
-    "errRate": 0.9533354212339492,
-    "dataSentBytes": 5691280,
-    "dataRecvBytes": 36204124
+    "rps": 7.899627588351219,
+    "totalReqs": 222,
+    "writes": 2,
+    "reads": 220,
+    "succRate": 0.7297297297297297,
+    "errRate": 0.2702702702702703,
+    "dataSentBytes": 13670,
+    "dataRecvBytes": 342013
   },
   "errors": {
-    "c2xx": 2384,
-    "c4xx": 37435,
-    "c5xx": 11269,
+    "c2xx": 162,
+    "c4xx": 18,
+    "c5xx": 42,
     "timeouts": 0,
     "connErr": 0
   },
   "concurrency": {
-    "peakVUs": 50,
-    "queueTimeP95_ms": 0.005657,
-    "queueTimeAvg_ms": 0.08184768331112757
+    "peakVUs": 2,
+    "queueTimeP95_ms": 0.005727,
+    "queueTimeAvg_ms": 0.8387899009009004
   },
   "costEstimate": {
-    "bytesPerReqAvg": 370.2982500782963,
-    "bytesPerSession": 378444.81158001884,
-    "monthlyBytesPerUser": 37844481.158001885
+    "bytesPerReqAvg": 1091.1306306306305,
+    "bytesPerSession": 121115.49999999999,
+    "monthlyBytesPerUser": 12111549.999999998
   },
   "summary": {
-    "maxSustainableRPS": "< 70.8 (SLA violado)",
+    "maxSustainableRPS": "< 7.9 (SLA violado)",
     "bottleneck": "Servidor (5xx alto — pool de conexões ou OOM)",
     "scaleRecommendation": "Escala HORIZONTAL recomendada: adicionar réplicas do(s) serviço(s) com maior taxa de 5xx."
   }

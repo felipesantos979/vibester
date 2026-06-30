@@ -10,7 +10,7 @@ export function generateUser() {
     name:     `K6 VU${__VU}`,
     email:    `k6_${id}@loadtest.invalid`,
     password: 'K6Load#2024!',
-    bornAt:   '1995-01-01T00:00:00.000Z',
+    bornAt:   '1995-01-01',
   };
 }
 

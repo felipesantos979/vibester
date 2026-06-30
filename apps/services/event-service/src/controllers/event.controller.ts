@@ -65,8 +65,8 @@ const eventDetailsSchema = z.object({
     organizer: z.string(),
     location: z.string(),
     informacoes: z.string().nullish(),
-    startDate: z.date(),
-    endDate: z.date(),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
     ticketLink: z.string().nullable(),
     totalConfirmed: z.number(),
     latitude: z.number(),
@@ -83,16 +83,16 @@ const nearbyEventSchema = z.object({
     category: z.string(),
     organizer: z.string(),
     location: z.string(),
-    startDate: z.date(),
-    endDate: z.date(),
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date(),
     ticketLink: z.string().nullable(),
     totalConfirmed: z.number(),
     latitude: z.number(),
     longitude: z.number(),
     establishmentId: z.string(),
     isFeatured: z.boolean(),
-    createdAt: z.date(),
-    updatedAt: z.date(),
+    createdAt: z.coerce.date(),
+    updatedAt: z.coerce.date(),
     distanceKm: z.number(),
 });
 
@@ -101,7 +101,7 @@ const toggleFeaturedBodySchema = z.object({
 });
 
 const weekQuerySchema = z.object({
-    date: z.string().date(), // formato YYYY-MM-DD
+    date: z.string().date().optional(), // formato YYYY-MM-DD; omitido = hoje
 });
 
 export async function eventRoutes(app: FastifyInstance) {
@@ -275,7 +275,8 @@ export async function eventRoutes(app: FastifyInstance) {
         },
     }, async (request, reply) => {
         try {
-            const events = await eventsByWeekService.get(request.query.date);
+            const date = request.query.date ?? new Date().toISOString().slice(0, 10);
+            const events = await eventsByWeekService.get(date);
             return reply.status(200).send(events);
         } catch (error) {
             request.log.error(error);
