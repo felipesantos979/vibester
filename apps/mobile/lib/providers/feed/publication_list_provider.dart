@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:mobile/models/feed/feed_item_model.dart';
 import 'package:mobile/models/feed/publication_model.dart';
 import 'package:mobile/service/feed/feed_service.dart';
+import 'package:mobile/service/posts/post_service.dart';
 
 class PublicationListProvider extends ChangeNotifier {
   final FeedService _feedService = FeedService();
+  final PostService _postService = PostService();
 
   final List<PublicationModel> _publications = [];
   String? _nextCursor;
@@ -76,15 +78,36 @@ class PublicationListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleLike(String? id) {
-    if (id == null) return;
+  Future<void> toggleLike(String? id, String? userId) async {
+    if (id == null || userId == null) return;
+
     final index = _publications.indexWhere((p) => p.id == id);
     if (index == -1) return;
+
     final pub = _publications[index];
+    final wasLiked = pub.isLiked;
+
     _publications[index] = pub.copyWith(
-      isLiked: !pub.isLiked,
-      likes: pub.isLiked ? pub.likes - 1 : pub.likes + 1,
+      isLiked: !wasLiked,
+      likes: wasLiked ? pub.likes - 1 : pub.likes + 1,
     );
     notifyListeners();
+
+    try {
+      if (wasLiked) {
+        await _postService.unlikePost(postId: id, userId: userId);
+      } else {
+        await _postService.likePost(postId: id, userId: userId);
+      }
+    } catch (e) {
+      final is409 =
+          e.toString().contains('409') ||
+          e.toString().contains('already liked') ||
+          e.toString().contains('already unliked');
+      if (!is409) {
+        _publications[index] = pub;
+        notifyListeners();
+      }
+    }
   }
 }

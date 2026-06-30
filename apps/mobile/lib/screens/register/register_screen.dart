@@ -2,15 +2,11 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/models/user/user_model.dart';
-import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
-import 'package:mobile/service/api_client.dart';
 import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/date_picker_field.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
-import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -68,32 +64,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         bornAt: bornAtFormatado,
       );
 
-      // Loga com o mesmo email e senha que acabaram de ser usados pra criar a conta.
-      final loginResponse = await _userService.login(
-        emailOuUsername: email,
-        password: senha,
-      );
-
-      final token = loginResponse['token'];
-      final accountId = loginResponse['accountId'];
-
-      // Token precisa estar setado ANTES do getProfile, porque é esse
-      // interceptor que anexa o header Authorization na chamada.
-      ApiClient.token = token;
-
-      // Busca os dados completos do perfil usando o accountId (não o id de
-      // login/auth), que é o que a API usa pra indexar o profile.
-      final profileResponse = await _userService.getProfile(accountId);
-      final usuarioLogado = UserModel.fromProfileJson(
-        profileResponse,
-        accountId: accountId,
-        token: token,
-      );
-
       if (!mounted) return;
-      context.read<UserProvider>().setUser(usuarioLogado);
-
-      Navigator.pushNamed(context, AppRoutes.emailConfirm);
+      if (!mounted) return;
+      Navigator.pushNamed(
+        context,
+        AppRoutes.emailConfirm,
+        arguments: {'email': email, 'senha': senha},
+      );
     } catch (e) {
       _erroApi = e.toString();
       debugPrint(_erroApi);

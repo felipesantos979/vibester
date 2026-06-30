@@ -47,7 +47,7 @@ class PlaceModel {
           ((json['averageRating'] ?? json['rating']) as num?)?.toDouble() ?? 0,
       nivelPrecoMedio: json['priceIndicator'] ?? '',
       bio: json['bio'] ?? '',
-      endereco: json['address'] ?? '',
+      endereco: json['endereco'] ?? '',
       qtdAvaliacoes: json['reviewCount'] ?? 0,
       distribuicao: json['ratingDistribution'] != null
           ? List<double>.from(json['ratingDistribution'])

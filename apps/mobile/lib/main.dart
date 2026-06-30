@@ -142,7 +142,14 @@ class MyApp extends StatelessWidget {
 
             // REGISTER
             case AppRoutes.emailConfirm:
-              return _fadeRoute(const EmailConfirmScreen(), settings);
+              final args = settings.arguments as Map<String, String>;
+              return _fadeRoute(
+                EmailConfirmScreen(
+                  email: args['email']!,
+                  senha: args['senha']!,
+                ),
+                settings,
+              );
             case AppRoutes.login:
               return _fadeRoute(const LoginScreen(), settings);
             case AppRoutes.recoverPassword:
