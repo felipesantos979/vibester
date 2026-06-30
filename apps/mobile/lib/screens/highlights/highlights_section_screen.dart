@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/models/place/exclusive_offers_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
+import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/screens/highlights/category_highlights_section.dart';
-import 'package:mobile/service/event/event_service.dart';
 import 'package:mobile/service/location/location_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/location_satate.dart';
@@ -18,7 +17,14 @@ import 'package:mobile/widgets/indicators/lineup_place_indicator.dart';
 import 'package:provider/provider.dart';
 
 class HighlightsSectionScreen extends StatefulWidget {
-  const HighlightsSectionScreen({super.key});
+  final TabController? tabController;
+  final int? tabIndex;
+
+  const HighlightsSectionScreen({
+    super.key,
+    this.tabController,
+    this.tabIndex,
+  });
 
   @override
   State<HighlightsSectionScreen> createState() =>
@@ -36,22 +42,6 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
   final _locationService = LocationService();
   // Controla o icone de refresh
   bool _atualizandoLocalizacao = false;
-
-  final _eventService = EventService();
-  List<EventModel> _eventosDaSemana = [];
-  bool _carregandoEventosDaSemana = true;
-
-  Future<void> _buscarEventosDaSemana() async {
-    try {
-      final eventos = await _eventService.getEventsWeek();
-      if (!mounted) return;
-      setState(() => _eventosDaSemana = eventos);
-    } catch (e) {
-      debugPrint('Erro ao buscar eventos da semana: $e');
-    } finally {
-      if (mounted) setState(() => _carregandoEventosDaSemana = false);
-    }
-  }
 
   Future<void> _atualizarLocalizacaoManualmente() async {
     setState(() {
@@ -77,14 +67,20 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
     _pageController = PageController(viewportFraction: 0.95);
     _offersController = PageController(viewportFraction: 0.95);
 
-    _buscarEventosDaSemana();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EventsListProvider>().fetchFeaturedEvents();
+      context.read<EventsListProvider>().fetchWeekEvents();
+      context.read<PlaceListProvider>().fetchPlaces();
+    });
+
+    // Escuta a troca de aba e refaz as buscas sempre que essa aba específica se tornar ativa de novo
+    widget.tabController?.addListener(_aoTrocarDeAba);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<EventsListProvider>().fetchEvents();
-
       _timer = Timer.periodic(const Duration(seconds: 4), (_) {
-        if (_eventosDaSemana.isEmpty) return;
-        _currentPage = (_currentPage + 1) % _eventosDaSemana.length;
+        final atual = context.read<EventsListProvider>().weekEvents;
+        if (atual.isEmpty) return;
+        _currentPage = (_currentPage + 1) % atual.length;
         _pageController.animateToPage(
           _currentPage,
           duration: const Duration(milliseconds: 700),
@@ -104,8 +100,20 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
     });
   }
 
+  void _aoTrocarDeAba() {
+    final controller = widget.tabController;
+    final indice = widget.tabIndex;
+    if (controller == null || indice == null) return;
+
+    if (controller.index == indice && !controller.indexIsChanging) {
+      context.read<EventsListProvider>().fetchFeaturedEvents();
+      context.read<EventsListProvider>().fetchWeekEvents();
+    }
+  }
+
   @override
   void dispose() {
+    widget.tabController?.removeListener(_aoTrocarDeAba);
     _timer.cancel();
     _offersTimer.cancel();
     _pageController.dispose();
@@ -148,7 +156,8 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<EventModel> event = context.watch<EventsListProvider>().events;
+    final eventsProvider = context.watch<EventsListProvider>();
+
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       body: ListView(
@@ -157,14 +166,33 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
             padding: const EdgeInsets.only(top: 20),
             child: SizedBox(
               height: 270,
-              child: PageView.builder(
-                padEnds: false,
-                controller: PageController(viewportFraction: 0.95),
-                itemCount: event.length,
-                itemBuilder: (context, index) {
-                  return FeaturedEvents(event: event[index]);
-                },
-              ),
+              child: eventsProvider.isLoadingFeatured &&
+                      eventsProvider.featuredEvents.isEmpty
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(colorAmbar),
+                      ),
+                    )
+                  : eventsProvider.featuredEvents.isEmpty
+                      ? const Center(
+                          child: Text(
+                            'Nenhum evento em destaque',
+                            style: TextStyle(
+                              color: Colors.white38,
+                              fontSize: 14,
+                            ),
+                          ),
+                        )
+                      : PageView.builder(
+                          padEnds: false,
+                          controller: PageController(viewportFraction: 0.95),
+                          itemCount: eventsProvider.featuredEvents.length,
+                          itemBuilder: (context, index) {
+                            return FeaturedEvents(
+                              event: eventsProvider.featuredEvents[index],
+                            );
+                          },
+                        ),
             ),
           ),
 
@@ -220,13 +248,14 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                   padding: const EdgeInsets.only(top: 20),
                   child: SizedBox(
                     height: 270,
-                    child: _carregandoEventosDaSemana
+                    child: eventsProvider.isLoadingWeek &&
+                            eventsProvider.weekEvents.isEmpty
                         ? const Center(
                             child: CircularProgressIndicator(
                               color: Color(colorAmbar),
                             ),
                           )
-                        : _eventosDaSemana.isEmpty
+                        : eventsProvider.weekEvents.isEmpty
                             ? const Center(
                                 child: Text(
                                   'Nenhum evento esta semana',
@@ -241,10 +270,10 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                                 controller: _pageController,
                                 onPageChanged: (index) =>
                                     setState(() => _currentPage = index),
-                                itemCount: _eventosDaSemana.length,
+                                itemCount: eventsProvider.weekEvents.length,
                                 itemBuilder: (context, index) {
                                   return WeeklyEvents(
-                                    evento: _eventosDaSemana[index],
+                                    evento: eventsProvider.weekEvents[index],
                                   );
                                 },
                               ),
