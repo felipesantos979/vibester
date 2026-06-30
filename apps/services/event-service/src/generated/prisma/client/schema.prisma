@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Event {
+  id              String         @id @default(uuid())
+  name            String
+  informacoes     String?
+  photoUrl        String
+  category        String
+  organizer       String
+  location        String
+  startDate       DateTime
+  endDate         DateTime
+  ticketLink      String?
+  totalConfirmed  Int            @default(0)
+  checkIns        EventCheckIn[]
+  latitude        Float
+  longitude       Float
+  establishmentId String
+  isFeatured      Boolean        @default(false)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([establishmentId])
+  @@index([startDate])
+  @@index([isFeatured])
+  @@index([latitude, longitude])
+}
+
+model EventCheckIn {
+  id        String   @id @default(uuid())
+  eventId   String
+  userId    String
+  createdAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([userId])
+  @@index([eventId])
+}
