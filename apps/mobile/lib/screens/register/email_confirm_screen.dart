@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/models/user/user_model.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
+import 'package:mobile/service/api_client.dart';
+import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
 import 'package:pinput/pinput.dart';
+import 'package:provider/provider.dart';
 
 class EmailConfirmScreen extends StatefulWidget {
+  final String email;
+  final String senha;
   final VoidCallback? onEmailConfirmed;
-  const EmailConfirmScreen({this.onEmailConfirmed, super.key});
+
+  const EmailConfirmScreen({
+    required this.email,
+    required this.senha,
+    this.onEmailConfirmed,
+    super.key,
+  });
 
   @override
   State<EmailConfirmScreen> createState() => _EmailConfirmScreenState();
@@ -15,14 +28,77 @@ class EmailConfirmScreen extends StatefulWidget {
 
 class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
   bool _pinError = false;
+  bool _isLoading = false;
   final _pinController = TextEditingController();
-  void _aoVerificar() {
-    if (!context.mounted) return;
+  final _userService = UserService();
 
+  Future<void> _aoVerificar() async {
     if (widget.onEmailConfirmed != null) {
       widget.onEmailConfirmed!();
-    } else {
+      return;
+    }
+
+    try {
+      final loginResponse = await _userService.login(
+        emailOuUsername: widget.email,
+        password: widget.senha,
+      );
+
+      final token = loginResponse['token'];
+      final accountId = loginResponse['accountId'];
+
+      ApiClient.token = token;
+
+      final profileResponse = await _userService.getProfile(accountId);
+      final usuarioLogado = UserModel.fromProfileJson(
+        profileResponse,
+        accountId: accountId,
+        token: token,
+      );
+
+      if (!mounted) return;
+      context.read<UserProvider>().setUser(usuarioLogado);
+
       Navigator.pushNamed(context, AppRoutes.profileEditing);
+    } catch (e) {
+      debugPrint(e.toString());
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Erro ao entrar após confirmação. Faça login manualmente.',
+          ),
+        ),
+      );
+      Navigator.pushNamed(context, AppRoutes.login);
+    }
+  }
+
+  Future<void> _verificarCodigo() async {
+    if (_pinController.text.length < 5) {
+      setState(() => _pinError = true);
+      return;
+    }
+
+    setState(() {
+      _pinError = false;
+      _isLoading = true;
+    });
+
+    try {
+      await _userService.verifyEmail(
+        email: widget.email,
+        code: _pinController.text,
+      );
+      await _aoVerificar();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _pinError = true);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -101,10 +177,10 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+
             RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
-                style: GoogleFonts.inter(color: Color(colorGrey), fontSize: 14),
                 children: [
                   TextSpan(
                     text: 'Enviamos um código de verificação para\n',
@@ -115,7 +191,7 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
                     ),
                   ),
                   TextSpan(
-                    text: 'email@example.com',
+                    text: widget.email,
                     style: GoogleFonts.inter(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -125,15 +201,19 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
                   TextSpan(
                     text:
                         '\n\nVerifique sua caixa de entrada e insira o\ncódigo abaixo para ativar sua conta ',
+                    style: GoogleFonts.inter(
+                      color: Color(colorGrey),
+                      fontSize: 14,
+                    ),
                   ),
                 ],
               ),
             ),
 
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             Pinput(
-              length: 5,
+              length: 6,
               defaultPinTheme: defaultTheme,
               focusedPinTheme: focusedTheme,
               errorPinTheme: errorTheme,
@@ -141,21 +221,14 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
               forceErrorState: _pinError,
             ),
 
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
 
             PrimaryButton(
-              label: 'Verificar e-mail',
-              onPressed: () {
-                if (_pinController.text.length < 5) {
-                  setState(() => _pinError = true);
-                  return;
-                }
-                setState(() => _pinError = false);
-                _aoVerificar();
-              },
+              label: _isLoading ? 'Verificando...' : 'Verificar e-mail',
+              onPressed: _isLoading ? () {} : _verificarCodigo,
             ),
 
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
           ],
         ),
       ),

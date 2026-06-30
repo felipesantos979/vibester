@@ -4,6 +4,7 @@ class ApiEndpoints {
   // Auth
   static String register() => '$baseUrl/auth/register';
   static String login() => '$baseUrl/auth/login';
+  static String verifyEmail() => '$baseUrl/auth/verify-email';
 
   // User
   static String createProfile() => '$baseUrl/api/users/profile';
@@ -46,6 +47,7 @@ class ApiEndpoints {
   //Post
   static String posts() => '$baseUrl/post/posts';
   static String postsUploadUrl() => '$baseUrl/post/posts/upload-url';
+  static String likePost(String postId) => '$baseUrl/post/posts/$postId/likes';
 
   //Feed
   static String feed(String userId) => '$baseUrl/feed/feed/$userId';

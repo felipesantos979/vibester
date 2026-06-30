@@ -26,6 +26,7 @@ class FeedItemModel {
   final String? eventOrganizerName;
   final String? eventOrganizerLogo;
   final int totalConfirmed;
+  final bool isLiked;
 
   final String? title;
   final String? content;
@@ -42,6 +43,7 @@ class FeedItemModel {
     required this.userId,
     required this.createdAt,
     required this.updatedAt,
+    this.isLiked = false,
     this.authorId,
     this.authorUsername,
     this.authorProfilePicture,
@@ -78,6 +80,7 @@ class FeedItemModel {
     return FeedItemModel(
       itemId: json['item_id'] ?? '',
       itemType: _parseItemType(json['item_type']),
+      isLiked: json['isLiked'] ?? false,
       userId: json['user_id'] ?? '',
       createdAt: parseDate(json['created_at']),
       updatedAt: parseDate(json['updated_at']),

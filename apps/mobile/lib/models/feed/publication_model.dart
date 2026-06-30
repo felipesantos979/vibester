@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:mobile/models/feed/feed_item_model.dart';
 
 class PublicationModel {
@@ -52,6 +53,7 @@ class PublicationModel {
   }
 
   factory PublicationModel.fromFeedItem(FeedItemModel item) {
+    debugPrint('>>> post ${item.itemId} isLiked: ${item.isLiked}');
     return PublicationModel(
       id: item.itemId,
       authorId: item.authorId,
@@ -62,6 +64,7 @@ class PublicationModel {
       location: item.establishmentName,
       publicatedAt: item.createdAt,
       likes: item.totalLikes,
+      isLiked: item.isLiked,
     );
   }
 }

@@ -122,4 +122,34 @@ class PostService {
       throw Exception(mensagem);
     }
   }
+
+  Future<void> likePost({
+    required String postId,
+    required String userId,
+  }) async {
+    try {
+      await ApiClient.dio.post(
+        ApiEndpoints.likePost(postId),
+        data: {'userId': userId},
+      );
+    } on DioException catch (e) {
+      final mensagem = e.response?.data?['message'] ?? 'Erro ao curtir post';
+      throw Exception(mensagem);
+    }
+  }
+
+  Future<void> unlikePost({
+    required String postId,
+    required String userId,
+  }) async {
+    try {
+      await ApiClient.dio.delete(
+        ApiEndpoints.likePost(postId),
+        data: {'userId': userId},
+      );
+    } on DioException catch (e) {
+      final mensagem = e.response?.data?['message'] ?? 'Erro ao descurtir post';
+      throw Exception(mensagem);
+    }
+  }
 }
