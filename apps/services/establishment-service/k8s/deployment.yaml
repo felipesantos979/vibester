@@ -8,6 +8,11 @@ metadata:
 spec:
   replicas: 2
   progressDeadlineSeconds: 300
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: establishment-service
