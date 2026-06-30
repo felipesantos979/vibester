@@ -26,7 +26,7 @@ export function createPostFlow() {
 
   if (createRes.status === 201) {
     try {
-      const { id: postId } = JSON.parse(createRes.body);
+      const { postId } = JSON.parse(createRes.body);
       sleep(0.05);
       const likeRes = post(
         `${SERVICES.post}/posts/${postId}/likes`,

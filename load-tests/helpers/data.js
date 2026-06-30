@@ -22,16 +22,24 @@ export function generatePost(userId) {
   };
 }
 
-export function generateEvent(accountId) {
+// SEED_ESTABLISHMENT_ID must exist in the database before running load tests
+const SEED_ESTABLISHMENT_ID = __ENV.SEED_ESTABLISHMENT_ID || '00000000-0000-0000-0000-000000000001';
+
+export function generateEvent(_accountId) {
   const daysAhead = 7 + Math.floor(Math.random() * 30);
+  const startDate = new Date(Date.now() + daysAhead * 86_400_000);
+  const endDate   = new Date(startDate.getTime() + 4 * 3_600_000);
   return {
-    accountId,
-    name:        `K6 Event ${uid()}`,
-    description: 'Load test event',
-    date:        new Date(Date.now() + daysAhead * 86_400_000).toISOString(),
-    latitude:    -23.5505 + (Math.random() - 0.5) * 0.2,
-    longitude:   -46.6333 + (Math.random() - 0.5) * 0.2,
-    category:    'music',
+    name:            `K6 Event ${uid()}`,
+    photoUrl:        'https://picsum.photos/seed/k6/800/600',
+    category:        'music',
+    organizer:       `K6 Organizer VU${__VU}`,
+    location:        'São Paulo, SP',
+    startDate:       startDate.toISOString(),
+    endDate:         endDate.toISOString(),
+    latitude:        -23.5505 + (Math.random() - 0.5) * 0.2,
+    longitude:       -46.6333 + (Math.random() - 0.5) * 0.2,
+    establishmentId: SEED_ESTABLISHMENT_ID,
   };
 }
 
