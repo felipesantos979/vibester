@@ -8,6 +8,7 @@ import { registerSwagger } from "./config/swagger";
 import { connectRedis } from "./config/redis";
 import { register, httpRequestsTotal, httpRequestDurationSeconds } from "./config/metrics";
 import { env } from "./config/env";
+import { EstablishmentKafkaConsumer } from "./kafka/consumer";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -106,6 +107,11 @@ const start = async () => {
     await app.register(establishmentRoutes);
     await connectRedis();
     await app.listen({ port: env.PORT, host: "0.0.0.0" });
+
+    if (env.NODE_ENV !== "test") {
+      const kafkaConsumer = new EstablishmentKafkaConsumer();
+      await kafkaConsumer.start();
+    }
   } catch (err) {
     app.log.error(err);
     process.exit(1);

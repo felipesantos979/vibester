@@ -1,8 +1,10 @@
+import { randomUUID } from "node:crypto";
 import { EstablishmentClient } from "../clients/establishment.client";
 import { prisma } from "../prisma/index";
 import { SerpApiService, PopularityHourData } from "./serpapi.service";
 import { TTLCache } from "../utils/cache";
 import { type AppLogger, consoleLogger } from "../utils/logger";
+import { kafkaProducer } from "../kafka/producer";
 
 type MovementLevelValue =
   | "VERY_LOW"
@@ -172,11 +174,24 @@ export class MovementService {
       },
     });
 
-    await this.establishmentClient.updateMovementLevel(
-      data.establishmentId,
-      data.level,
-      source as "SERPAPI" | "ESTIMATED"
-    );
+    await kafkaProducer.send({
+      topic: "establishments",
+      messages: [
+        {
+          key: data.establishmentId,
+          value: JSON.stringify({
+            eventId: randomUUID(),
+            eventType: "establishment.movement.updated",
+            occurredAt: new Date().toISOString(),
+            data: {
+              establishmentId: data.establishmentId,
+              level: data.level,
+              source,
+            },
+          }),
+        },
+      ],
+    });
   }
 
   private async savePopularTimesDaily(data: {

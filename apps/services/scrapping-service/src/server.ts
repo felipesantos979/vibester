@@ -7,6 +7,7 @@ import { routes } from "./routes";
 import { registerSwagger } from "./config/swagger";
 import { startMovementJob } from "./jobs/movement.job";
 import { prisma } from "./prisma/index";
+import { kafkaProducer } from "./kafka/producer";
 import type { AppLogger } from "./utils/logger";
 
 const app = Fastify({
@@ -33,11 +34,14 @@ const start = async () => {
     error: (msg, cause) => app.log.error({ err: cause }, msg),
   };
 
+  await kafkaProducer.connect();
+
   const stopJob = startMovementJob(appLogger);
 
   const shutdown = async () => {
     app.log.info("Recebendo sinal de encerramento, aguardando tarefas...");
     stopJob();
+    await kafkaProducer.disconnect();
     await app.close();
     await prisma.$disconnect();
     process.exit(0);
