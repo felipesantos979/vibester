@@ -171,6 +171,12 @@ export class MovementService {
         isEstimated: data.isEstimated,
       },
     });
+
+    await this.establishmentClient.updateMovementLevel(
+      data.establishmentId,
+      data.level,
+      source as "SERPAPI" | "ESTIMATED"
+    );
   }
 
   private async savePopularTimesDaily(data: {
