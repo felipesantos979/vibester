@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/feed/publication_model.dart';
@@ -27,7 +28,7 @@ class PublicationCard extends StatelessWidget {
 
   Widget _buildImage(String src) {
     if (src.startsWith('http')) {
-      return Image.network(src, fit: BoxFit.cover);
+      return CachedNetworkImage(imageUrl: src, fit: BoxFit.cover);
     }
     return Image.file(File(src), fit: BoxFit.cover);
   }
@@ -54,7 +55,7 @@ class PublicationCard extends StatelessWidget {
                       : null,
                   child: CircleAvatar(
                     radius: 27,
-                    backgroundImage: NetworkImage(
+                    backgroundImage: CachedNetworkImageProvider(
                       publication.autorProfileImage,
                     ),
                   ),
