@@ -52,11 +52,27 @@ if (env.NODE_ENV !== "test") {
     global: true,
     max: 100,
     timeWindow: "1 minute",
+    keyGenerator: (req) => {
+      const auth = req.headers.authorization;
+      if (auth?.startsWith("Bearer ")) {
+        try {
+          const payload = req.server.jwt.decode<{ sub?: string }>(auth.slice(7));
+          if (payload?.sub) return payload.sub;
+        } catch {}
+      }
+      return req.ip ?? "unknown";
+    },
     errorResponseBuilder: () => ({
+      statusCode: 429,
       message: "Too many requests. Please try again later.",
     }),
   });
 }
+
+app.setErrorHandler((error, _request, reply) => {
+  const statusCode = error.statusCode ?? 500;
+  reply.code(statusCode).send({ message: error.message });
+});
 
 app.addHook("onRequest", (request, _reply, done) => {
   (request as FastifyRequest & { _startTime: number })._startTime = Date.now();
