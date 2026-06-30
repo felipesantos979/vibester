@@ -7,6 +7,11 @@ metadata:
     app: user-service
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
   selector:
     matchLabels:
       app: user-service
@@ -37,7 +42,7 @@ spec:
             #   value: "http://jaeger-collector:4318"
           resources:
             requests:
-              cpu: "100m"
+              cpu: "50m"
               memory: "128Mi"
             limits:
               cpu: "500m"
