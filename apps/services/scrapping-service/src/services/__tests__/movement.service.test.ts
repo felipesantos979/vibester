@@ -46,12 +46,18 @@ function makePopularityResult(overrides: Partial<PlacePopularityResult> = {}): P
 }
 
 describe("MovementService", () => {
-  let mockEstablishmentClient: { listOpenEstablishments: ReturnType<typeof vi.fn> };
+  let mockEstablishmentClient: {
+    listOpenEstablishments: ReturnType<typeof vi.fn>;
+    updateMovementLevel: ReturnType<typeof vi.fn>;
+  };
   let mockSerpApiService: { getPlacePopularity: ReturnType<typeof vi.fn> };
   let service: MovementService;
 
   beforeEach(() => {
-    mockEstablishmentClient = { listOpenEstablishments: vi.fn() };
+    mockEstablishmentClient = {
+      listOpenEstablishments: vi.fn(),
+      updateMovementLevel: vi.fn().mockResolvedValue(undefined),
+    };
     mockSerpApiService = { getPlacePopularity: vi.fn() };
     service = new MovementService(
       mockEstablishmentClient as any,

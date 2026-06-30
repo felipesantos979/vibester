@@ -4,14 +4,17 @@ const BASE_DELAY_MS = 500;
 
 export async function fetchWithTimeout(
   url: URL | string,
-  timeoutMs = DEFAULT_TIMEOUT_MS,
+  initOrTimeout?: RequestInit | number,
   retries = DEFAULT_RETRIES
 ): Promise<Response> {
+  const timeoutMs = typeof initOrTimeout === "number" ? initOrTimeout : DEFAULT_TIMEOUT_MS;
+  const init: RequestInit = typeof initOrTimeout === "object" ? initOrTimeout : {};
+
   let lastError: unknown;
 
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      return await fetch(url.toString(), { signal: AbortSignal.timeout(timeoutMs) });
+      return await fetch(url.toString(), { ...init, signal: AbortSignal.timeout(timeoutMs) });
     } catch (err) {
       lastError = err;
       if (attempt < retries) {

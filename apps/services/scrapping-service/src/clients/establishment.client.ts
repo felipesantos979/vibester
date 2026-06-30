@@ -25,4 +25,27 @@ export class EstablishmentClient {
 
     return response.json();
   }
+
+  async updateMovementLevel(
+    id: string,
+    level: "VERY_LOW" | "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH" | "UNAVAILABLE",
+    source: "SERPAPI" | "ESTIMATED"
+  ): Promise<void> {
+    if (!this.baseUrl) {
+      throw new Error("ESTABLISHMENT_SERVICE_URL não configurada");
+    }
+
+    const response = await fetchWithTimeout(
+      `${this.baseUrl}/establishments/${id}/movement`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ level, source }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Erro ao atualizar movimento: ${response.status}`);
+    }
+  }
 }

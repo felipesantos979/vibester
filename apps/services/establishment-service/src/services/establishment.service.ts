@@ -204,6 +204,29 @@ export class EstablishmentService {
     });
   }
 
+  static async updateMovementLevel(
+    id: string,
+    level: "VERY_LOW" | "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH" | "UNAVAILABLE"
+  ): Promise<void> {
+    const LEVEL_TO_INT: Record<string, number> = {
+      UNAVAILABLE: 0,
+      VERY_LOW: 1,
+      LOW: 2,
+      MEDIUM: 3,
+      HIGH: 4,
+      VERY_HIGH: 5,
+    };
+
+    const nivelMovimento = LEVEL_TO_INT[level] ?? 0;
+
+    await prismaClient.establishment.update({
+      where: { id },
+      data: { nivelMovimento },
+    });
+
+    await redis.del(`establishment:profile:${id}`).catch(() => {});
+  }
+
   static async listOpenEstablishments(): Promise<EstablishmentInterface[]> {
     return cacheAside("establishment:open", 60, async () => {
       const now = new Date();
