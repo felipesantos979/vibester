@@ -38,15 +38,24 @@ class PlaceModel {
   //Json pra dart, é pra quando os dados virem da API, pra q eles possam ser usados pelo dart
   factory PlaceModel.fromJson(Map<String, dynamic> json) {
     final location = json['location'] as Map<String, dynamic>?;
+
+    final distanceToKm = (json['distanceTo'] as num?)?.toDouble();
+
     return PlaceModel(
       id: json['id'],
       nome: json['name'] ?? '',
-      nivelMovimento: json['movementLevel'] ?? 0,
+      nivelMovimento: json['movementLevel'] ?? json['nivelMovimento'] ?? 0,
       categoria: json['category'] ?? '',
       avaliacao:
           ((json['averageRating'] ?? json['rating']) as num?)?.toDouble() ?? 0,
       nivelPrecoMedio: json['priceIndicator'] ?? '',
       bio: json['bio'] ?? '',
+      endereco: json['address'] ?? json['endereco'] ?? '',
+      qtdAvaliacoes: json['reviewCount'] ?? json['qtdAvaliacoes'] ?? 0,
+      distribuicao: (json['ratingDistribution'] ?? json['distribuicao']) != null
+          ? List<double>.from(
+              (json['ratingDistribution'] ?? json['distribuicao']),
+            )
       endereco: json['endereco'] ?? '',
       qtdAvaliacoes: json['reviewCount'] ?? 0,
       distribuicao: json['ratingDistribution'] != null
@@ -54,9 +63,12 @@ class PlaceModel {
           : [],
       profileImage:
           json['photoUrl'] ?? json['profileImage'] ?? json['icon'] ?? '',
-      bannerImage: json['banner'] ?? '',
-      latitude: (location?['latitude'] as num?)?.toDouble(),
-      longitude: (location?['longitude'] as num?)?.toDouble(),
+      bannerImage: json['banner'] ?? json['bannerUrl'] ?? '',
+      latitude: (location?['latitude'] as num?)?.toDouble() ??
+          (json['latitude'] as num?)?.toDouble(),
+      longitude: (location?['longitude'] as num?)?.toDouble() ??
+          (json['longitude'] as num?)?.toDouble(),
+      distancia: distanceToKm != null ? distanceToKm * 1000 : null,
     );
   }
 

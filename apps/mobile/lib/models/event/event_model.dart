@@ -16,6 +16,10 @@ class EventModel {
   final double latitude;
   final double longitude;
   final double distanceKm;
+  final String organizador;
+  final DateTime? dataFimEvento;
+  final String ticketLink;
+  final bool emDestaque;
 
   EventModel({
     this.id,
@@ -33,6 +37,10 @@ class EventModel {
     this.latitude = 0,
     this.longitude = 0,
     this.distanceKm = 0,
+    this.organizador = '',
+    this.dataFimEvento,
+    this.ticketLink = '',
+    this.emDestaque = false,
   });
 
   //Json pra dart, é pra quando os dados virem da API, pra q eles possam ser usados pelo dart.
@@ -40,7 +48,7 @@ class EventModel {
   factory EventModel.fromJson(Map<String, dynamic> json) {
     return EventModel(
       id: json['id'],
-      placeId: json['placeId'],
+      placeId: json['placeId'] ?? json['establishmentId'],
       dataDoEvento: json['startDate'] != null
           ? DateTime.parse(json['startDate'])
           : json['eventDate'] != null
@@ -49,13 +57,18 @@ class EventModel {
       titulo: json['name'] ?? json['title'] ?? 'Evento sem título',
       categoria: json['category'] ?? 'Sem categoria',
       localizacao: json['location'] ?? 'Local não informado',
-      informacoes: json['info'] ?? '',
+      informacoes: json['info'] ?? json['informacoes'] ?? '',
       artistas: json['artists'] ?? '',
       imageUrl: json['photoUrl'] ?? json['imageUrl'] ?? '',
       totalConfirmed: json['totalConfirmed'] ?? 0,
       latitude: (json['latitude'] ?? 0).toDouble(),
       longitude: (json['longitude'] ?? 0).toDouble(),
       distanceKm: (json['distanceKm'] ?? 0).toDouble(),
+      organizador: json['organizer'] ?? '',
+      dataFimEvento:
+          json['endDate'] != null ? DateTime.parse(json['endDate']) : null,
+      ticketLink: json['ticketLink'] ?? '',
+      emDestaque: json['isFeatured'] ?? false,
     );
   }
 

@@ -6,7 +6,10 @@ import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/models/place/exclusive_offers_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
 import 'package:mobile/screens/highlights/category_highlights_section.dart';
+import 'package:mobile/service/event/event_service.dart';
+import 'package:mobile/service/location/location_service.dart';
 import 'package:mobile/utils/colors.dart';
+import 'package:mobile/utils/location_satate.dart';
 import 'package:mobile/widgets/cards/highlights/close_to_you.dart';
 import 'package:mobile/widgets/cards/highlights/exclusive_offers.dart';
 import 'package:mobile/widgets/cards/event/featured_events.dart';
@@ -30,19 +33,58 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
   int _currentPage = 0;
   int _currentOffer = 0;
 
+  final _locationService = LocationService();
+  // Controla o icone de refresh
+  bool _atualizandoLocalizacao = false;
+
+  final _eventService = EventService();
+  List<EventModel> _eventosDaSemana = [];
+  bool _carregandoEventosDaSemana = true;
+
+  Future<void> _buscarEventosDaSemana() async {
+    try {
+      final eventos = await _eventService.getEventsWeek();
+      if (!mounted) return;
+      setState(() => _eventosDaSemana = eventos);
+    } catch (e) {
+      debugPrint('Erro ao buscar eventos da semana: $e');
+    } finally {
+      if (mounted) setState(() => _carregandoEventosDaSemana = false);
+    }
+  }
+
+  Future<void> _atualizarLocalizacaoManualmente() async {
+    setState(() {
+      _atualizandoLocalizacao = true;
+      latitudeAtual = null;
+      longitudeAtual = null;
+    });
+
+    try {
+      final posicao = await _locationService.getCurrentPosition();
+      latitudeAtual = posicao.latitude;
+      longitudeAtual = posicao.longitude;
+    } catch (e) {
+      debugPrint('Erro ao atualizar localização manualmente: $e');
+    } finally {
+      if (mounted) setState(() => _atualizandoLocalizacao = false);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.95);
     _offersController = PageController(viewportFraction: 0.95);
 
+    _buscarEventosDaSemana();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<EventsListProvider>().fetchEvents();
 
       _timer = Timer.periodic(const Duration(seconds: 4), (_) {
-        final atual = context.read<EventsListProvider>().events;
-        if (atual.isEmpty) return;
-        _currentPage = (_currentPage + 1) % atual.length;
+        if (_eventosDaSemana.isEmpty) return;
+        _currentPage = (_currentPage + 1) % _eventosDaSemana.length;
         _pageController.animateToPage(
           _currentPage,
           duration: const Duration(milliseconds: 700),
@@ -178,16 +220,34 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                   padding: const EdgeInsets.only(top: 20),
                   child: SizedBox(
                     height: 270,
-                    child: PageView.builder(
-                      padEnds: false,
-                      controller: _pageController,
-                      onPageChanged: (index) =>
-                          setState(() => _currentPage = index),
-                      itemCount: event.length,
-                      itemBuilder: (context, index) {
-                        return WeeklyEvents(evento: event[index]);
-                      },
-                    ),
+                    child: _carregandoEventosDaSemana
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: Color(colorAmbar),
+                            ),
+                          )
+                        : _eventosDaSemana.isEmpty
+                            ? const Center(
+                                child: Text(
+                                  'Nenhum evento esta semana',
+                                  style: TextStyle(
+                                    color: Colors.white38,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              )
+                            : PageView.builder(
+                                padEnds: false,
+                                controller: _pageController,
+                                onPageChanged: (index) =>
+                                    setState(() => _currentPage = index),
+                                itemCount: _eventosDaSemana.length,
+                                itemBuilder: (context, index) {
+                                  return WeeklyEvents(
+                                    evento: _eventosDaSemana[index],
+                                  );
+                                },
+                              ),
                   ),
                 ),
 
@@ -223,20 +283,84 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
                 ),
                 const SizedBox(height: 30),
 
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Perto de Você",
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Perto de Você",
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
                     ),
-                  ),
+                    _atualizandoLocalizacao
+                        ? const Padding(
+                            padding: EdgeInsets.all(12),
+                            child: SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            ),
+                          )
+                        : IconButton(
+                            icon: const Icon(
+                              Icons.sync,
+                              color: Colors.white,
+                              size: 27,
+                            ),
+                            onPressed: _atualizarLocalizacaoManualmente,
+                          ),
+                  ],
                 ),
 
                 const SizedBox(height: 20),
-                CloseToYou(),
+                FutureBuilder<void>(
+                  // Aguarda a mesma Future que o home_tab.dart guardou ao capturar a localização
+                  future: localizacaoFuture,
+                  builder: (context, snapshot) {
+                    if (localizacaoFuture != null &&
+                        snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 24),
+                          child: CircularProgressIndicator(
+                            color: Color(colorAmbar),
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (latitudeAtual == null || longitudeAtual == null) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.location_off,
+                            color: Colors.white38,
+                            size: 40,
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'Não foi possível acessar sua localização. '
+                            'Verifique se o GPS está ativado e se o app '
+                            'tem permissão de localização.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white38,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+
+                    return CloseToYou();
+                  },
+                ),
                 const SizedBox(height: 10),
               ],
             ),
