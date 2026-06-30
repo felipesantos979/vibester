@@ -6,7 +6,7 @@ import 'package:mobile/service/api_endpoints.dart';
 class PlaceService {
   Future<List<PlaceModel>> getPlaces() async {
     final response = await ApiClient.dio.get(ApiEndpoints.establishments());
-    final List data = response.data;
+    final List data = response.data['data'];
     return data.map((json) => PlaceModel.fromJson(json)).toList();
   }
 

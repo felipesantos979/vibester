@@ -251,4 +251,20 @@ class UserService {
     }
     return 'https://$url';
   }
+
+  Future<void> verifyEmail({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      await ApiClient.dio.post(
+        ApiEndpoints.verifyEmail(),
+        data: {'email': email, 'code': code},
+      );
+    } on DioException catch (e) {
+      final mensagem =
+          e.response?.data?['message'] ?? 'Código inválido ou expirado';
+      throw Exception(mensagem);
+    }
+  }
 }

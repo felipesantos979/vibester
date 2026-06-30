@@ -56,6 +56,10 @@ class PlaceModel {
           ? List<double>.from(
               (json['ratingDistribution'] ?? json['distribuicao']),
             )
+      endereco: json['endereco'] ?? '',
+      qtdAvaliacoes: json['reviewCount'] ?? 0,
+      distribuicao: json['ratingDistribution'] != null
+          ? List<double>.from(json['ratingDistribution'])
           : [],
       profileImage:
           json['photoUrl'] ?? json['profileImage'] ?? json['icon'] ?? '',

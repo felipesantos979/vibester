@@ -52,6 +52,7 @@ export interface FeedItem {
     totalComments?: number;
 
     // controle
+    isLiked: boolean;
     isSponsored: boolean;
     isDeleted: boolean;
     updatedAt?: Date;

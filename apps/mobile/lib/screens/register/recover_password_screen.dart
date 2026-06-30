@@ -14,6 +14,14 @@ class RecoverPasswordScreen extends StatefulWidget {
 
 class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,6 +72,7 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                     SizedBox(
                       width: 350,
                       child: TextFormField(
+                        controller: _emailController,
                         style: TextStyle(color: Colors.white),
                         cursorColor: Color(colorAmbar),
                         decoration: InputDecoration(
@@ -129,14 +138,20 @@ class _RecoverPasswordScreenState extends State<RecoverPasswordScreen> {
                           label: 'Enviar Codigo',
                           onPressed: () {
                             if (!_formKey.currentState!.validate()) return;
+
+                            final email = _emailController.text.trim();
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => EmailConfirmScreen(
+                                  senha: '',
+                                  email: email,
                                   onEmailConfirmed: () {
                                     Navigator.pushNamed(
                                       context,
                                       AppRoutes.resetPassword,
+                                      arguments: email,
                                     );
                                   },
                                 ),
