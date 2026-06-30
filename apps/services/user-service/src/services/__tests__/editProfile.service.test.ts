@@ -157,7 +157,7 @@ describe("EditProfileService", () => {
       });
       expect(mockProducerSend).toHaveBeenCalledWith({
         topic: "user.followed",
-        messages: [{ value: JSON.stringify({ followerId: FOLLOWER_ID, followingId: FOLLOWING_ID }) }],
+        messages: [{ value: JSON.stringify({ followerId: FOLLOWER_ID, followedId: FOLLOWING_ID }) }],
       });
       expect(result.followers).toBe(1);
     });

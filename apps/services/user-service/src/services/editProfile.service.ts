@@ -51,7 +51,7 @@ export class EditProfileService {
 
         await producer.send({
             topic: 'user.followed',
-            messages: [{ value: JSON.stringify({ followerId, followingId }) }],
+            messages: [{ value: JSON.stringify({ followerId, followedId: followingId }) }],
         });
 
         await redis.del(
@@ -82,6 +82,11 @@ export class EditProfileService {
             ]);
 
             return followingProfile;
+        });
+
+        await producer.send({
+            topic: 'user.unfollowed',
+            messages: [{ value: JSON.stringify({ followerId, followedId: followingId }) }],
         });
 
         await redis.del(
