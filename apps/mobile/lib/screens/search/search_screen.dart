@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/models/user/user_model.dart';
@@ -511,7 +512,7 @@ class _UserSearchTile extends StatelessWidget {
               backgroundColor: Color(colorGrey),
               backgroundImage:
                   (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
-                      ? NetworkImage(user.avatarUrl!)
+                      ? CachedNetworkImageProvider(user.avatarUrl!)
                       : null,
               child: (user.avatarUrl == null || user.avatarUrl!.isEmpty)
                   ? const Icon(Icons.person, color: Colors.white54, size: 26)

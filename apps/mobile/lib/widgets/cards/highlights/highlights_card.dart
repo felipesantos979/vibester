@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/models/highlights/highlight_model.dart';
 import 'package:mobile/routes/app_routes.dart';
@@ -39,26 +40,19 @@ class HighlightsCard extends StatelessWidget {
                       color: Colors.white38,
                     ),
                   )
-                : Image.network(
-                    imageUrl,
+                : CachedNetworkImage(
+                    imageUrl: imageUrl,
                     fit: BoxFit.cover,
-                    loadingBuilder: (context, child, progress) {
-                      if (progress == null) return child;
-                      return Container(
-                        color: Colors.white12,
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            color: Color(colorAmbar),
-                            strokeWidth: 2,
-                            value: progress.expectedTotalBytes != null
-                                ? progress.cumulativeBytesLoaded /
-                                      progress.expectedTotalBytes!
-                                : null,
-                          ),
+                    placeholder: (context, url) => Container(
+                      color: Colors.white12,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          color: Color(colorAmbar),
+                          strokeWidth: 2,
                         ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
+                      ),
+                    ),
+                    errorWidget: (context, url, error) {
                       debugPrint('Erro ao carregar imagem ($imageUrl): $error');
                       return Container(
                         color: Colors.white12,
