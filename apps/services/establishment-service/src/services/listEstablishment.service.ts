@@ -50,14 +50,14 @@ export class ListEstablishmentsService {
         return candidates
             .map((est) => ({
                 ...est,
-                distanceKm: calculateDistance(
+                distanceTo: calculateDistance(
                     input.latitude,
                     input.longitude,
                     est.latitude,
                     est.longitude,
                 ),
             }))
-            .filter((e) => e.distanceKm <= radiusKm)
-            .sort((a, b) => a.distanceKm - b.distanceKm);
+            .filter((e) => e.distanceTo <= radiusKm)
+            .sort((a, b) => a.distanceTo - b.distanceTo);
     }
 }

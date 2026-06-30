@@ -309,7 +309,7 @@ describe("ListEstablishmentsService.listEstablishments (nearby)", () => {
     vi.clearAllMocks();
   });
 
-  it("returns establishments within the radius with distanceKm attached", async () => {
+  it("returns establishments within the radius with distanceTo attached", async () => {
     mockFindMany.mockResolvedValueOnce([makeEstablishment()]);
 
     const result = await listEstablishmentsNearbyService.listEstablishments({
@@ -319,7 +319,7 @@ describe("ListEstablishmentsService.listEstablishments (nearby)", () => {
     });
 
     expect(result).toHaveLength(1);
-    expect(result[0].distanceKm).toBeCloseTo(0, 1);
+    expect(result[0].distanceTo).toBeCloseTo(0, 1);
   });
 
   it("excludes establishments outside the radius", async () => {
@@ -336,7 +336,7 @@ describe("ListEstablishmentsService.listEstablishments (nearby)", () => {
     expect(result).toHaveLength(0);
   });
 
-  it("sorts results by distanceKm ascending", async () => {
+  it("sorts results by distanceTo ascending", async () => {
     mockFindMany.mockResolvedValueOnce([
       makeEstablishment({ id: "est-far", latitude: BASE_LAT + 0.05, longitude: BASE_LON }),
       makeEstablishment({ id: "est-near", latitude: BASE_LAT + 0.01, longitude: BASE_LON }),
