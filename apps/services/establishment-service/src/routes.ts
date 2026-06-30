@@ -96,7 +96,7 @@ const nearbyEstablishmentSchema = {
   type: "object",
   properties: {
     ...establishmentSchema.properties,
-    distanceKm: { type: "number" },
+    distanceTo: { type: "number" },
   },
 };
 
