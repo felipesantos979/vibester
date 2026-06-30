@@ -1,7 +1,7 @@
 export interface SerpApiResponse {
   place_results?: {
     title?: string;
-    type?: string;
+    type?: string | string[];
 
     popular_times?: {
       current_day?: string;
