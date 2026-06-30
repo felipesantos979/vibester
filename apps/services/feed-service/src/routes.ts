@@ -1,5 +1,13 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyRequest } from "fastify";
+import "@fastify/jwt";
 import { FeedController } from "./controllers/feed.controller";
+
+declare module "@fastify/jwt" {
+    interface FastifyJWT {
+        payload: { userId: string; accountId: string };
+        user: { userId: string; accountId: string };
+    }
+}
 
 const feedController = new FeedController();
 
@@ -71,6 +79,16 @@ export async function feedRoutes(app: FastifyInstance) {
   }, async () => ({ status: "ok" }));
 
   app.get("/feed/:userId", {
+    onRequest: [async (request: FastifyRequest<{ Params: { userId: string } }>, reply) => {
+      try {
+        await request.jwtVerify();
+      } catch {
+        return reply.status(401).send({ message: "Unauthorized" });
+      }
+      if (request.user.accountId !== request.params.userId) {
+        return reply.status(403).send({ message: "Forbidden" });
+      }
+    }],
     schema: {
       tags: ["Feed"],
       summary: "Buscar feed do usuário",
@@ -103,6 +121,8 @@ export async function feedRoutes(app: FastifyInstance) {
       response: {
         200: feedResponseSchema,
         400: errorSchema,
+        401: errorSchema,
+        403: errorSchema,
         500: errorSchema,
       },
     },

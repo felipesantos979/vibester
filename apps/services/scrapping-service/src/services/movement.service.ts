@@ -1,8 +1,10 @@
+import { randomUUID } from "node:crypto";
 import { EstablishmentClient } from "../clients/establishment.client";
 import { prisma } from "../prisma/index";
 import { SerpApiService, PopularityHourData } from "./serpapi.service";
 import { TTLCache } from "../utils/cache";
 import { type AppLogger, consoleLogger } from "../utils/logger";
+import { kafkaProducer } from "../kafka/producer";
 
 type MovementLevelValue =
   | "VERY_LOW"
@@ -71,6 +73,7 @@ export class MovementService {
               statusText: "Estimativa baseada em histórico",
               timeSpent: null,
               isEstimated: true,
+              category: data?.category ?? null,
             });
 
             this.logger.info(
@@ -88,6 +91,7 @@ export class MovementService {
             statusText: data?.liveStatus ?? null,
             timeSpent: data?.timeSpent ?? null,
             isEstimated: false,
+            category: data?.category ?? null,
           });
 
           continue;
@@ -104,6 +108,7 @@ export class MovementService {
           statusText: data.liveStatus,
           timeSpent: data.timeSpent,
           isEstimated: false,
+          category: data.category,
         });
 
         if (data.currentDayInt !== null && data.hoursData.length > 0) {
@@ -146,6 +151,7 @@ export class MovementService {
     statusText: string | null;
     timeSpent: string | null;
     isEstimated: boolean;
+    category: string | null;
   }) {
     const source = data.isEstimated ? "ESTIMATED" : "SERPAPI";
 
@@ -170,6 +176,26 @@ export class MovementService {
         timeSpent: data.timeSpent,
         isEstimated: data.isEstimated,
       },
+    });
+
+    await kafkaProducer.send({
+      topic: "establishments",
+      messages: [
+        {
+          key: data.establishmentId,
+          value: JSON.stringify({
+            eventId: randomUUID(),
+            eventType: "establishment.movement.updated",
+            occurredAt: new Date().toISOString(),
+            data: {
+              establishmentId: data.establishmentId,
+              level: data.level,
+              source,
+              ...(data.category ? { category: data.category } : {}),
+            },
+          }),
+        },
+      ],
     });
   }
 

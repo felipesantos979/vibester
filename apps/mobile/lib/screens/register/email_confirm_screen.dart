@@ -4,6 +4,7 @@ import 'package:mobile/models/user/user_model.dart';
 import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/service/api_client.dart';
+import 'package:mobile/service/auth_storage_service.dart';
 import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/buttons/primary_button.dart';
@@ -55,6 +56,8 @@ class _EmailConfirmScreenState extends State<EmailConfirmScreen> {
         accountId: accountId,
         token: token,
       );
+
+      await AuthStorageService.saveSession(usuarioLogado);
 
       if (!mounted) return;
       context.read<UserProvider>().setUser(usuarioLogado);

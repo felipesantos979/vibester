@@ -118,7 +118,10 @@ class _HomeTabState extends State<HomeTab> with SingleTickerProviderStateMixin {
         children: [
           //Chama passando o estado da barra
           FeedScreen(navbarVisibleNotifier: widget.navbarVisibleNotifier),
-          HighlightsSectionScreen(),
+          HighlightsSectionScreen(
+            tabController: _tabController,
+            tabIndex: _abaDestaquesIndex,
+          ),
           HotPlacesScreen(),
         ],
       ),

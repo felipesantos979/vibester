@@ -3,6 +3,8 @@ import { EstablishmentService } from "../services/establishment.service";
 import {
   ListEstablishmentsQuerystring,
   GetEstablishmentParams,
+  UpdateMovementLevelParams,
+  UpdateMovementLevelBody,
 } from "../types/establishment.types";
 import { z } from "zod";
 import { UploadService } from "../services/upload.service";
@@ -220,6 +222,30 @@ export async function uploadProfilePictureController(
 
     console.error("Upload profile picture error:", error);
     return reply.status(500).send({ message: "Internal server error" });
+  }
+}
+
+export async function updateMovementLevelController(
+  request: FastifyRequest<{ Params: UpdateMovementLevelParams; Body: UpdateMovementLevelBody }>,
+  reply: FastifyReply
+) {
+  try {
+    const { id } = request.params;
+    const { level } = request.body;
+
+    await EstablishmentService.updateMovementLevel(id, level);
+
+    return reply.status(204).send();
+  } catch (error: unknown) {
+    if (
+      error instanceof Error &&
+      (error as NodeJS.ErrnoException).code === "P2025"
+    ) {
+      return reply.status(404).send({ message: "Estabelecimento não encontrado" });
+    }
+
+    console.error("Update movement level error:", error);
+    return reply.status(500).send({ message: "Erro interno no servidor" });
   }
 }
 

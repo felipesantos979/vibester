@@ -80,7 +80,7 @@ class FeedItemModel {
     return FeedItemModel(
       itemId: json['item_id'] ?? '',
       itemType: _parseItemType(json['item_type']),
-      isLiked: json['isLiked'] ?? false,
+      isLiked: json['is_liked'] ?? false,
       userId: json['user_id'] ?? '',
       createdAt: parseDate(json['created_at']),
       updatedAt: parseDate(json['updated_at']),

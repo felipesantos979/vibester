@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/user/user_model.dart';
+import 'package:mobile/service/api_client.dart';
+import 'package:mobile/service/auth_storage_service.dart';
 
 class UserProvider extends ChangeNotifier {
   UserModel? _user;
@@ -40,6 +42,13 @@ class UserProvider extends ChangeNotifier {
         _user!.cidade = valor;
         break;
     }
+    notifyListeners();
+  }
+
+  Future<void> logout() async {
+    _user = null;
+    ApiClient.token = null;
+    await AuthStorageService.clearSession();
     notifyListeners();
   }
 

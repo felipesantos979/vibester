@@ -5,7 +5,7 @@ vi.mock('../../src/config/cassandra', () => ({
   getCassandraClient: () => ({ execute: mockExecute }),
 }));
 
-import { buildServer } from '../helpers/fastify.test.helper';
+import { buildServer, makeAuthHeader } from '../helpers/fastify.test.helper';
 
 const USER_ID = 'a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
 const ITEM_ID = 'b1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
@@ -50,8 +50,12 @@ function makeFeedRow(overrides: Record<string, unknown> = {}) {
 
 describe('feed-service — HTTP Integration', () => {
   let app: Awaited<ReturnType<typeof buildServer>>;
+  let authHeader: string;
 
-  beforeAll(async () => { app = await buildServer(); });
+  beforeAll(async () => {
+    app = await buildServer();
+    authHeader = makeAuthHeader(app, USER_ID);
+  });
   afterAll(async () => { await app.close(); });
   beforeEach(() => {
     vi.resetAllMocks();
@@ -63,7 +67,7 @@ describe('feed-service — HTTP Integration', () => {
       const rows = [makeFeedRow()];
       mockExecute.mockResolvedValueOnce({ rows });
 
-      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}` });
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}`, headers: { authorization: authHeader } });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
@@ -75,7 +79,7 @@ describe('feed-service — HTTP Integration', () => {
     it('retorna feed vazio quando não há conteúdo', async () => {
       mockExecute.mockResolvedValueOnce({ rows: [] });
 
-      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}` });
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}`, headers: { authorization: authHeader } });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);
@@ -87,7 +91,7 @@ describe('feed-service — HTTP Integration', () => {
       const rows = [makeFeedRow()];
       mockExecute.mockResolvedValueOnce({ rows });
 
-      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}?limit=5` });
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}?limit=5`, headers: { authorization: authHeader } });
 
       expect(res.statusCode).toBe(200);
       expect(mockExecute).toHaveBeenCalledWith(
@@ -98,12 +102,12 @@ describe('feed-service — HTTP Integration', () => {
     });
 
     it('retorna 400 para limit inválido', async () => {
-      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}?limit=0` });
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}?limit=0`, headers: { authorization: authHeader } });
       expect(res.statusCode).toBe(400);
     });
 
     it('retorna 400 para limit acima do máximo', async () => {
-      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}?limit=100` });
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}?limit=100`, headers: { authorization: authHeader } });
       expect(res.statusCode).toBe(400);
     });
 
@@ -115,6 +119,7 @@ describe('feed-service — HTTP Integration', () => {
       const res = await app.inject({
         method: 'GET',
         url: `/feed/${USER_ID}?cursor=${encodeURIComponent(cursorDate)}`,
+        headers: { authorization: authHeader },
       });
 
       expect(res.statusCode).toBe(200);
@@ -124,6 +129,7 @@ describe('feed-service — HTTP Integration', () => {
       const res = await app.inject({
         method: 'GET',
         url: `/feed/${USER_ID}?cursor=not-a-date`,
+        headers: { authorization: authHeader },
       });
 
       expect(res.statusCode).toBe(400);
@@ -137,7 +143,7 @@ describe('feed-service — HTTP Integration', () => {
       ];
       mockExecute.mockResolvedValueOnce({ rows });
 
-      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}` });
+      const res = await app.inject({ method: 'GET', url: `/feed/${USER_ID}`, headers: { authorization: authHeader } });
 
       expect(res.statusCode).toBe(200);
       const body = JSON.parse(res.payload);

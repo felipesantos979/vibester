@@ -5,6 +5,7 @@ import {
   getEstablishmentProfileController,
   listOpenEstablishmentsController,
   uploadProfilePictureController,
+  updateMovementLevelController,
 } from "./controllers/establishment.controller";
 import { listNearbyEstablishmentsController } from "./controllers/establishment.controller";
 
@@ -300,6 +301,43 @@ export async function establishmentRoutes(
       },
     },
     updateEstablishmentRatingController
+  );
+
+  fastify.patch(
+    "/establishments/:id/movement",
+    {
+      schema: {
+        tags: ["Establishments"],
+        summary: "Atualizar nível de movimento",
+        description:
+          "Atualiza o nível de movimento de um estabelecimento. Chamado pelo scrapping-service a cada hora.",
+        params: {
+          type: "object",
+          required: ["id"],
+          properties: { id: { type: "string", format: "uuid" } },
+        },
+        body: {
+          type: "object",
+          required: ["level"],
+          properties: {
+            level: {
+              type: "string",
+              enum: ["VERY_LOW", "LOW", "MEDIUM", "HIGH", "VERY_HIGH", "UNAVAILABLE"],
+            },
+            source: {
+              type: "string",
+              enum: ["SERPAPI", "GOOGLE_MAPS", "MANUAL", "ESTIMATED"],
+            },
+          },
+        },
+        response: {
+          204: { type: "null" },
+          404: errorSchema,
+          500: errorSchema,
+        },
+      },
+    },
+    updateMovementLevelController
   );
 
   fastify.post(

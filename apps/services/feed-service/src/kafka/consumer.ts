@@ -12,7 +12,6 @@ import { postLikedSchema } from "../schema/events/post-liked.schema";
 import { postUnlikedSchema } from "../schema/events/post-unliked.schema";
 import { kafka } from "./client";
 
-// tópicos cujo payload chega direto, sem o envelope kafkaEventSchema
 const DIRECT_PAYLOAD_TOPICS: Record<string, (data: unknown) => Promise<void>> = {};
 
 export class KafkaConsumer {
@@ -24,7 +23,9 @@ export class KafkaConsumer {
         "establishments",
         "events",
         "post.liked",
-        "post.unliked"
+        "post.unliked",
+        "user.followed",
+        "user.unfollowed",
     ];
 
     private readonly directTopicHandlers: Record<string, (data: unknown) => Promise<void>> = {
@@ -33,6 +34,12 @@ export class KafkaConsumer {
 
         "post.unliked": async (data: unknown) =>
             this.feedService.handlePostUnliked(postUnlikedSchema.parse(data)),
+
+        "user.followed": async (data: unknown) =>
+            this.feedService.handleUserFollowed(followSchema.parse(data)),
+
+        "user.unfollowed": async (data: unknown) =>
+            this.feedService.handleUserUnfollowed(followSchema.parse(data)),
     };
 
     private handlers = {
@@ -103,7 +110,6 @@ export class KafkaConsumer {
         try {
             const rawEvent = JSON.parse(value);
 
-            // tópicos com payload direto, sem envelope kafkaEventSchema
             const directHandler = this.directTopicHandlers[topic];
             if (directHandler) {
                 await directHandler(rawEvent);

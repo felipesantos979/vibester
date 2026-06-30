@@ -1,4 +1,4 @@
-import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
+import Fastify, { FastifyInstance, FastifyRequest, FastifyReply, FastifyError } from "fastify";
 import cors from "@fastify/cors";
 import jwt from "@fastify/jwt";
 import multipart from "@fastify/multipart";
@@ -8,6 +8,7 @@ import { registerSwagger } from "./config/swagger";
 import { connectRedis } from "./config/redis";
 import { register, httpRequestsTotal, httpRequestDurationSeconds } from "./config/metrics";
 import { env } from "./config/env";
+import { EstablishmentKafkaConsumer } from "./kafka/consumer";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -52,11 +53,27 @@ if (env.NODE_ENV !== "test") {
     global: true,
     max: 100,
     timeWindow: "1 minute",
+    keyGenerator: (req) => {
+      const auth = req.headers.authorization;
+      if (auth?.startsWith("Bearer ")) {
+        try {
+          const payload = req.server.jwt.decode<{ sub?: string }>(auth.slice(7));
+          if (payload?.sub) return payload.sub;
+        } catch {}
+      }
+      return req.ip ?? "unknown";
+    },
     errorResponseBuilder: () => ({
+      statusCode: 429,
       message: "Too many requests. Please try again later.",
     }),
   });
 }
+
+app.setErrorHandler((error: FastifyError, _request, reply) => {
+  const statusCode = error.statusCode ?? 500;
+  reply.code(statusCode).send({ message: error.message });
+});
 
 app.addHook("onRequest", (request, _reply, done) => {
   (request as FastifyRequest & { _startTime: number })._startTime = Date.now();
@@ -90,6 +107,11 @@ const start = async () => {
     await app.register(establishmentRoutes);
     await connectRedis();
     await app.listen({ port: env.PORT, host: "0.0.0.0" });
+
+    if (env.NODE_ENV !== "test") {
+      const kafkaConsumer = new EstablishmentKafkaConsumer();
+      await kafkaConsumer.start();
+    }
   } catch (err) {
     app.log.error(err);
     process.exit(1);

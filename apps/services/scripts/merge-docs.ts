@@ -45,6 +45,7 @@ const services: ServiceConfig[] = [
     name: 'feed-service',
     prefix: '/feed',
     env: {
+      JWT_SECRET: 'ci-secret',
       ASTRA_SECURE_CONNECT_BUNDLE: '/dev/null',
       ASTRA_TOKEN: 'ci-dummy',
       ASTRA_CLIENT_ID: 'ci-dummy',

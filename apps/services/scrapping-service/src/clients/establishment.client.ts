@@ -25,4 +25,5 @@ export class EstablishmentClient {
 
     return response.json();
   }
+
 }

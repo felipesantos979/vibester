@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:mobile/models/user/user_model.dart';
 import 'package:mobile/service/api_client.dart';
 import 'package:mobile/service/api_endpoints.dart';
 
@@ -250,6 +251,20 @@ class UserService {
       return url;
     }
     return 'https://$url';
+  }
+
+  Future<List<UserSearchResult>> searchUsers(String q, {int limit = 10}) async {
+    try {
+      final response = await ApiClient.dio.get(
+        ApiEndpoints.searchUsers(q, limit: limit),
+      );
+      final data = response.data['data'] as List;
+      return data.map((json) => UserSearchResult.fromJson(json)).toList();
+    } on DioException catch (e) {
+      final mensagem =
+          e.response?.data?['message'] ?? 'Erro ao pesquisar usuários';
+      throw Exception(mensagem);
+    }
   }
 
   Future<void> verifyEmail({

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:mobile/models/feed/feed_item_model.dart';
 import 'package:mobile/models/feed/publication_model.dart';
@@ -89,7 +91,7 @@ class PublicationListProvider extends ChangeNotifier {
 
     _publications[index] = pub.copyWith(
       isLiked: !wasLiked,
-      likes: wasLiked ? pub.likes - 1 : pub.likes + 1,
+      likes: wasLiked ? max(0, pub.likes - 1) : pub.likes + 1,
     );
     notifyListeners();
 

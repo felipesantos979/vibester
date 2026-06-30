@@ -21,6 +21,7 @@ class ApiEndpoints {
 
   // Events
   static String events() => '$baseUrl/event/events';
+  static String eventsFeatured() => '$baseUrl/event/events/featured';
   static String eventNearby() => '$baseUrl/event/events/nearby';
   static String eventDetail(String eventId) => '$baseUrl/event/events/$eventId';
   static String eventsWeek(String date) =>
@@ -59,4 +60,8 @@ class ApiEndpoints {
 
   //Feed
   static String feed(String userId) => '$baseUrl/feed/feed/$userId';
+
+  // Search
+  static String searchUsers(String q, {int limit = 10, int page = 1}) =>
+      '$baseUrl/user/users/search?q=${Uri.encodeComponent(q)}&limit=$limit&page=$page';
 }

@@ -28,6 +28,8 @@ const { mockUserProfile, mockUserFollow, mockTransaction } = vi.hoisted(() => {
   const mockUserProfile = {
     create: vi.fn(),
     findUnique: vi.fn(),
+    findMany: vi.fn(),
+    count: vi.fn(),
     update: vi.fn(),
     findUniqueOrThrow: vi.fn(),
   };
@@ -36,9 +38,12 @@ const { mockUserProfile, mockUserFollow, mockTransaction } = vi.hoisted(() => {
     delete: vi.fn(),
     findMany: vi.fn(),
   };
-  const mockTransaction = vi.fn().mockImplementation((fn: Function) =>
-    fn({ userProfile: mockUserProfile, userFollow: mockUserFollow })
-  );
+  const mockTransaction = vi.fn().mockImplementation((arg: ((...args: unknown[]) => unknown) | Promise<unknown>[]) => {
+    if (typeof arg === 'function') {
+      return arg({ userProfile: mockUserProfile, userFollow: mockUserFollow });
+    }
+    return Promise.all(arg);
+  });
   return { mockUserProfile, mockUserFollow, mockTransaction };
 });
 
@@ -89,9 +94,12 @@ describe('user-service — HTTP Integration', () => {
 
   beforeEach(async () => {
     vi.clearAllMocks();
-    mockTransaction.mockImplementation((fn: Function) =>
-      fn({ userProfile: mockUserProfile, userFollow: mockUserFollow })
-    );
+    mockTransaction.mockImplementation((arg: ((...args: unknown[]) => unknown) | Promise<unknown>[]) => {
+      if (typeof arg === 'function') {
+        return arg({ userProfile: mockUserProfile, userFollow: mockUserFollow });
+      }
+      return Promise.all(arg);
+    });
     await redis.flushall();
   });
 
@@ -214,7 +222,7 @@ describe('user-service — HTTP Integration', () => {
           topic: 'user.followed',
           messages: expect.arrayContaining([
             expect.objectContaining({
-              value: JSON.stringify({ followerId: FOLLOWER_ID, followingId: USER_ID }),
+              value: JSON.stringify({ followerId: FOLLOWER_ID, followedId: USER_ID }),
             }),
           ]),
         })
@@ -268,6 +276,89 @@ describe('user-service — HTTP Integration', () => {
 
       await app.inject({ method: 'GET', url: `/users/${FOLLOWER_ID}/following` });
       expect(mockUserFollow.findMany).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('GET /users/search — pesquisa de perfis em tempo real', () => {
+    function makeSearchProfile(overrides: Record<string, unknown> = {}) {
+      return {
+        userID: USER_ID,
+        name: 'John Doe',
+        username: 'johndoe',
+        avatarUrl: null,
+        followers: 42,
+        ...overrides,
+      };
+    }
+
+    it('retorna 200 com lista de perfis e metadados de paginação', async () => {
+      mockUserProfile.findMany.mockResolvedValue([makeSearchProfile()]);
+      mockUserProfile.count.mockResolvedValue(1);
+
+      const res = await app.inject({ method: 'GET', url: '/users/search?q=john' });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body).toMatchObject({
+        data: [{ accountId: USER_ID, name: 'John Doe', username: 'johndoe', avatarUrl: null, followers: 42 }],
+        total: 1,
+        page: 1,
+        limit: 10,
+      });
+    });
+
+    it('retorna lista vazia quando nenhum perfil corresponde ao termo', async () => {
+      mockUserProfile.findMany.mockResolvedValue([]);
+      mockUserProfile.count.mockResolvedValue(0);
+
+      const res = await app.inject({ method: 'GET', url: '/users/search?q=zzznobody' });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.data).toHaveLength(0);
+      expect(body.total).toBe(0);
+    });
+
+    it('respeita os parâmetros limit e page', async () => {
+      const profiles = [
+        makeSearchProfile({ userID: USER_ID, username: 'alice' }),
+        makeSearchProfile({ userID: FOLLOWER_ID, username: 'alice2' }),
+      ];
+      mockUserProfile.findMany.mockResolvedValue(profiles);
+      mockUserProfile.count.mockResolvedValue(10);
+
+      const res = await app.inject({ method: 'GET', url: '/users/search?q=alice&limit=2&page=2' });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.limit).toBe(2);
+      expect(body.page).toBe(2);
+      expect(body.total).toBe(10);
+      expect(body.data).toHaveLength(2);
+    });
+
+    it('retorna 400 quando o parâmetro q está ausente', async () => {
+      const res = await app.inject({ method: 'GET', url: '/users/search' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('retorna 400 quando q é uma string vazia', async () => {
+      const res = await app.inject({ method: 'GET', url: '/users/search?q=' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('retorna 400 quando limit excede 50', async () => {
+      const res = await app.inject({ method: 'GET', url: '/users/search?q=test&limit=51' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('retorna 500 quando o banco falha', async () => {
+      mockTransaction.mockRejectedValueOnce(new Error('DB failure'));
+
+      const res = await app.inject({ method: 'GET', url: '/users/search?q=error' });
+
+      expect(res.statusCode).toBe(500);
+      expect(JSON.parse(res.payload)).toEqual({ message: 'Error searching profiles' });
     });
   });
 });
