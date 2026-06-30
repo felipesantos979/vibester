@@ -29,18 +29,30 @@ vi.mock("../../src/config/redis", async () => {
     };
 });
 
-const { mockEvent, mockQueryRaw } = vi.hoisted(() => ({
+const { mockEvent, mockEventCheckIn, mockTransaction, mockQueryRaw } = vi.hoisted(() => ({
     mockEvent: {
         create: vi.fn(),
         findUnique: vi.fn(),
         findMany: vi.fn(),
         update: vi.fn(),
     },
+    mockEventCheckIn: {
+        create: vi.fn(),
+        findUnique: vi.fn(),
+        findMany: vi.fn(),
+        delete: vi.fn(),
+    },
+    mockTransaction: vi.fn(),
     mockQueryRaw: vi.fn().mockResolvedValue([{ "?column?": 1 }]),
 }));
 
 vi.mock("../../src/prisma/index", () => ({
-    default: { event: mockEvent, $queryRaw: mockQueryRaw },
+    default: {
+        event: mockEvent,
+        eventCheckIn: mockEventCheckIn,
+        $transaction: mockTransaction,
+        $queryRaw: mockQueryRaw,
+    },
 }));
 
 import { buildServer, generateToken } from "../helpers/fastify.test.helper";
@@ -98,6 +110,7 @@ describe("event-service — HTTP Integration", () => {
     beforeEach(async () => {
         vi.clearAllMocks();
         mockQueryRaw.mockResolvedValue([{ "?column?": 1 }]);
+        mockTransaction.mockResolvedValue([]);
         await redis.flushall();
     });
 
@@ -292,6 +305,137 @@ describe("event-service — HTTP Integration", () => {
             mockEvent.findUnique.mockResolvedValue(null);
             const res = await app.inject({ method: "GET", url: `/events/${EVENT_ID}` });
             expect(res.statusCode).toBe(404);
+        });
+    });
+
+    const USER_ID = "c1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5";
+
+    describe("POST /events/:eventId/checkin", () => {
+        it("realiza check-in com sucesso e retorna { checkedIn: true }", async () => {
+            const res = await app.inject({
+                method: "POST",
+                url: `/events/${EVENT_ID}/checkin`,
+                payload: { userId: USER_ID },
+            });
+            expect(res.statusCode).toBe(200);
+            expect(JSON.parse(res.payload)).toEqual({ checkedIn: true });
+            expect(mockTransaction).toHaveBeenCalledTimes(1);
+        });
+
+        it("retorna 409 quando usuário já fez check-in", async () => {
+            const { Prisma } = await import("../../src/generated/prisma/client");
+            mockTransaction.mockRejectedValueOnce(
+                Object.assign(new Prisma.PrismaClientKnownRequestError("Unique", {
+                    code: "P2002",
+                    clientVersion: "7.0.0",
+                })),
+            );
+            const res = await app.inject({
+                method: "POST",
+                url: `/events/${EVENT_ID}/checkin`,
+                payload: { userId: USER_ID },
+            });
+            expect(res.statusCode).toBe(409);
+            expect(JSON.parse(res.payload)).toHaveProperty("message", "Usuário já fez check-in neste evento");
+        });
+
+        it("retorna 404 quando evento não existe", async () => {
+            const { Prisma } = await import("../../src/generated/prisma/client");
+            mockTransaction.mockRejectedValueOnce(
+                Object.assign(new Prisma.PrismaClientKnownRequestError("Not found", {
+                    code: "P2025",
+                    clientVersion: "7.0.0",
+                })),
+            );
+            const res = await app.inject({
+                method: "POST",
+                url: `/events/${EVENT_ID}/checkin`,
+                payload: { userId: USER_ID },
+            });
+            expect(res.statusCode).toBe(404);
+        });
+
+        it("retorna 400 para userId inválido", async () => {
+            const res = await app.inject({
+                method: "POST",
+                url: `/events/${EVENT_ID}/checkin`,
+                payload: { userId: "nao-e-uuid" },
+            });
+            expect(res.statusCode).toBe(400);
+        });
+    });
+
+    describe("DELETE /events/:eventId/checkin", () => {
+        it("remove check-in com sucesso e retorna { checkedIn: false }", async () => {
+            mockEventCheckIn.findUnique.mockResolvedValue({ id: "checkin-id" });
+            const res = await app.inject({
+                method: "DELETE",
+                url: `/events/${EVENT_ID}/checkin`,
+                payload: { userId: USER_ID },
+            });
+            expect(res.statusCode).toBe(200);
+            expect(JSON.parse(res.payload)).toEqual({ checkedIn: false });
+        });
+
+        it("retorna 404 quando check-in não existe", async () => {
+            mockEventCheckIn.findUnique.mockResolvedValue(null);
+            const res = await app.inject({
+                method: "DELETE",
+                url: `/events/${EVENT_ID}/checkin`,
+                payload: { userId: USER_ID },
+            });
+            expect(res.statusCode).toBe(404);
+            expect(JSON.parse(res.payload)).toHaveProperty("message", "Check-in não encontrado");
+        });
+    });
+
+    describe("GET /events/checkins/:userId", () => {
+        it("retorna lista de eventos com checkedInAt", async () => {
+            const checkedInAt = new Date("2026-07-01T12:00:00.000Z");
+            mockEventCheckIn.findMany.mockResolvedValue([
+                { event: makeEvent(), createdAt: checkedInAt },
+            ]);
+            const res = await app.inject({
+                method: "GET",
+                url: `/events/checkins/${USER_ID}`,
+            });
+            expect(res.statusCode).toBe(200);
+            const body = JSON.parse(res.payload);
+            expect(body).toHaveLength(1);
+            expect(body[0]).toHaveProperty("id", EVENT_ID);
+            expect(body[0]).toHaveProperty("checkedInAt");
+        });
+
+        it("retorna lista vazia quando usuário não tem check-ins", async () => {
+            mockEventCheckIn.findMany.mockResolvedValue([]);
+            const res = await app.inject({
+                method: "GET",
+                url: `/events/checkins/${USER_ID}`,
+            });
+            expect(res.statusCode).toBe(200);
+            expect(JSON.parse(res.payload)).toEqual([]);
+        });
+    });
+
+    describe("GET /events/:eventId/checkin/:userId", () => {
+        it("retorna { checkedIn: true } quando check-in existe", async () => {
+            mockEventCheckIn.findUnique.mockResolvedValue({ id: "checkin-id" });
+            const res = await app.inject({
+                method: "GET",
+                url: `/events/${EVENT_ID}/checkin/${USER_ID}`,
+            });
+            expect(res.statusCode).toBe(200);
+            expect(JSON.parse(res.payload)).toEqual({ checkedIn: true });
+        });
+
+        it("retorna { checkedIn: false } quando check-in não existe", async () => {
+            mockEventCheckIn.findUnique.mockResolvedValue(null);
+            const res = await app.inject({
+                method: "GET",
+                url: `/events/${EVENT_ID}/checkin/${USER_ID}`,
+            });
+            expect(res.statusCode).toBe(200);
+            expect(JSON.parse(res.payload)).toEqual({ checkedIn: false });
         });
     });
 });
