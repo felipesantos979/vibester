@@ -1,3 +1,29 @@
+class UserSearchResult {
+  final String accountId;
+  final String? name;
+  final String? username;
+  final String? avatarUrl;
+  final int followers;
+
+  UserSearchResult({
+    required this.accountId,
+    this.name,
+    this.username,
+    this.avatarUrl,
+    required this.followers,
+  });
+
+  factory UserSearchResult.fromJson(Map<String, dynamic> json) {
+    return UserSearchResult(
+      accountId: json['accountId'] ?? '',
+      name: json['name'],
+      username: json['username'],
+      avatarUrl: json['avatarUrl'],
+      followers: json['followers'] ?? 0,
+    );
+  }
+}
+
 class UserModel {
   String? id;
   String? userID;

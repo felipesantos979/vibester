@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place/place_model.dart';
+import 'package:mobile/models/user/user_model.dart';
 import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
+import 'package:mobile/service/user/user_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/search_bar.dart';
 import 'package:mobile/utils/search_state.dart';
@@ -17,8 +20,15 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController pesquisaController = TextEditingController();
+  final UserService _userService = UserService();
+
   String? _categoriaSelecionada;
   List<String>? _historicoGuardado;
+
+  List<UserSearchResult> _userResults = [];
+  bool _isSearchingUsers = false;
+  String? _searchError;
+  Timer? _debounceTimer;
 
   static const _categorias = [
     {'label': 'Balada', 'image': 'assets/img/baladas.jpg'},
@@ -29,10 +39,57 @@ class _SearchScreenState extends State<SearchScreen> {
     {'label': 'Entretenimento', 'image': 'assets/img/entretenimento.jpg'},
   ];
 
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    pesquisaController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    final query = pesquisaController.text.trim();
+
+    _debounceTimer?.cancel();
+
+    if (query.isEmpty) {
+      setState(() {
+        _userResults = [];
+        _isSearchingUsers = false;
+        _searchError = null;
+      });
+      return;
+    }
+
+    setState(() => _isSearchingUsers = true);
+
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      _buscarUsuarios(query);
+    });
+  }
+
+  Future<void> _buscarUsuarios(String q) async {
+    try {
+      final results = await _userService.searchUsers(q);
+      if (!mounted) return;
+      setState(() {
+        _userResults = results;
+        _isSearchingUsers = false;
+        _searchError = null;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isSearchingUsers = false;
+        _searchError = 'Não foi possível buscar usuários';
+      });
+    }
+  }
+
   void _selecionarCategoria(String categoria) {
     setState(() {
       _categoriaSelecionada = categoria;
       pesquisaController.clear();
+      _userResults = [];
       _historicoGuardado = List<String>.from(ultimasPesquisas);
       ultimasPesquisas.clear();
     });
@@ -66,6 +123,8 @@ class _SearchScreenState extends State<SearchScreen> {
               .toList()
         : <PlaceModel>[];
 
+    final buscandoUsuarios = pesquisaController.text.trim().isNotEmpty;
+
     return Scaffold(
       backgroundColor: Color(colorDarkGrey),
       appBar: AppBar(
@@ -91,260 +150,403 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
               child: CustomSearchBar(
                 controller: pesquisaController,
-                onChanged: () {},
+                onChanged: _onSearchChanged,
                 onSubmitted: () {
-                  setState(() {
-                    if (pesquisaController.text.isNotEmpty) {
-                      ultimasPesquisas.insert(0, pesquisaController.text);
-                      pesquisaController.clear();
+                  final texto = pesquisaController.text.trim();
+                  if (texto.isNotEmpty) {
+                    setState(() {
+                      ultimasPesquisas.insert(0, texto);
                       if (ultimasPesquisas.length > 5) {
                         ultimasPesquisas.removeLast();
                       }
-                    }
-                  });
+                    });
+                  }
                 },
               ),
             ),
           ),
 
-          if (ultimasPesquisas.isNotEmpty) ...[
-            SliverToBoxAdapter(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(left: 16),
-                    child: const Text(
-                      "Buscas Recentes",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        ultimasPesquisas.clear();
-                      });
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(right: 7),
-                      child: Text(
-                        "Limpar",
-                        style: TextStyle(
-                          color: Color(colorAmbar),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Container(margin: const EdgeInsets.all(5)),
-            ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                final pesquisa = ultimasPesquisas[index];
-                return Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.history, color: Colors.white38),
-                      title: Text(
-                        pesquisa,
-                        style: const TextStyle(color: Colors.white38),
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white38),
-                        onPressed: () {
-                          setState(() {
-                            ultimasPesquisas.remove(pesquisa);
-                          });
-                        },
-                      ),
-                      onTap: () {
-                        pesquisaController.text = pesquisa;
-                      },
-                    ),
-                    Divider(
-                      color: Color(colorGrey),
-                      height: 1,
-                      indent: 16,
-                      endIndent: 16,
-                    ),
-                  ],
-                );
-              }, childCount: ultimasPesquisas.length),
-            ),
-            SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.only(left: 16, right: 16, bottom: 45),
-                color: Color(colorGrey),
-                height: 1,
-                width: double.infinity,
-              ),
-            ),
-          ],
-
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.only(left: 15),
-                    child: Text(
-                      _categoriaSelecionada ?? "Descubra por Categoria",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  if (_categoriaSelecionada != null)
-                    Container(
-                      margin: const EdgeInsets.only(right: 7),
-                      child: IconButton(
-                        icon: const Icon(Icons.close, color: Colors.white),
-                        onPressed: _voltarParaInicio,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-
-          if (_categoriaSelecionada == null) ...[
-            SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.all(10),
-                child: Column(
-                  children: () {
-                    final pares = <List<Map<String, String>>>[];
-                    for (var i = 0; i < _categorias.length; i += 2) {
-                      pares.add(_categorias.sublist(i, i + 2));
-                    }
-                    return pares.map((par) {
-                      return Row(
-                        children: par.map((cat) {
-                          return GestureDetector(
-                            onTap: () => _selecionarCategoria(cat['label']!),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: Color(colorDarkGrey),
-                                  width: 1,
-                                ),
-                              ),
-                              margin: const EdgeInsets.all(6),
-                              width: (screenWidth / 2) - 25,
-                              height: (screenWidth / 2) - 25,
-                              child: Stack(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(16),
-                                    child: SizedBox(
-                                      width: double.infinity,
-                                      height: double.infinity,
-                                      child: Image.asset(
-                                        cat['image']!,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    bottom: 10,
-                                    left: 10,
-                                    child: Text(
-                                      cat['label']!,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        shadows: [
-                                          Shadow(
-                                            color: Colors.white38,
-                                            blurRadius: 8,
-                                            offset: Offset(1, 1),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      );
-                    }).toList();
-                  }(),
-                ),
-              ),
-            ),
-          ] else ...[
-            if (provider.isLoading && places.isEmpty)
+          // Resultados de busca de usuários
+          if (buscandoUsuarios) ...[
+            if (_isSearchingUsers)
               const SliverFillRemaining(
                 child: Center(
                   child: CircularProgressIndicator(color: Color(colorAmbar)),
                 ),
               )
-            else if (listaFiltrada.isEmpty)
+            else if (_searchError != null)
+              SliverFillRemaining(
+                child: Center(
+                  child: Text(
+                    _searchError!,
+                    style: const TextStyle(color: Colors.white38),
+                  ),
+                ),
+              )
+            else if (_userResults.isEmpty)
               SliverFillRemaining(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      height: 200,
-                      width: 200,
+                      height: 180,
+                      width: 180,
                       child: Image.asset('assets/img/mascote/lupa.png'),
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      'Nenhum lugar encontrado',
+                      'Nenhum usuário encontrado',
                       style: TextStyle(
                         color: Colors.white38,
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Ainda não há estabelecimentos nessa categoria',
-                      style: TextStyle(color: Colors.white24, fontSize: 13),
-                    ),
                   ],
                 ),
               )
-            else
+            else ...[
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, bottom: 8),
+                  child: Text(
+                    'Usuários',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
               SliverPadding(
                 padding: const EdgeInsets.only(bottom: 80),
                 sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return PlaceCard(
-                      place: listaFiltrada[index],
-                      onTap: () {
-                        Navigator.pushNamed(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final user = _userResults[index];
+                      return _UserSearchTile(
+                        user: user,
+                        onTap: () => Navigator.pushNamed(
                           context,
-                          AppRoutes.placeDetail,
-                          arguments: listaFiltrada[index].id,
-                        );
-                      },
-                    );
-                  }, childCount: listaFiltrada.length),
+                          AppRoutes.otherProfile,
+                          arguments: user.accountId,
+                        ),
+                      );
+                    },
+                    childCount: _userResults.length,
+                  ),
                 ),
               ),
+            ],
+          ] else ...[
+            // Vista normal: buscas recentes + categorias
+            if (ultimasPesquisas.isNotEmpty) ...[
+              SliverToBoxAdapter(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(left: 16),
+                      child: const Text(
+                        "Buscas Recentes",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          ultimasPesquisas.clear();
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 7),
+                        child: Text(
+                          "Limpar",
+                          style: TextStyle(
+                            color: Color(colorAmbar),
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Container(margin: const EdgeInsets.all(5)),
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final pesquisa = ultimasPesquisas[index];
+                  return Column(
+                    children: [
+                      ListTile(
+                        leading: const Icon(
+                          Icons.history,
+                          color: Colors.white38,
+                        ),
+                        title: Text(
+                          pesquisa,
+                          style: const TextStyle(color: Colors.white38),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white38),
+                          onPressed: () {
+                            setState(() {
+                              ultimasPesquisas.remove(pesquisa);
+                            });
+                          },
+                        ),
+                        onTap: () {
+                          pesquisaController.text = pesquisa;
+                          _onSearchChanged();
+                        },
+                      ),
+                      Divider(
+                        color: Color(colorGrey),
+                        height: 1,
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                    ],
+                  );
+                }, childCount: ultimasPesquisas.length),
+              ),
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 45),
+                  color: Color(colorGrey),
+                  height: 1,
+                  width: double.infinity,
+                ),
+              ),
+            ],
+
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(left: 15),
+                      child: Text(
+                        _categoriaSelecionada ?? "Descubra por Categoria",
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    if (_categoriaSelecionada != null)
+                      Container(
+                        margin: const EdgeInsets.only(right: 7),
+                        child: IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white),
+                          onPressed: _voltarParaInicio,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+            if (_categoriaSelecionada == null) ...[
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: const EdgeInsets.all(10),
+                  child: Column(
+                    children: () {
+                      final pares = <List<Map<String, String>>>[];
+                      for (var i = 0; i < _categorias.length; i += 2) {
+                        pares.add(_categorias.sublist(i, i + 2));
+                      }
+                      return pares.map((par) {
+                        return Row(
+                          children: par.map((cat) {
+                            return GestureDetector(
+                              onTap: () => _selecionarCategoria(cat['label']!),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16),
+                                  border: Border.all(
+                                    color: Color(colorDarkGrey),
+                                    width: 1,
+                                  ),
+                                ),
+                                margin: const EdgeInsets.all(6),
+                                width: (screenWidth / 2) - 25,
+                                height: (screenWidth / 2) - 25,
+                                child: Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        child: Image.asset(
+                                          cat['image']!,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      bottom: 10,
+                                      left: 10,
+                                      child: Text(
+                                        cat['label']!,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          shadows: [
+                                            Shadow(
+                                              color: Colors.white38,
+                                              blurRadius: 8,
+                                              offset: Offset(1, 1),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      }).toList();
+                    }(),
+                  ),
+                ),
+              ),
+            ] else ...[
+              if (provider.isLoading && places.isEmpty)
+                const SliverFillRemaining(
+                  child: Center(
+                    child: CircularProgressIndicator(
+                      color: Color(colorAmbar),
+                    ),
+                  ),
+                )
+              else if (listaFiltrada.isEmpty)
+                SliverFillRemaining(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 200,
+                        width: 200,
+                        child: Image.asset('assets/img/mascote/lupa.png'),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Nenhum lugar encontrado',
+                        style: TextStyle(
+                          color: Colors.white38,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Ainda não há estabelecimentos nessa categoria',
+                        style: TextStyle(color: Colors.white24, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 80),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return PlaceCard(
+                        place: listaFiltrada[index],
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.placeDetail,
+                            arguments: listaFiltrada[index].id,
+                          );
+                        },
+                      );
+                    }, childCount: listaFiltrada.length),
+                  ),
+                ),
+            ],
+
+            SliverToBoxAdapter(
+              child: const SizedBox(height: 40),
+            ),
           ],
-          SliverToBoxAdapter(
-            child: const SizedBox(height: 40),
-          ),
         ],
+      ),
+    );
+  }
+}
+
+class _UserSearchTile extends StatelessWidget {
+  final UserSearchResult user;
+  final VoidCallback onTap;
+
+  const _UserSearchTile({required this.user, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 26,
+              backgroundColor: Color(colorGrey),
+              backgroundImage:
+                  (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
+                      ? NetworkImage(user.avatarUrl!)
+                      : null,
+              child: (user.avatarUrl == null || user.avatarUrl!.isEmpty)
+                  ? const Icon(Icons.person, color: Colors.white54, size: 26)
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    user.name ?? user.username ?? '',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  if (user.username != null && user.username!.isNotEmpty)
+                    Text(
+                      '@${user.username}',
+                      style: const TextStyle(
+                        color: Colors.white54,
+                        fontSize: 13,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            Text(
+              '${user.followers} seguidores',
+              style: const TextStyle(color: Colors.white38, fontSize: 12),
+            ),
+          ],
+        ),
       ),
     );
   }

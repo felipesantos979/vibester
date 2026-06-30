@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
+import 'package:mobile/models/user/user_model.dart';
+import 'package:mobile/service/api_client.dart';
+import 'package:mobile/service/auth_storage_service.dart';
 import 'package:mobile/models/highlights/highlight_model.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
@@ -84,20 +87,31 @@ class _NoBounceScrollBehavior extends ScrollBehavior {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('pt_BR', null);
-  runApp(const MyApp());
+  final savedUser = await AuthStorageService.loadSession();
+  if (savedUser?.token != null) {
+    ApiClient.token = savedUser!.token;
+  }
+  runApp(MyApp(savedUser: savedUser));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final UserModel? savedUser;
+
+  const MyApp({super.key, this.savedUser});
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = UserProvider();
+    if (savedUser != null) {
+      userProvider.setUser(savedUser!);
+    }
+
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PlaceListProvider()),
         ChangeNotifierProvider(create: (_) => EventsListProvider()),
         ChangeNotifierProvider(create: (_) => PublicationListProvider()),
-        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider.value(value: userProvider),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -107,7 +121,7 @@ class MyApp extends StatelessWidget {
           textTheme: GoogleFonts.interTextTheme(),
           fontFamily: GoogleFonts.inter().fontFamily,
         ),
-        initialRoute: AppRoutes.initialScreen,
+        initialRoute: savedUser != null ? AppRoutes.home : AppRoutes.initialScreen,
         onGenerateRoute: (settings) {
           switch (settings.name) {
             // EVENTS
