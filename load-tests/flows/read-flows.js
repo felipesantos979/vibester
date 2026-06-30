@@ -67,8 +67,9 @@ export function eventReadFlow() {
 
   sleep(0.1);
 
+  const today = new Date().toISOString().slice(0, 10);
   const week = get(
-    `${SERVICES.event}/events/week`,
+    `${SERVICES.event}/events/week?date=${today}`,
     { tags: { endpoint: 'week-events', service: 'event' } },
   );
   ok(week, 'week-events');
