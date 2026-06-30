@@ -50,23 +50,21 @@ class PlaceModel {
           ((json['averageRating'] ?? json['rating']) as num?)?.toDouble() ?? 0,
       nivelPrecoMedio: json['priceIndicator'] ?? '',
       bio: json['bio'] ?? '',
-      endereco: json['address'] ?? json['endereco'] ?? '',
+      endereco: json['endereco'] ?? json['endereco'] ?? '',
       qtdAvaliacoes: json['reviewCount'] ?? json['qtdAvaliacoes'] ?? 0,
       distribuicao: (json['ratingDistribution'] ?? json['distribuicao']) != null
           ? List<double>.from(
               (json['ratingDistribution'] ?? json['distribuicao']),
             )
-      endereco: json['endereco'] ?? '',
-      qtdAvaliacoes: json['reviewCount'] ?? 0,
-      distribuicao: json['ratingDistribution'] != null
-          ? List<double>.from(json['ratingDistribution'])
           : [],
       profileImage:
           json['photoUrl'] ?? json['profileImage'] ?? json['icon'] ?? '',
       bannerImage: json['banner'] ?? json['bannerUrl'] ?? '',
-      latitude: (location?['latitude'] as num?)?.toDouble() ??
+      latitude:
+          (location?['latitude'] as num?)?.toDouble() ??
           (json['latitude'] as num?)?.toDouble(),
-      longitude: (location?['longitude'] as num?)?.toDouble() ??
+      longitude:
+          (location?['longitude'] as num?)?.toDouble() ??
           (json['longitude'] as num?)?.toDouble(),
       distancia: distanceToKm != null ? distanceToKm * 1000 : null,
     );
