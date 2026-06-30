@@ -1,0 +1,55 @@
+{
+  "scenario": "02-load",
+  "timestamp": "2026-06-30T02:55:23.325Z",
+  "durationSec": 721,
+  "peakVUs": 50,
+  "sla": {
+    "compliant": false,
+    "p95_ms": 125.54294364999993,
+    "p99_ms": 286.12633883999996,
+    "errorRate": 0.9533354212339492,
+    "ttfbP95_ms": 125.16291934999998
+  },
+  "latency": {
+    "p50": 46.197024,
+    "p90": 109.7375834,
+    "p95": 125.54294364999993,
+    "p99": 286.12633883999996,
+    "mean": 68.71655195411748,
+    "max": 757.992949,
+    "ttfbP95": 125.16291934999998,
+    "ttfbAvg": 68.34059350783016
+  },
+  "throughput": {
+    "rps": 70.82179579954216,
+    "totalReqs": 51088,
+    "writes": 18433,
+    "reads": 32655,
+    "succRate": 0.04666457876605079,
+    "errRate": 0.9533354212339492,
+    "dataSentBytes": 5691280,
+    "dataRecvBytes": 36204124
+  },
+  "errors": {
+    "c2xx": 2384,
+    "c4xx": 37435,
+    "c5xx": 11269,
+    "timeouts": 0,
+    "connErr": 0
+  },
+  "concurrency": {
+    "peakVUs": 50,
+    "queueTimeP95_ms": 0.005657,
+    "queueTimeAvg_ms": 0.08184768331112757
+  },
+  "costEstimate": {
+    "bytesPerReqAvg": 370.2982500782963,
+    "bytesPerSession": 378444.81158001884,
+    "monthlyBytesPerUser": 37844481.158001885
+  },
+  "summary": {
+    "maxSustainableRPS": "< 70.8 (SLA violado)",
+    "bottleneck": "Servidor (5xx alto — pool de conexões ou OOM)",
+    "scaleRecommendation": "Escala HORIZONTAL recomendada: adicionar réplicas do(s) serviço(s) com maior taxa de 5xx."
+  }
+}
