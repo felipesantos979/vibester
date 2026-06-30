@@ -36,6 +36,12 @@
 	<string>Usado para tirar sua foto de perfil</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Usado para escolher sua foto de perfil da galeria</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Precisamos da sua localização para mostrar eventos e estabelecimentos próximos a você.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Precisamos da sua localização para mostrar eventos e estabelecimentos próximos a você.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Precisamos da sua localização para mostrar eventos e estabelecimentos próximos a você.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
