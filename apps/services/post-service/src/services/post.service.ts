@@ -7,6 +7,18 @@ import {
 } from "../types/post.types";
 import { redis, cacheAside } from "../config/redis";
 import { HttpError } from "../errors/http.error";
+import { producer } from "../kafka/producer";
+
+const POSTS_TOPIC = "posts";
+
+function kafkaEnvelope(eventType: string, data: unknown) {
+    return JSON.stringify({
+        eventId: randomUUID(),
+        eventType,
+        occurredAt: new Date().toISOString(),
+        data,
+    });
+}
 
 export class PostService {
 
@@ -46,6 +58,34 @@ export class PostService {
         }
 
         await this.invalidatePostCaches(post.userId, post.establishmentId, post.postId);
+
+        await producer.send({
+            topic: POSTS_TOPIC,
+            messages: [{
+                key: post.postId,
+                value: kafkaEnvelope("post.created", {
+                    itemId: post.postId,
+                    itemType: post.establishmentId ? "ESTABLISHMENT_POST" : "USER_POST",
+                    authorId: post.userId,
+                    authorUsername: post.userUsername,
+                    authorProfilePicture: post.userProfilePicture,
+                    authorVerified: post.userVerified ?? false,
+                    establishmentId: post.establishmentId,
+                    establishmentName: post.establishmentName,
+                    establishmentLogo: post.establishmentLogo,
+                    establishmentCategory: post.establishmentCategory,
+                    content: post.caption,
+                    imageUrls: post.imageUrls,
+                    tags: post.tags,
+                    totalLikes: 0,
+                    totalComments: 0,
+                    isLiked: false,
+                    isSponsored: false,
+                    isDeleted: false,
+                    createdAt: post.createdAt.toISOString(),
+                }),
+            }],
+        });
 
         return post;
     }
@@ -88,6 +128,19 @@ export class PostService {
 
         await this.invalidatePostCaches(post.userId, post.establishmentId, input.postId);
 
+        await producer.send({
+            topic: POSTS_TOPIC,
+            messages: [{
+                key: input.postId,
+                value: kafkaEnvelope("post.content.updated", {
+                    authorId: post.userId,
+                    postId: input.postId,
+                    createdAt: post.createdAt.toISOString(),
+                    caption: input.caption,
+                }),
+            }],
+        });
+
         return {
             ...post,
             caption: input.caption,
@@ -110,6 +163,18 @@ export class PostService {
         }
 
         await this.invalidatePostCaches(post.userId, post.establishmentId, postId);
+
+        await producer.send({
+            topic: POSTS_TOPIC,
+            messages: [{
+                key: postId,
+                value: kafkaEnvelope("post.deleted", {
+                    authorId: post.userId,
+                    postId,
+                    createdAt: post.createdAt.toISOString(),
+                }),
+            }],
+        });
     }
 
     private async invalidatePostCaches(userId: string, establishmentId: string | undefined, postId: string) {

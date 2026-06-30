@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { LikeRepository } from "../repository/like.repository";
 import { PostRepository } from "../repository/post.repository";
 import { PostLike } from "../types/like.types";
@@ -38,17 +39,37 @@ export class LikeService {
                  total_likes, post.postId);
         }
 
-        await producer.send({
-            topic: 'post.liked',
-            messages: [{
-                key: postId,
-                value: JSON.stringify({
-                    postId,
-                    postOwnerId: post.userId,
-                    likedByUserId: userId,
-                }),
-            }],
-        });
+        await Promise.all([
+            producer.send({
+                topic: 'post.liked',
+                messages: [{
+                    key: postId,
+                    value: JSON.stringify({
+                        postId,
+                        userId,
+                        createdAt: like.likedAt.toISOString(),
+                    }),
+                }],
+            }),
+            producer.send({
+                topic: 'posts',
+                messages: [{
+                    key: postId,
+                    value: JSON.stringify({
+                        eventId: randomUUID(),
+                        eventType: 'post.stats.updated',
+                        occurredAt: new Date().toISOString(),
+                        data: {
+                            authorId: post.userId,
+                            postId,
+                            createdAt: post.createdAt.toISOString(),
+                            totalLikes: total_likes,
+                            totalComments: post.totalComments,
+                        },
+                    }),
+                }],
+            }),
+        ]);
 
         return like;
     }
@@ -79,6 +100,38 @@ export class LikeService {
             await this.postRepository.updateTotalLikesByEstablishment(post.establishmentId, post.createdAt,
                  totalLikes, post.postId);
         }
+
+        await Promise.all([
+            producer.send({
+                topic: 'post.unliked',
+                messages: [{
+                    key: postId,
+                    value: JSON.stringify({
+                        postId,
+                        userId,
+                        createdAt: existingLike.likedAt.toISOString(),
+                    }),
+                }],
+            }),
+            producer.send({
+                topic: 'posts',
+                messages: [{
+                    key: postId,
+                    value: JSON.stringify({
+                        eventId: randomUUID(),
+                        eventType: 'post.stats.updated',
+                        occurredAt: new Date().toISOString(),
+                        data: {
+                            authorId: post.userId,
+                            postId,
+                            createdAt: post.createdAt.toISOString(),
+                            totalLikes: totalLikes,
+                            totalComments: post.totalComments,
+                        },
+                    }),
+                }],
+            }),
+        ]);
     }
 
     async findLikesByUser(userId: string, limit = 50): Promise<PostLike[]> {

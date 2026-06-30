@@ -7,6 +7,9 @@ vi.mock("../../config/redis", () => ({
   redis: mockRedis,
   cacheAside: async <T>(_key: string, _ttl: number, fetchFn: () => Promise<T>): Promise<T> => fetchFn(),
 }));
+vi.mock("../../kafka/producer", () => ({
+  producer: { send: vi.fn().mockResolvedValue(undefined) },
+}));
 
 import { PostService } from "../post.service";
 import { PostRepository } from "../../repository/post.repository";
