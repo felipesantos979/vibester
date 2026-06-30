@@ -12,6 +12,7 @@ export const env = {
   serpapiKey: process.env.SERP_API_KEY as string,
   googleKey: process.env.GOOGLE_API_KEY as string,
   establishmentServiceUrl: process.env.ESTABLISHMENT_SERVICE_URL as string,
+  kafkaBrokers: process.env.KAFKA_BROKERS ?? "kafka:9092",
   timezone: process.env.TZ as string,
   corsOrigin: process.env.CORS_ORIGIN || "*",
   rateLimitMax: Number(process.env.RATE_LIMIT_MAX) || 100,

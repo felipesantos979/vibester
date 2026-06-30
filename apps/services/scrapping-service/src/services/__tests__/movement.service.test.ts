@@ -3,7 +3,7 @@ import { MovementService } from "../movement.service";
 import type { EstablishmentResponse } from "../../clients/establishment.client";
 import type { PlacePopularityResult } from "../serpapi.service";
 
-const { mockPrisma } = vi.hoisted(() => ({
+const { mockPrisma, mockKafkaProducer } = vi.hoisted(() => ({
   mockPrisma: {
     currentPopularity: {
       findUnique: vi.fn(),
@@ -16,10 +16,19 @@ const { mockPrisma } = vi.hoisted(() => ({
     },
     $transaction: vi.fn(),
   },
+  mockKafkaProducer: {
+    connect: vi.fn().mockResolvedValue(undefined),
+    disconnect: vi.fn().mockResolvedValue(undefined),
+    send: vi.fn().mockResolvedValue(undefined),
+  },
 }));
 
 vi.mock("../../prisma/index", () => ({
   prisma: mockPrisma,
+}));
+
+vi.mock("../../kafka/producer", () => ({
+  kafkaProducer: mockKafkaProducer,
 }));
 
 function makeEstablishment(overrides: Partial<EstablishmentResponse> = {}): EstablishmentResponse {
@@ -46,18 +55,12 @@ function makePopularityResult(overrides: Partial<PlacePopularityResult> = {}): P
 }
 
 describe("MovementService", () => {
-  let mockEstablishmentClient: {
-    listOpenEstablishments: ReturnType<typeof vi.fn>;
-    updateMovementLevel: ReturnType<typeof vi.fn>;
-  };
+  let mockEstablishmentClient: { listOpenEstablishments: ReturnType<typeof vi.fn> };
   let mockSerpApiService: { getPlacePopularity: ReturnType<typeof vi.fn> };
   let service: MovementService;
 
   beforeEach(() => {
-    mockEstablishmentClient = {
-      listOpenEstablishments: vi.fn(),
-      updateMovementLevel: vi.fn().mockResolvedValue(undefined),
-    };
+    mockEstablishmentClient = { listOpenEstablishments: vi.fn() };
     mockSerpApiService = { getPlacePopularity: vi.fn() };
     service = new MovementService(
       mockEstablishmentClient as any,
