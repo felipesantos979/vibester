@@ -50,6 +50,7 @@ function makePopularityResult(overrides: Partial<PlacePopularityResult> = {}): P
     liveBusynessScore: 75,
     timeSpent: "30-60 min",
     hoursData: [],
+    category: null,
     ...overrides,
   };
 }

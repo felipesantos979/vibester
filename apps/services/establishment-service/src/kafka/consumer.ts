@@ -11,6 +11,7 @@ const movementUpdatedSchema = z.object({
     establishmentId: z.string().uuid(),
     level: z.enum(["VERY_LOW", "LOW", "MEDIUM", "HIGH", "VERY_HIGH", "UNAVAILABLE"]),
     source: z.enum(["SERPAPI", "ESTIMATED"]),
+    category: z.string().optional(),
   }),
 });
 
@@ -45,8 +46,13 @@ export class EstablishmentKafkaConsumer {
       const parsed = movementUpdatedSchema.safeParse(raw);
       if (!parsed.success || parsed.data.eventType !== "establishment.movement.updated") return;
 
-      const { establishmentId, level } = parsed.data.data;
+      const { establishmentId, level, category } = parsed.data.data;
       await EstablishmentService.updateMovementLevel(establishmentId, level);
+
+      if (category) {
+        await EstablishmentService.updateCategory(establishmentId, category);
+        console.log(`[Kafka] categoria atualizada: ${establishmentId} → ${category}`);
+      }
 
       console.log(`[Kafka] nivelMovimento atualizado: ${establishmentId} → ${level}`);
     } catch (error) {
