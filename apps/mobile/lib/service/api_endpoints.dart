@@ -60,4 +60,8 @@ class ApiEndpoints {
 
   //Feed
   static String feed(String userId) => '$baseUrl/feed/feed/$userId';
+
+  // Search
+  static String searchUsers(String q, {int limit = 10, int page = 1}) =>
+      '$baseUrl/user/users/search?q=${Uri.encodeComponent(q)}&limit=$limit&page=$page';
 }
