@@ -227,6 +227,15 @@ export class EstablishmentService {
     await redis.del(`establishment:profile:${id}`).catch(() => {});
   }
 
+  static async updateCategory(id: string, category: string): Promise<void> {
+    await prismaClient.establishment.update({
+      where: { id },
+      data: { category },
+    });
+
+    await redis.del(`establishment:profile:${id}`).catch(() => {});
+  }
+
   static async listOpenEstablishments(): Promise<EstablishmentInterface[]> {
     return cacheAside("establishment:open", 60, async () => {
       const now = new Date();

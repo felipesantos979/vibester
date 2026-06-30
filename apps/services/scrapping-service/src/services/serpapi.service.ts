@@ -29,7 +29,32 @@ export type PlacePopularityResult = {
   liveBusynessScore: number | null;
   timeSpent: string | null;
   hoursData: PopularityHourData[];
+  category: string | null;
 };
+
+const SERPAPI_TYPE_TO_CATEGORY: Record<string, string> = {
+  bar: "bar",
+  "bar e grill": "bar",
+  "bar e restaurante": "bar",
+  pub: "bar",
+  "bar esportivo": "bar",
+  "night club": "night_club",
+  "clube noturno": "night_club",
+  boate: "night_club",
+  balada: "night_club",
+  restaurante: "restaurant",
+  restaurant: "restaurant",
+  café: "cafe",
+  cafe: "cafe",
+  cafeteria: "cafe",
+  "coffee shop": "cafe",
+  lanchonete: "cafe",
+};
+
+function mapSerpApiTypeToCategory(type: string | undefined): string | null {
+  if (!type) return null;
+  return SERPAPI_TYPE_TO_CATEGORY[type.toLowerCase()] ?? null;
+}
 
 export class SerpApiService {
   private cache = new TTLCache<string, PlacePopularityResult | null>();
@@ -62,6 +87,7 @@ export class SerpApiService {
 
     const place = result.place_results ?? {};
     const popular = place.popular_times ?? {};
+    const category = mapSerpApiTypeToCategory(place.type);
 
     if (!popular || Object.keys(popular).length === 0) return null;
 
@@ -113,6 +139,7 @@ export class SerpApiService {
       liveBusynessScore,
       timeSpent: live.time_spent ?? null,
       hoursData,
+      category,
     };
   }
 }

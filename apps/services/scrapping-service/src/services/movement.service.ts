@@ -73,6 +73,7 @@ export class MovementService {
               statusText: "Estimativa baseada em histórico",
               timeSpent: null,
               isEstimated: true,
+              category: data?.category ?? null,
             });
 
             this.logger.info(
@@ -90,6 +91,7 @@ export class MovementService {
             statusText: data?.liveStatus ?? null,
             timeSpent: data?.timeSpent ?? null,
             isEstimated: false,
+            category: data?.category ?? null,
           });
 
           continue;
@@ -106,6 +108,7 @@ export class MovementService {
           statusText: data.liveStatus,
           timeSpent: data.timeSpent,
           isEstimated: false,
+          category: data.category,
         });
 
         if (data.currentDayInt !== null && data.hoursData.length > 0) {
@@ -148,6 +151,7 @@ export class MovementService {
     statusText: string | null;
     timeSpent: string | null;
     isEstimated: boolean;
+    category: string | null;
   }) {
     const source = data.isEstimated ? "ESTIMATED" : "SERPAPI";
 
@@ -187,6 +191,7 @@ export class MovementService {
               establishmentId: data.establishmentId,
               level: data.level,
               source,
+              ...(data.category ? { category: data.category } : {}),
             },
           }),
         },
