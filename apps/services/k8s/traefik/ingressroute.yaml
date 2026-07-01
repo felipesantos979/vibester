@@ -84,6 +84,15 @@ spec:
         - name: feed-service
           port: 3006
 
+    - match: Host(`api.vibester.com.br`) && PathPrefix(`/notification`)
+      kind: Rule
+      middlewares:
+        - name: strip-notification-prefix
+          namespace: default
+      services:
+        - name: notification-service
+          port: 3005
+
     - match: Host(`api.vibester.com.br`) && PathPrefix(`/docs`)
       kind: Rule
       services:

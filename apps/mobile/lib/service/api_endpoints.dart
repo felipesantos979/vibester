@@ -64,4 +64,28 @@ class ApiEndpoints {
   // Search
   static String searchUsers(String q, {int limit = 10, int page = 1}) =>
       '$baseUrl/user/users/search?q=${Uri.encodeComponent(q)}&limit=$limit&page=$page';
+
+  // Notifications
+  static String notifications(String userId, {int? limit, DateTime? before}) {
+    final params = <String, String>{};
+    if (limit != null) params['limit'] = '$limit';
+    if (before != null) {
+      params['before'] = before.toUtc().toIso8601String();
+    }
+
+    if (params.isEmpty) {
+      return '$baseUrl/notification/notifications/$userId';
+    }
+
+    final query = params.entries
+        .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+        .join('&');
+    return '$baseUrl/notification/notifications/$userId?$query';
+  }
+
+  static String notificationsUnreadCount(String userId) =>
+      '$baseUrl/notification/notifications/$userId/unread-count';
+
+  static String notificationsMarkRead(String userId) =>
+      '$baseUrl/notification/notifications/$userId/read';
 }

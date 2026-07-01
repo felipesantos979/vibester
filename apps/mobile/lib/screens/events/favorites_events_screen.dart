@@ -13,7 +13,11 @@ class FavoritesEventsScreen extends StatefulWidget {
   State<FavoritesEventsScreen> createState() => _FavoritesEventsScreenState();
 }
 
-class _FavoritesEventsScreenState extends State<FavoritesEventsScreen> {
+class _FavoritesEventsScreenState extends State<FavoritesEventsScreen>
+    with AutomaticKeepAliveClientMixin<FavoritesEventsScreen> {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
@@ -24,6 +28,8 @@ class _FavoritesEventsScreenState extends State<FavoritesEventsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     final List<EventModel> favorites = context
         .watch<EventsListProvider>()
         .favorites;

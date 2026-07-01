@@ -13,9 +13,15 @@ class FavoritePlacesScreen extends StatefulWidget {
   State<FavoritePlacesScreen> createState() => _FavoritePlacesScreenState();
 }
 
-class _FavoritePlacesScreenState extends State<FavoritePlacesScreen> {
+class _FavoritePlacesScreenState extends State<FavoritePlacesScreen>
+    with AutomaticKeepAliveClientMixin<FavoritePlacesScreen> {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     final List<PlaceModel> favorites = context
         .watch<PlaceListProvider>()
         .favorites;

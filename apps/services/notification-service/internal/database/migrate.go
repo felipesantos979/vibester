@@ -26,6 +26,12 @@ func Migrate() error {
 
 		CREATE INDEX IF NOT EXISTS idx_two_factor_codes_email_used
 			ON two_factor_codes (email, used, expires_at);
+
+		CREATE INDEX IF NOT EXISTS idx_notifications_recipient_read_created
+			ON notifications (recipient_id, read, created_at DESC);
+
+		CREATE INDEX IF NOT EXISTS idx_notifications_recipient_type_ref
+			ON notifications (recipient_id, type, ref_id);
 	`)
 	return err
 }

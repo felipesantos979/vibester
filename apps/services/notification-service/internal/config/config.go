@@ -18,6 +18,13 @@ func GetEnv(key string) string {
 	return os.Getenv(key)
 }
 
+func GetEnvOrDefault(key, fallback string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return fallback
+}
+
 func GetKafkaBrokers() []string {
 	return strings.Split(GetEnv("KAFKA_BROKERS"), ",")
 }

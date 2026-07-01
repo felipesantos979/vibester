@@ -43,6 +43,10 @@ class HighlightsCard extends StatelessWidget {
                 : CachedNetworkImage(
                     imageUrl: imageUrl,
                     fit: BoxFit.cover,
+                    // Miniatura de grid (2 colunas): decodificar em resolução
+                    // menor evita que a imagem em tela cheia do post detail
+                    // expulse essas miniaturas do cache de memória.
+                    memCacheWidth: 400,
                     fadeInDuration: Duration.zero,
                     fadeOutDuration: Duration.zero,
                     progressIndicatorBuilder: (context, url, progress) {

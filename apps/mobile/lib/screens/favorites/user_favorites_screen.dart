@@ -3,6 +3,7 @@ import 'package:mobile/providers/events/events_list_provider.dart';
 import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/screens/favorites/I_will_go_screen.dart';
 import 'package:mobile/screens/favorites/favorites_screen.dart';
+import 'package:mobile/screens/favorites/notifications_tab.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/utils/divider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -28,7 +29,11 @@ class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> tabs = [FavoritesScreen(), IWillGoScreen()];
+    final List<Widget> tabs = [
+      FavoritesScreen(),
+      IWillGoScreen(),
+      NotificationsTab(),
+    ];
     final event = Provider.of<EventsListProvider>(context);
     final places = Provider.of<PlaceListProvider>(context);
 
@@ -244,44 +249,50 @@ class _UserFavoritesScreenState extends State<UserFavoritesScreen> {
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: ['Favoritos', 'Vou ir'].asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final label = entry.value;
-                  final isActive = _currentIndex == index;
+                children: ['Favoritos', 'Vou ir', 'Notificações']
+                    .asMap()
+                    .entries
+                    .map((entry) {
+                      final index = entry.key;
+                      final label = entry.value;
+                      final isActive = _currentIndex == index;
 
-                  return GestureDetector(
-                    onTap: () => setState(() => _currentIndex = index),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            label,
-                            style: TextStyle(
-                              color: isActive ? Colors.white : Colors.white38,
-                              fontWeight: isActive
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
-                              fontSize: 16,
-                            ),
+                      return GestureDetector(
+                        onTap: () => setState(() => _currentIndex = index),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
                           ),
-                          const SizedBox(height: 4),
-                          if (isActive)
-                            Container(
-                              height: 3,
-                              width: 24,
-                              color: Color(colorBrasa),
-                            )
-                          else
-                            const SizedBox(height: 2),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
+                          child: Column(
+                            children: [
+                              Text(
+                                label,
+                                style: TextStyle(
+                                  color: isActive
+                                      ? Colors.white
+                                      : Colors.white38,
+                                  fontWeight: isActive
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              if (isActive)
+                                Container(
+                                  height: 3,
+                                  width: 24,
+                                  color: Color(colorBrasa),
+                                )
+                              else
+                                const SizedBox(height: 2),
+                            ],
+                          ),
+                        ),
+                      );
+                    })
+                    .toList(),
               ),
 
               MyDivider(height: 1, width: double.infinity),
