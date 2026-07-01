@@ -31,6 +31,7 @@ const postSchema = {
         tags: { type: "array", items: { type: "string" }, nullable: true },
         totalLikes: { type: "integer" },
         totalComments: { type: "integer" },
+        isLiked: { type: "boolean" },
         isDeleted: { type: "boolean" },
         createdAt: { type: "string", format: "date-time" },
         updatedAt: { type: "string", format: "date-time", nullable: true },
@@ -81,6 +82,15 @@ const paginationQuerystring = {
     properties: {
         limit: { type: "integer", minimum: 1, maximum: 100, default: 50, description: "Máximo de resultados" },
         cursor: { type: "string", description: "Cursor opaco retornado no header X-Next-Cursor da página anterior" },
+    },
+};
+
+const postsQuerystring = {
+    type: "object",
+    properties: {
+        limit: { type: "integer", minimum: 1, maximum: 100, default: 50, description: "Máximo de resultados" },
+        cursor: { type: "string", description: "Cursor opaco retornado no header X-Next-Cursor da página anterior" },
+        viewerId: { type: "string", format: "uuid", description: "Id do usuário autenticado, usado para calcular isLiked" },
     },
 };
 
@@ -140,10 +150,10 @@ export async function routes(app: FastifyInstance) {
 
     const uploadService = new UploadService();
     const postRepository = new PostRepository();
-    const postService = new PostService(postRepository);
+    const likeRepository = new LikeRepository();
+    const postService = new PostService(postRepository, likeRepository);
     const postController = new PostController(postService, uploadService);
 
-    const likeRepository = new LikeRepository();
     const likeService = new LikeService(likeRepository, postRepository);
     const likeController = new LikeController(likeService);
 
@@ -223,7 +233,7 @@ export async function routes(app: FastifyInstance) {
             tags: ["Posts"],
             summary: "Listar posts de um usuário",
             params: userIdParam,
-            querystring: paginationQuerystring,
+            querystring: postsQuerystring,
             response: { 200: { type: "array", items: postSchema } },
         },
     }, postController.findByUser.bind(postController));
@@ -237,7 +247,7 @@ export async function routes(app: FastifyInstance) {
                 required: ["establishmentId"],
                 properties: { establishmentId: { type: "string", format: "uuid" } },
             },
-            querystring: paginationQuerystring,
+            querystring: postsQuerystring,
             response: { 200: { type: "array", items: postSchema } },
         },
     }, postController.findByEstablishment.bind(postController));

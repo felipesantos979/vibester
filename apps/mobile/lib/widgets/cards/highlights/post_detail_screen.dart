@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile/models/highlights/highlight_model.dart';
+import 'package:mobile/providers/user/user_provider.dart';
+import 'package:mobile/service/posts/post_service.dart';
 import 'package:mobile/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 class PostDetailScreen extends StatefulWidget {
   final HighlightModel highlight;
@@ -15,13 +18,57 @@ class PostDetailScreen extends StatefulWidget {
 }
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
+  final PostService _postService = PostService();
   late final PageController _pageController;
+  late HighlightModel _highlight;
   int _paginaAtual = 0;
+  bool _isTogglingLike = false;
 
   @override
   void initState() {
     super.initState();
+    _highlight = widget.highlight;
     _pageController = PageController();
+  }
+
+  Future<void> _alternarCurtida() async {
+    final userId = context.read<UserProvider>().user?.accountId;
+    if (userId == null || _isTogglingLike) return;
+
+    final curtiaAntes = _highlight.curtidoPeloUsuario;
+    setState(() {
+      _isTogglingLike = true;
+      _highlight = _highlight.copyWith(
+        curtidoPeloUsuario: !curtiaAntes,
+        totalCurtidas: curtiaAntes
+            ? _highlight.totalCurtidas - 1
+            : _highlight.totalCurtidas + 1,
+      );
+    });
+
+    try {
+      if (curtiaAntes) {
+        await _postService.unlikePost(postId: _highlight.postId, userId: userId);
+      } else {
+        await _postService.likePost(postId: _highlight.postId, userId: userId);
+      }
+    } catch (e) {
+      final is409 = e.toString().contains('409') ||
+          e.toString().contains('already liked') ||
+          e.toString().contains('already unliked');
+      // 409 significa que o backend já está no estado pra onde tentamos ir
+      // (ex: curtida duplicada por uma corrida com outra tela) — mantém a UI.
+      if (!is409 && mounted) {
+        setState(() {
+          _highlight = _highlight.copyWith(
+            curtidoPeloUsuario: curtiaAntes,
+            totalCurtidas: _highlight.totalCurtidas + (curtiaAntes ? 1 : -1),
+          );
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _isTogglingLike = false);
+    }
   }
 
   @override
@@ -42,7 +89,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final highlight = widget.highlight;
+    final highlight = _highlight;
     final imagens = highlight.imagensUrls;
     final dataFormatada = _formatarData(highlight.criadoEm);
 
@@ -151,7 +198,19 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                 // Curtidas e comentários
                 Row(
                   children: [
-                    Icon(Icons.favorite, color: Color(colorBrasa), size: 22),
+                    GestureDetector(
+                      onTap: _alternarCurtida,
+                      behavior: HitTestBehavior.opaque,
+                      child: Icon(
+                        highlight.curtidoPeloUsuario
+                            ? Icons.favorite
+                            : Icons.favorite_outline,
+                        color: highlight.curtidoPeloUsuario
+                            ? Color(colorBrasa)
+                            : Colors.white70,
+                        size: 22,
+                      ),
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       '${highlight.totalCurtidas}',

@@ -13,6 +13,7 @@ vi.mock("../../kafka/producer", () => ({
 
 import { PostService } from "../post.service";
 import { PostRepository } from "../../repository/post.repository";
+import { LikeRepository } from "../../repository/like.repository";
 import { Post, CreatePostInput, UpdatePostInput } from "../../types/post.types";
 
 function createMockPostRepository() {
@@ -21,8 +22,8 @@ function createMockPostRepository() {
     createPostByUser: vi.fn().mockResolvedValue(undefined),
     createPostByEstablishment: vi.fn().mockResolvedValue(undefined),
     findById: vi.fn().mockResolvedValue(null),
-    findByUser: vi.fn().mockResolvedValue([]),
-    findByEstablishment: vi.fn().mockResolvedValue([]),
+    findByUser: vi.fn().mockResolvedValue({ posts: [], nextCursor: null }),
+    findByEstablishment: vi.fn().mockResolvedValue({ posts: [], nextCursor: null }),
     updateCaptionById: vi.fn().mockResolvedValue(undefined),
     updateCaptionByUser: vi.fn().mockResolvedValue(undefined),
     updateCaptionByEstablishment: vi.fn().mockResolvedValue(undefined),
@@ -36,6 +37,12 @@ function createMockPostRepository() {
     updateTotalCommentsByUser: vi.fn().mockResolvedValue(undefined),
     updateTotalCommentsByEstablishment: vi.fn().mockResolvedValue(undefined),
   } as unknown as PostRepository;
+}
+
+function createMockLikeRepository() {
+  return {
+    findLikedPostIds: vi.fn().mockResolvedValue(new Set()),
+  } as unknown as LikeRepository;
 }
 
 function makePost(overrides: Partial<Post> = {}): Post {
@@ -55,11 +62,13 @@ function makePost(overrides: Partial<Post> = {}): Post {
 describe("PostService", () => {
   let service: PostService;
   let repo: ReturnType<typeof createMockPostRepository>;
+  let likeRepo: ReturnType<typeof createMockLikeRepository>;
 
   beforeEach(() => {
     repo = createMockPostRepository();
+    likeRepo = createMockLikeRepository();
     mockRedis.del.mockResolvedValue(1);
-    service = new PostService(repo);
+    service = new PostService(repo, likeRepo);
   });
 
 
@@ -125,20 +134,41 @@ describe("PostService", () => {
   describe("findByUser", () => {
     it("should delegate to repository with default limit", async () => {
       const posts = [makePost()];
-      (repo.findByUser as ReturnType<typeof vi.fn>).mockResolvedValue(posts);
+      (repo.findByUser as ReturnType<typeof vi.fn>).mockResolvedValue({ posts, nextCursor: null });
 
       const result = await service.findByUser("user-1");
-      expect(result).toEqual(posts);
+      expect(result.posts).toEqual([{ ...posts[0], isLiked: false }]);
       expect(repo.findByUser).toHaveBeenCalledWith("user-1", 50, undefined);
     });
 
     it("should delegate to repository with custom limit", async () => {
       const posts = [makePost()];
-      (repo.findByUser as ReturnType<typeof vi.fn>).mockResolvedValue(posts);
+      (repo.findByUser as ReturnType<typeof vi.fn>).mockResolvedValue({ posts, nextCursor: null });
 
       const result = await service.findByUser("user-1", 20);
-      expect(result).toEqual(posts);
+      expect(result.posts).toEqual([{ ...posts[0], isLiked: false }]);
       expect(repo.findByUser).toHaveBeenCalledWith("user-1", 20, undefined);
+    });
+
+    it("should mark posts liked by the viewer as isLiked", async () => {
+      const posts = [makePost({ postId: "post-1" }), makePost({ postId: "post-2" })];
+      (repo.findByUser as ReturnType<typeof vi.fn>).mockResolvedValue({ posts, nextCursor: null });
+      (likeRepo.findLikedPostIds as ReturnType<typeof vi.fn>).mockResolvedValue(new Set(["post-2"]));
+
+      const result = await service.findByUser("user-1", 50, undefined, "viewer-1");
+
+      expect(likeRepo.findLikedPostIds).toHaveBeenCalledWith(["post-1", "post-2"], "viewer-1");
+      expect(result.posts.find((p) => p.postId === "post-1")?.isLiked).toBe(false);
+      expect(result.posts.find((p) => p.postId === "post-2")?.isLiked).toBe(true);
+    });
+
+    it("should not query likes when no viewerId is given", async () => {
+      const posts = [makePost()];
+      (repo.findByUser as ReturnType<typeof vi.fn>).mockResolvedValue({ posts, nextCursor: null });
+
+      await service.findByUser("user-1");
+
+      expect(likeRepo.findLikedPostIds).not.toHaveBeenCalled();
     });
   });
 
@@ -146,10 +176,10 @@ describe("PostService", () => {
   describe("findByEstablishment", () => {
     it("should delegate to repository with default limit", async () => {
       const posts = [makePost({ establishmentId: "est-1" })];
-      (repo.findByEstablishment as ReturnType<typeof vi.fn>).mockResolvedValue(posts);
+      (repo.findByEstablishment as ReturnType<typeof vi.fn>).mockResolvedValue({ posts, nextCursor: null });
 
       const result = await service.findByEstablishment("est-1");
-      expect(result).toEqual(posts);
+      expect(result.posts).toEqual([{ ...posts[0], isLiked: false }]);
       expect(repo.findByEstablishment).toHaveBeenCalledWith("est-1", 50, undefined);
     });
   });
