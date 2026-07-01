@@ -79,29 +79,31 @@ export class PostController {
     async findByUser(
         request: FastifyRequest<{
             Params: { userId: string; };
-            Querystring: { limit?: number };
+            Querystring: { limit?: number; cursor?: string };
         }>,
         reply: FastifyReply
     ) {
         const { userId } = userIdParamsSchema.parse(request.params);
         const limit = request.query.limit ?? 50;
-        const posts = await this.postService.findByUser(userId, limit);
+        const result = await this.postService.findByUser(userId, limit, request.query.cursor);
 
-        return reply.status(200).send(posts);
+        if (result.nextCursor) { reply.header("X-Next-Cursor", result.nextCursor); }
+        return reply.status(200).send(result.posts);
     }
 
     async findByEstablishment(
         request: FastifyRequest<{
             Params: { establishmentId: string; };
-            Querystring: { limit?: number };
+            Querystring: { limit?: number; cursor?: string };
         }>,
         reply: FastifyReply
     ) {
         const { establishmentId } = establishmentIdParamsSchema.parse(request.params);
         const limit = request.query.limit ?? 50;
-        const posts = await this.postService.findByEstablishment(establishmentId, limit);
+        const result = await this.postService.findByEstablishment(establishmentId, limit, request.query.cursor);
 
-        return reply.status(200).send(posts);
+        if (result.nextCursor) { reply.header("X-Next-Cursor", result.nextCursor); }
+        return reply.status(200).send(result.posts);
     }
 
     async updateCaption(

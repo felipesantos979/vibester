@@ -80,6 +80,7 @@ const paginationQuerystring = {
     type: "object",
     properties: {
         limit: { type: "integer", minimum: 1, maximum: 100, default: 50, description: "Máximo de resultados" },
+        cursor: { type: "string", description: "Cursor opaco retornado no header X-Next-Cursor da página anterior" },
     },
 };
 

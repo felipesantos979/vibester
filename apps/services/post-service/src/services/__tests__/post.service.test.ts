@@ -129,7 +129,7 @@ describe("PostService", () => {
 
       const result = await service.findByUser("user-1");
       expect(result).toEqual(posts);
-      expect(repo.findByUser).toHaveBeenCalledWith("user-1", 50);
+      expect(repo.findByUser).toHaveBeenCalledWith("user-1", 50, undefined);
     });
 
     it("should delegate to repository with custom limit", async () => {
@@ -138,7 +138,7 @@ describe("PostService", () => {
 
       const result = await service.findByUser("user-1", 20);
       expect(result).toEqual(posts);
-      expect(repo.findByUser).toHaveBeenCalledWith("user-1", 20);
+      expect(repo.findByUser).toHaveBeenCalledWith("user-1", 20, undefined);
     });
   });
 
@@ -150,7 +150,7 @@ describe("PostService", () => {
 
       const result = await service.findByEstablishment("est-1");
       expect(result).toEqual(posts);
-      expect(repo.findByEstablishment).toHaveBeenCalledWith("est-1", 50);
+      expect(repo.findByEstablishment).toHaveBeenCalledWith("est-1", 50, undefined);
     });
   });
 
