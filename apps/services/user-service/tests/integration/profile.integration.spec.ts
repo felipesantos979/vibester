@@ -24,7 +24,7 @@ vi.mock('../../src/config/redis', async () => {
   };
 });
 
-const { mockUserProfile, mockUserFollow, mockTransaction } = vi.hoisted(() => {
+const { mockUserProfile, mockUserFollow, mockTransaction, mockQueryRaw } = vi.hoisted(() => {
   const mockUserProfile = {
     create: vi.fn(),
     findUnique: vi.fn(),
@@ -37,6 +37,7 @@ const { mockUserProfile, mockUserFollow, mockTransaction } = vi.hoisted(() => {
     create: vi.fn(),
     delete: vi.fn(),
     findMany: vi.fn(),
+    count: vi.fn(),
   };
   const mockTransaction = vi.fn().mockImplementation((arg: ((...args: unknown[]) => unknown) | Promise<unknown>[]) => {
     if (typeof arg === 'function') {
@@ -44,7 +45,8 @@ const { mockUserProfile, mockUserFollow, mockTransaction } = vi.hoisted(() => {
     }
     return Promise.all(arg);
   });
-  return { mockUserProfile, mockUserFollow, mockTransaction };
+  const mockQueryRaw = vi.fn().mockResolvedValue([{ '?column?': 1 }]);
+  return { mockUserProfile, mockUserFollow, mockTransaction, mockQueryRaw };
 });
 
 vi.mock('../../src/prisma/index', () => ({
@@ -52,7 +54,7 @@ vi.mock('../../src/prisma/index', () => ({
     userProfile: mockUserProfile,
     userFollow: mockUserFollow,
     $transaction: mockTransaction,
-    $queryRaw: vi.fn().mockResolvedValue([{ '?column?': 1 }]),
+    $queryRaw: mockQueryRaw,
   },
 }));
 
@@ -111,6 +113,43 @@ describe('user-service — HTTP Integration', () => {
     });
   });
 
+  describe('GET /ready', () => {
+    it('retorna 200 quando db e cache estão saudáveis', async () => {
+      const res = await app.inject({ method: 'GET', url: '/ready' });
+      expect(res.statusCode).toBe(200);
+      expect(JSON.parse(res.payload)).toEqual({ status: 'ok', db: true, cache: true });
+    });
+
+    it('retorna 503 quando o banco está indisponível', async () => {
+      mockQueryRaw.mockRejectedValueOnce(new Error('connection refused'));
+
+      const res = await app.inject({ method: 'GET', url: '/ready' });
+      expect(res.statusCode).toBe(503);
+      expect(JSON.parse(res.payload)).toEqual({ status: 'degraded', db: false, cache: true });
+    });
+
+    it('retorna 503 quando o cache está indisponível', async () => {
+      const pingSpy = vi.spyOn(redis, 'ping').mockRejectedValueOnce(new Error('connection refused'));
+
+      const res = await app.inject({ method: 'GET', url: '/ready' });
+      expect(res.statusCode).toBe(503);
+      expect(JSON.parse(res.payload)).toEqual({ status: 'degraded', db: true, cache: false });
+
+      pingSpy.mockRestore();
+    });
+
+    it('retorna 503 quando db e cache estão indisponíveis', async () => {
+      mockQueryRaw.mockRejectedValueOnce(new Error('connection refused'));
+      const pingSpy = vi.spyOn(redis, 'ping').mockRejectedValueOnce(new Error('connection refused'));
+
+      const res = await app.inject({ method: 'GET', url: '/ready' });
+      expect(res.statusCode).toBe(503);
+      expect(JSON.parse(res.payload)).toEqual({ status: 'degraded', db: false, cache: false });
+
+      pingSpy.mockRestore();
+    });
+  });
+
   describe('POST /users/profile', () => {
     it('cria perfil e retorna 201 com accountId', async () => {
       mockUserProfile.create.mockResolvedValue(makeProfile());
@@ -161,6 +200,41 @@ describe('user-service — HTTP Integration', () => {
     });
   });
 
+  describe('PUT /users/profile/info', () => {
+    it('atualiza nome e username e retorna 200', async () => {
+      mockUserProfile.update.mockResolvedValue(
+        makeProfile({ name: 'Novo Nome', username: 'novo_username' })
+      );
+
+      const res = await app.inject({
+        method: 'PUT',
+        url: '/users/profile/info',
+        payload: { accountId: USER_ID, name: 'Novo Nome', username: 'novo_username' },
+      });
+
+      expect(res.statusCode).toBe(200);
+      const body = JSON.parse(res.payload);
+      expect(body.name).toBe('Novo Nome');
+      expect(body.username).toBe('novo_username');
+      expect(mockUserProfile.update).toHaveBeenCalledWith({
+        where: { userID: USER_ID },
+        data: { name: 'Novo Nome', username: 'novo_username' },
+      });
+    });
+
+    it('retorna 500 quando a atualização falha', async () => {
+      mockUserProfile.update.mockRejectedValue(new Error('db error'));
+
+      const res = await app.inject({
+        method: 'PUT',
+        url: '/users/profile/info',
+        payload: { accountId: USER_ID, name: 'Novo Nome', username: 'novo_username' },
+      });
+
+      expect(res.statusCode).toBe(500);
+    });
+  });
+
   describe('PUT /users/profile/bio — cache invalidation', () => {
     it('atualiza bio, invalida cache e retorna 200', async () => {
       const original = makeProfile();
@@ -198,6 +272,18 @@ describe('user-service — HTTP Integration', () => {
       expect(res.statusCode).toBe(200);
       expect(JSON.parse(res.payload).avatarUrl).toBe(avatarUrl);
     });
+
+    it('retorna 500 quando a atualização falha', async () => {
+      mockUserProfile.update.mockRejectedValue(new Error('db error'));
+
+      const res = await app.inject({
+        method: 'PUT',
+        url: '/users/profile/avatar',
+        payload: { accountId: USER_ID, avatarUrl: 'https://example.com/avatar.jpg' },
+      });
+
+      expect(res.statusCode).toBe(500);
+    });
   });
 
   describe('POST /users/profile/followers/increase — transação atômica + Kafka', () => {
@@ -222,11 +308,23 @@ describe('user-service — HTTP Integration', () => {
           topic: 'user.followed',
           messages: expect.arrayContaining([
             expect.objectContaining({
-              value: JSON.stringify({ followerId: FOLLOWER_ID, followedId: USER_ID }),
+              value: JSON.stringify({ followerId: FOLLOWER_ID, followingId: USER_ID }),
             }),
           ]),
         })
       );
+    });
+
+    it('retorna 500 quando a transação falha', async () => {
+      mockTransaction.mockRejectedValue(new Error('transaction error'));
+
+      const res = await app.inject({
+        method: 'POST',
+        url: '/users/profile/followers/increase',
+        payload: { followerId: FOLLOWER_ID, followingId: USER_ID },
+      });
+
+      expect(res.statusCode).toBe(500);
     });
   });
 
@@ -248,6 +346,18 @@ describe('user-service — HTTP Integration', () => {
       expect(JSON.parse(res.payload).followers).toBe(0);
       expect(mockTransaction).toHaveBeenCalledTimes(1);
     });
+
+    it('retorna 500 quando a transação falha', async () => {
+      mockTransaction.mockRejectedValue(new Error('transaction error'));
+
+      const res = await app.inject({
+        method: 'POST',
+        url: '/users/profile/followers/decrease',
+        payload: { followerId: FOLLOWER_ID, followingId: USER_ID },
+      });
+
+      expect(res.statusCode).toBe(500);
+    });
   });
 
   describe('GET /users/:userID/followers — Redis cache', () => {
@@ -263,6 +373,13 @@ describe('user-service — HTTP Integration', () => {
       expect(res2.statusCode).toBe(200);
       expect(mockUserFollow.findMany).toHaveBeenCalledTimes(1);
     });
+
+    it('retorna 500 quando a consulta falha', async () => {
+      mockUserFollow.findMany.mockRejectedValue(new Error('db error'));
+
+      const res = await app.inject({ method: 'GET', url: `/users/${USER_ID}/followers` });
+      expect(res.statusCode).toBe(500);
+    });
   });
 
   describe('GET /users/:userID/following — Redis cache', () => {
@@ -276,6 +393,53 @@ describe('user-service — HTTP Integration', () => {
 
       await app.inject({ method: 'GET', url: `/users/${FOLLOWER_ID}/following` });
       expect(mockUserFollow.findMany).toHaveBeenCalledTimes(1);
+    });
+
+    it('retorna 500 quando a consulta falha', async () => {
+      mockUserFollow.findMany.mockRejectedValue(new Error('db error'));
+
+      const res = await app.inject({ method: 'GET', url: `/users/${FOLLOWER_ID}/following` });
+      expect(res.statusCode).toBe(500);
+    });
+  });
+
+  describe('GET /users/:followerId/follows/:followingId — verificar se segue', () => {
+    it('retorna isFollowing: true quando o relacionamento existe', async () => {
+      mockUserFollow.count.mockResolvedValue(1);
+
+      const res = await app.inject({
+        method: 'GET',
+        url: `/users/${FOLLOWER_ID}/follows/${USER_ID}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(JSON.parse(res.payload)).toEqual({ isFollowing: true });
+      expect(mockUserFollow.count).toHaveBeenCalledWith({
+        where: { followerId: FOLLOWER_ID, followingId: USER_ID },
+      });
+    });
+
+    it('retorna isFollowing: false quando o relacionamento não existe', async () => {
+      mockUserFollow.count.mockResolvedValue(0);
+
+      const res = await app.inject({
+        method: 'GET',
+        url: `/users/${FOLLOWER_ID}/follows/${USER_ID}`,
+      });
+
+      expect(res.statusCode).toBe(200);
+      expect(JSON.parse(res.payload)).toEqual({ isFollowing: false });
+    });
+
+    it('retorna 500 quando a consulta falha', async () => {
+      mockUserFollow.count.mockRejectedValue(new Error('db error'));
+
+      const res = await app.inject({
+        method: 'GET',
+        url: `/users/${FOLLOWER_ID}/follows/${USER_ID}`,
+      });
+
+      expect(res.statusCode).toBe(500);
     });
   });
 

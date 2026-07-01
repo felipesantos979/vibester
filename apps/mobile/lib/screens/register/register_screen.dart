@@ -88,329 +88,355 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(colorDarkGrey),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Center(
-                child: SizedBox(
-                  width: 130,
-                  height: 265,
-                  child: Image.asset('assets/img/mascote/mascote.png'),
-                ),
-              ),
-
-              Text(
-                'Criar conta',
-                style: GoogleFonts.inter(
-                  color: Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-              Text(
-                'Preencha seus dados para começar',
-                style: GoogleFonts.inter(color: Color(colorGrey)),
-              ),
-
-              const SizedBox(height: 15),
-
-              Column(
+      body: Stack(
+        children: [
+          Form(
+            key: _formKey,
+            child: SingleChildScrollView(
+              child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 280, bottom: 10),
-                    child: Text(
-                      'USUÁRIO',
-                      style: GoogleFonts.inter(
-                        color: Color(colorGrey),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
+                  Center(
+                    child: SizedBox(
+                      width: 130,
+                      height: 265,
+                      child: Image.asset('assets/img/mascote/mascote.png'),
                     ),
                   ),
 
-                  SizedBox(
-                    width: 350,
-                    child: TextFormField(
-                      controller: _nomeController,
+                  Text(
+                    'Criar conta',
+                    style: GoogleFonts.inter(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
 
-                      textInputAction: TextInputAction.next,
-                      style: const TextStyle(color: Colors.white),
-                      cursorColor: Color(colorAmbar),
+                  Text(
+                    'Preencha seus dados para começar',
+                    style: GoogleFonts.inter(color: Color(colorGrey)),
+                  ),
 
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(50),
-                        FilteringTextInputFormatter.deny(RegExp('@')),
+                  const SizedBox(height: 15),
+
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 280, bottom: 10),
+                        child: Text(
+                          'USUÁRIO',
+                          style: GoogleFonts.inter(
+                            color: Color(colorGrey),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(
+                        width: 350,
+                        child: TextFormField(
+                          controller: _nomeController,
+
+                          textInputAction: TextInputAction.next,
+                          style: const TextStyle(color: Colors.white),
+                          cursorColor: Color(colorAmbar),
+
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(50),
+                            FilteringTextInputFormatter.deny(RegExp('@')),
+                          ],
+
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: const Color(0xFF141414),
+                            prefixIcon: const Icon(Icons.person),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            errorStyle: const TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 12,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Colors.white10,
+                                width: 1.3,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Color(colorAmbar),
+                                width: 1.3,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Colors.redAccent,
+                                width: 1.3,
+                              ),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Colors.redAccent,
+                                width: 1.3,
+                              ),
+                            ),
+                          ),
+
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Informe seu nome de usuário!';
+                            }
+                            if (value.contains('@')) {
+                              return 'O nome de usuario não pode conter "@"!';
+                            }
+
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 280, bottom: 10),
+                        child: Text(
+                          'E-MAIL',
+                          style: GoogleFonts.inter(
+                            color: Color(colorGrey),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(
+                        width: 350,
+                        child: TextFormField(
+                          controller: _emailController,
+
+                          textInputAction: TextInputAction.next,
+                          style: const TextStyle(color: Colors.white),
+                          cursorColor: Color(colorAmbar),
+
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(320),
+                          ],
+
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: const Color(0xFF141414),
+                            prefixIcon: const Icon(Icons.email_outlined),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            errorStyle: const TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 12,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Colors.white10,
+                                width: 1.3,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Color(colorAmbar),
+                                width: 1.3,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Colors.redAccent,
+                                width: 1.3,
+                              ),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Colors.redAccent,
+                                width: 1.3,
+                              ),
+                            ),
+                          ),
+
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Informe seu email!';
+                            }
+                            if (!EmailValidator.validate(value)) {
+                              return 'Informe um email válido!';
+                            }
+                            return null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 211, bottom: 10),
+                    child: Column(
+                      children: [
+                        Text(
+                          'DATA DE NASCIMENTO',
+                          style: GoogleFonts.inter(
+                            color: Color(colorGrey),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
+                        ),
                       ],
+                    ),
+                  ),
+                  DatePickerField(
+                    labelText: 'Data de Nascimento',
+                    height: 60,
 
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color(0xFF141414),
-                        prefixIcon: const Icon(Icons.person),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        errorStyle: const TextStyle(
-                          color: Colors.redAccent,
-                          fontSize: 12,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Colors.white10,
-                            width: 1.3,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Color(colorAmbar),
-                            width: 1.3,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Colors.redAccent,
-                            width: 1.3,
-                          ),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Colors.redAccent,
-                            width: 1.3,
+                    onDateSelected: (data) {
+                      _dataNascimento = data;
+                    },
+
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Informe sua data de nascimento!';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 290, bottom: 10),
+                        child: Text(
+                          'SENHA',
+                          style: GoogleFonts.inter(
+                            color: Color(colorGrey),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
                           ),
                         ),
                       ),
 
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Informe seu nome de usuário!';
-                        }
-                        if (value.contains('@')) {
-                          return 'O nome de usuario não pode conter "@"!';
-                        }
+                      SizedBox(
+                        width: 350,
+                        child: TextFormField(
+                          controller: _senhaController,
 
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
+                          obscureText: true,
+                          textInputAction: TextInputAction.done,
+                          style: const TextStyle(color: Colors.white),
+                          cursorColor: Color(colorAmbar),
 
-              const SizedBox(height: 10),
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(20),
+                          ],
 
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 280, bottom: 10),
-                    child: Text(
-                      'E-MAIL',
-                      style: GoogleFonts.inter(
-                        color: Color(colorGrey),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: const Color(0xFF141414),
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            errorStyle: const TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 12,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Colors.white10,
+                                width: 1.3,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Color(colorAmbar),
+                                width: 1.3,
+                              ),
+                            ),
+                            errorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Colors.redAccent,
+                                width: 1.3,
+                              ),
+                            ),
+                            focusedErrorBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              borderSide: const BorderSide(
+                                color: Colors.redAccent,
+                                width: 1.3,
+                              ),
+                            ),
+                          ),
+
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Informe uma senha!';
+                            }
+                            if (value.length < 8) {
+                              return 'A senha deve ter pelo menos 8 caracteres!';
+                            }
+                            return null;
+                          },
+                        ),
                       ),
-                    ),
+                    ],
                   ),
+
+                  const SizedBox(height: 50),
 
                   SizedBox(
                     width: 350,
-                    child: TextFormField(
-                      controller: _emailController,
-
-                      textInputAction: TextInputAction.next,
-                      style: const TextStyle(color: Colors.white),
-                      cursorColor: Color(colorAmbar),
-
-                      inputFormatters: [LengthLimitingTextInputFormatter(320)],
-
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color(0xFF141414),
-                        prefixIcon: const Icon(Icons.email_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        errorStyle: const TextStyle(
-                          color: Colors.redAccent,
-                          fontSize: 12,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Colors.white10,
-                            width: 1.3,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Color(colorAmbar),
-                            width: 1.3,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Colors.redAccent,
-                            width: 1.3,
-                          ),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Colors.redAccent,
-                            width: 1.3,
-                          ),
-                        ),
-                      ),
-
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Informe seu email!';
-                        }
-                        if (!EmailValidator.validate(value)) {
-                          return 'Informe um email válido!';
-                        }
-                        return null;
-                      },
+                    height: 50,
+                    child: PrimaryButton(
+                      label: _isLoading ? 'Criando conta...' : 'Entrar',
+                      onPressed: _isLoading ? () {} : _criarConta,
                     ),
                   ),
                 ],
               ),
-
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.only(right: 211, bottom: 10),
-                child: Column(
-                  children: [
-                    Text(
-                      'DATA DE NASCIMENTO',
-                      style: GoogleFonts.inter(
-                        color: Color(colorGrey),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              DatePickerField(
-                labelText: 'Data de Nascimento',
-                height: 60,
-
-                onDateSelected: (data) {
-                  _dataNascimento = data;
-                },
-
-                validator: (value) {
-                  if (value == null) {
-                    return 'Informe sua data de nascimento!';
-                  }
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 12),
-
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 290, bottom: 10),
-                    child: Text(
-                      'SENHA',
-                      style: GoogleFonts.inter(
-                        color: Color(colorGrey),
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(
-                    width: 350,
-                    child: TextFormField(
-                      controller: _senhaController,
-
-                      obscureText: true,
-                      textInputAction: TextInputAction.done,
-                      style: const TextStyle(color: Colors.white),
-                      cursorColor: Color(colorAmbar),
-
-                      inputFormatters: [LengthLimitingTextInputFormatter(20)],
-
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: const Color(0xFF141414),
-                        prefixIcon: const Icon(Icons.lock_outline),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        errorStyle: const TextStyle(
-                          color: Colors.redAccent,
-                          fontSize: 12,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Colors.white10,
-                            width: 1.3,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Color(colorAmbar),
-                            width: 1.3,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Colors.redAccent,
-                            width: 1.3,
-                          ),
-                        ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(18),
-                          borderSide: const BorderSide(
-                            color: Colors.redAccent,
-                            width: 1.3,
-                          ),
-                        ),
-                      ),
-
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Informe uma senha!';
-                        }
-                        if (value.length < 8) {
-                          return 'A senha deve ter pelo menos 8 caracteres!';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 50),
-
-              SizedBox(
-                width: 350,
-                height: 50,
-                child: PrimaryButton(
-                  label: _isLoading ? 'Criando conta...' : 'Entrar',
-                  onPressed: _isLoading ? () {} : _criarConta,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+
+          //Botão de voltar
+          Positioned(
+            top: 20,
+            left: 16,
+            child: SafeArea(
+              child: CircleAvatar(
+                backgroundColor: Color(colorDarkGrey).withOpacity(0.8),
+                child: IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(
+                    Icons.arrow_back_ios_new,
+                    color: Color(colorAmbar),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
