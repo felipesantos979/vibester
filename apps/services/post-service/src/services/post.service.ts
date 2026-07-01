@@ -8,6 +8,7 @@ import {
 import { redis, cacheAside } from "../config/redis";
 import { HttpError } from "../errors/http.error";
 import { producer } from "../kafka/producer";
+import { decodeCursor } from "../utils/cursor";
 
 const POSTS_TOPIC = "posts";
 
@@ -96,15 +97,17 @@ export class PostService {
         );
     }
 
-    async findByUser(userId: string, limit = 50) {
-        return cacheAside(`post:user:${userId}:${limit}`, 120, () =>
-            this.postRepository.findByUser(userId, limit)
+    async findByUser(userId: string, limit = 50, rawCursor?: string) {
+        const cursor = decodeCursor(rawCursor);
+        return cacheAside(`post:user:${userId}:${limit}:${rawCursor ?? ""}`, 120, () =>
+            this.postRepository.findByUser(userId, limit, cursor)
         );
     }
 
-    async findByEstablishment(establishmentId: string, limit = 50) {
-        return cacheAside(`post:establishment:${establishmentId}:${limit}`, 120, () =>
-            this.postRepository.findByEstablishment(establishmentId, limit)
+    async findByEstablishment(establishmentId: string, limit = 50, rawCursor?: string) {
+        const cursor = decodeCursor(rawCursor);
+        return cacheAside(`post:establishment:${establishmentId}:${limit}:${rawCursor ?? ""}`, 120, () =>
+            this.postRepository.findByEstablishment(establishmentId, limit, cursor)
         );
     }
 

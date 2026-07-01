@@ -54,3 +54,8 @@ export interface GeneratePresignedUrlsInput {
   userId: string;
   count: number;
 }
+
+export interface PaginatedPosts {
+  posts: Post[];
+  nextCursor: string | null;
+}

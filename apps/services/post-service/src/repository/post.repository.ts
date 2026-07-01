@@ -1,7 +1,30 @@
-import { Post } from "../types/post.types";
+import { Post, PaginatedPosts } from "../types/post.types";
 import { BaseRepository } from "./base.repository";
+import { PostCursor, encodeCursor } from "../utils/cursor";
 
 export class PostRepository extends BaseRepository {
+
+    private mapRow(row: any): Post {
+        return {
+            postId: row.post_id,
+            userId: row.user_id,
+            userUsername: row.user_username,
+            userProfilePicture: row.user_profile_picture,
+            userVerified: row.user_verified,
+            establishmentId: row.establishment_id,
+            establishmentName: row.establishment_name,
+            establishmentLogo: row.establishment_logo,
+            establishmentCategory: row.establishment_category,
+            imageUrls: row.image_urls,
+            caption: row.caption,
+            tags: row.tags,
+            totalLikes: row.total_likes,
+            totalComments: row.total_comments,
+            isDeleted: row.is_deleted,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at
+        };
+    }
 
     async createPostById(post: Post) {
         return this.execute(
@@ -151,89 +174,71 @@ export class PostRepository extends BaseRepository {
 
         if (!row) { return null; }
 
-        return {
-            postId: row.post_id,
-            userId: row.user_id,
-            userUsername: row.user_username,
-            userProfilePicture: row.user_profile_picture,
-            userVerified: row.user_verified,
-            establishmentId: row.establishment_id,
-            establishmentName: row.establishment_name,
-            establishmentLogo: row.establishment_logo,
-            establishmentCategory: row.establishment_category,
-            imageUrls: row.image_urls,
-            caption: row.caption,
-            tags: row.tags,
-            totalLikes: row.total_likes,
-            totalComments: row.total_comments,
-            isDeleted: row.is_deleted,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at
-        };
+        return this.mapRow(row);
     }
 
-    async findByUser(userId: string, limit = 50): Promise<Post[]> {
+    async findByUser(userId: string, limit = 50, cursor?: PostCursor): Promise<PaginatedPosts> {
+        const params: unknown[] = [userId];
+        let cursorClause = "";
+
+        if (cursor) {
+            cursorClause = "AND (created_at, post_id) < (?, ?)";
+            params.push(cursor.createdAt, cursor.postId);
+        }
+
+        params.push(limit);
+
         const result = await this.execute(
             `
                 SELECT *
                 FROM posts_by_user
                 WHERE user_id = ?
+                ${cursorClause}
                 LIMIT ?;
             `,
-            [userId, limit]
+            params
         );
 
-        return result.rows.map((row) => ({
-            postId: row.post_id,
-            userId: row.user_id,
-            userUsername: row.user_username,
-            userProfilePicture: row.user_profile_picture,
-            userVerified: row.user_verified,
-            establishmentId: row.establishment_id,
-            establishmentName: row.establishment_name,
-            establishmentLogo: row.establishment_logo,
-            establishmentCategory: row.establishment_category,
-            imageUrls: row.image_urls,
-            caption: row.caption,
-            tags: row.tags,
-            totalLikes: row.total_likes,
-            totalComments: row.total_comments,
-            isDeleted: row.is_deleted,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at
-        }));
+        const rows = result.rows;
+        const posts = rows.map((row) => this.mapRow(row)).filter((post) => !post.isDeleted);
+        const lastRow = rows[rows.length - 1];
+        const nextCursor = rows.length === limit && lastRow
+            ? encodeCursor({ createdAt: lastRow.created_at, postId: lastRow.post_id })
+            : null;
+
+        return { posts, nextCursor };
     }
 
-    async findByEstablishment(establishmentId: string, limit = 50): Promise<Post[]> {
+    async findByEstablishment(establishmentId: string, limit = 50, cursor?: PostCursor): Promise<PaginatedPosts> {
+        const params: unknown[] = [establishmentId];
+        let cursorClause = "";
+
+        if (cursor) {
+            cursorClause = "AND (created_at, post_id) < (?, ?)";
+            params.push(cursor.createdAt, cursor.postId);
+        }
+
+        params.push(limit);
+
         const result = await this.execute(
             `
                 SELECT *
                 FROM posts_by_establishment
                 WHERE establishment_id = ?
+                ${cursorClause}
                 LIMIT ?;
             `,
-            [establishmentId, limit]
+            params
         );
 
-        return result.rows.map((row) => ({
-            postId: row.post_id,
-            userId: row.user_id,
-            userUsername: row.user_username,
-            userProfilePicture: row.user_profile_picture,
-            userVerified: row.user_verified,
-            establishmentId: row.establishment_id,
-            establishmentName: row.establishment_name,
-            establishmentLogo: row.establishment_logo,
-            establishmentCategory: row.establishment_category,
-            imageUrls: row.image_urls,
-            caption: row.caption,
-            tags: row.tags,
-            totalLikes: row.total_likes,
-            totalComments: row.total_comments,
-            isDeleted: row.is_deleted,
-            createdAt: row.created_at,
-            updatedAt: row.updated_at
-        }));
+        const rows = result.rows;
+        const posts = rows.map((row) => this.mapRow(row)).filter((post) => !post.isDeleted);
+        const lastRow = rows[rows.length - 1];
+        const nextCursor = rows.length === limit && lastRow
+            ? encodeCursor({ createdAt: lastRow.created_at, postId: lastRow.post_id })
+            : null;
+
+        return { posts, nextCursor };
     }
 
     async updateCaptionById(postId: string, caption: string, updatedAt: Date) {

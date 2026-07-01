@@ -47,5 +47,5 @@ export function generateEvent(_accountId) {
 export const NEARBY_QS = 'latitude=-23.5505&longitude=-46.6333&radius=5000';
 
 // SEED_ACCOUNT_ID must exist in the database before running load tests
-// (alvo fixo para o fluxo de "seguir usuário")
-export const SEED_ACCOUNT_ID = __ENV.SEED_ACCOUNT_ID || '00000000-0000-0000-0000-000000000001';
+// (alvo fixo para o fluxo de "seguir usuário" — default é a conta k6_test_01)
+export const SEED_ACCOUNT_ID = __ENV.SEED_ACCOUNT_ID || 'adbefbd5-af2d-4034-a00b-a2613740a796';
