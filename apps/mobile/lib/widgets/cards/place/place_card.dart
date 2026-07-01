@@ -50,6 +50,11 @@ class PlaceCard extends StatelessWidget {
                         child: CachedNetworkImage(
                           imageUrl: place.profileImage,
                           fit: BoxFit.cover,
+                          fadeInDuration: Duration.zero,
+                          fadeOutDuration: Duration.zero,
+                          placeholder: (_, _) =>
+                              const Center(child: CircularProgressIndicator()),
+                          errorWidget: (_, _, _) => const Icon(Icons.error),
                         ),
                       ),
                     ),

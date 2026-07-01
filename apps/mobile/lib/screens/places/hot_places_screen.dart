@@ -56,93 +56,98 @@ class _HotPlacesScreenState extends State<HotPlacesScreen> {
 
     return Scaffold(
       backgroundColor: Color(colorNoturno),
-      body: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(0, 16, 0, 80),
-        itemCount: listaFiltrada.isEmpty ? 2 : listaFiltrada.length + 1,
-        itemBuilder: (context, index) {
-          if (index == 0) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Populares Agora',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
+      body: RefreshIndicator(
+        color: Color(colorAmbar),
+        onRefresh: () =>
+            context.read<PlaceListProvider>().fetchPlaces(force: true),
+        child: ListView.builder(
+          padding: const EdgeInsets.fromLTRB(0, 16, 0, 80),
+          itemCount: listaFiltrada.isEmpty ? 2 : listaFiltrada.length + 1,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Populares Agora',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text.rich(
-                    TextSpan(
-                      text: 'Os locais mais movimentados da cidade ',
-                      style: TextStyle(color: Colors.white54, fontSize: 14),
-                      children: [
-                        TextSpan(
-                          text: 'ao vivo!',
-                          style: TextStyle(
-                            color: Color(colorAmbar),
-                            fontWeight: FontWeight.bold,
+                    const SizedBox(height: 4),
+                    Text.rich(
+                      TextSpan(
+                        text: 'Os locais mais movimentados da cidade ',
+                        style: TextStyle(color: Colors.white54, fontSize: 14),
+                        children: [
+                          TextSpan(
+                            text: 'ao vivo!',
+                            style: TextStyle(
+                              color: Color(colorAmbar),
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  CustomSearchBar(
-                    controller: pesquisaController,
-                    onChanged: () {
-                      setState(() {});
-                    },
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (listaFiltrada.isEmpty) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 90),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 200,
-                    width: 200,
-                    child: Image.asset('assets/img/mascote/lupa.png'),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Nenhum lugar encontrado',
-                    style: TextStyle(
-                      color: Colors.white38,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                    const SizedBox(height: 16),
+                    CustomSearchBar(
+                      controller: pesquisaController,
+                      onChanged: () {
+                        setState(() {});
+                      },
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Tente buscar por outro nome ou categoria',
-                    style: TextStyle(color: Colors.white24, fontSize: 13),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return PlaceCard(
-            place: listaFiltrada[index - 1],
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.placeDetail,
-                arguments: listaFiltrada[index - 1].id,
+                  ],
+                ),
               );
-            },
-          );
-        },
+            }
+
+            if (listaFiltrada.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 90),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: Image.asset('assets/img/mascote/lupa.png'),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Nenhum lugar encontrado',
+                      style: TextStyle(
+                        color: Colors.white38,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Tente buscar por outro nome ou categoria',
+                      style: TextStyle(color: Colors.white24, fontSize: 13),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return PlaceCard(
+              place: listaFiltrada[index - 1],
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  AppRoutes.placeDetail,
+                  arguments: listaFiltrada[index - 1].id,
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

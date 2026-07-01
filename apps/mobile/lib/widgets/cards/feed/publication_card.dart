@@ -28,7 +28,14 @@ class PublicationCard extends StatelessWidget {
 
   Widget _buildImage(String src) {
     if (src.startsWith('http')) {
-      return CachedNetworkImage(imageUrl: src, fit: BoxFit.cover);
+      return CachedNetworkImage(
+        imageUrl: src,
+        fit: BoxFit.cover,
+        fadeInDuration: Duration.zero,
+        fadeOutDuration: Duration.zero,
+        placeholder: (_, _) => const Center(child: CircularProgressIndicator()),
+        errorWidget: (_, _, _) => const Icon(Icons.error),
+      );
     }
     return Image.file(File(src), fit: BoxFit.cover);
   }

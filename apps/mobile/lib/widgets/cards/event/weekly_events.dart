@@ -49,6 +49,8 @@ class _WeeklyEventsState extends State<WeeklyEvents> {
                     child: CachedNetworkImage(
                       imageUrl: widget.evento.imageUrl,
                       fit: BoxFit.cover,
+                      fadeInDuration: Duration.zero,
+                      fadeOutDuration: Duration.zero,
                       placeholder: (_, _) =>
                           const Center(child: AppProgressIndicator()),
                       errorWidget: (_, _, _) => const Icon(Icons.error),

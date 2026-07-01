@@ -43,15 +43,20 @@ class HighlightsCard extends StatelessWidget {
                 : CachedNetworkImage(
                     imageUrl: imageUrl,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      color: Colors.white12,
-                      child: Center(
-                        child: CircularProgressIndicator(
-                          color: Color(colorAmbar),
-                          strokeWidth: 2,
+                    fadeInDuration: Duration.zero,
+                    fadeOutDuration: Duration.zero,
+                    progressIndicatorBuilder: (context, url, progress) {
+                      return Container(
+                        color: Colors.white12,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: Color(colorAmbar),
+                            strokeWidth: 2,
+                            value: progress.progress,
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                     errorWidget: (context, url, error) {
                       debugPrint('Erro ao carregar imagem ($imageUrl): $error');
                       return Container(

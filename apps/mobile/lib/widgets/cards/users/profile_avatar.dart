@@ -18,7 +18,9 @@ class ProfileAvatar extends StatelessWidget {
   ImageProvider? get _imageProvider {
     if (imageUrl == null) return null;
 
-    if (imageUrl!.startsWith('http')) return CachedNetworkImageProvider(imageUrl!);
+    if (imageUrl!.startsWith('http')) {
+      return CachedNetworkImageProvider(imageUrl!);
+    }
 
     return FileImage(File(imageUrl!));
   }

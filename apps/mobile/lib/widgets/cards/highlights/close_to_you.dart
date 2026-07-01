@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/routes/app_routes.dart';
@@ -168,10 +169,12 @@ class _CloseToYouState extends State<CloseToYou> {
                                         color: Colors.white38,
                                       ),
                                     )
-                                  : Image.network(
-                                      place.profileImage,
+                                  : CachedNetworkImage(
+                                      imageUrl: place.profileImage,
                                       fit: BoxFit.cover,
-                                      errorBuilder: (context, error, stack) {
+                                      fadeInDuration: Duration.zero,
+                                      fadeOutDuration: Duration.zero,
+                                      errorWidget: (context, error, stack) {
                                         return Container(
                                           color: Colors.white12,
                                           child: const Icon(
