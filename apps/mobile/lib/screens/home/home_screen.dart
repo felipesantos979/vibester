@@ -17,10 +17,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  static const _profileTabIndex = 3;
+
   int _currentIndex = 0;
   bool _navbarVisible = true;
   bool _isTabSwitching = false; // Bloqueia o listener durante a troca de aba
   final _navbarVisibleNotifier = ValueNotifier<bool>(true);
+  final _profileKey = GlobalKey<UserProfileScreenState>();
 
   // Instanciadas uma única vez para manter o estado (e o cache de imagens já
   // carregadas) de cada aba ao trocar entre elas.
@@ -35,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
     SearchScreen(),
     UserFavoritesScreen(),
-    UserProfileScreen(),
+    UserProfileScreen(key: _profileKey),
   ];
 
   @override
@@ -100,6 +103,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 final userId = context.read<UserProvider>().user?.accountId;
                 if (userId != null) {
                   context.read<NotificationProvider>().fetchUnreadCount(userId);
+                }
+
+                // As telas do IndexedStack são montadas uma única vez, então
+                // a aba de perfil não busca dados novos sozinha ao ser
+                // selecionada — atualiza manualmente aqui.
+                if (index == _profileTabIndex) {
+                  _profileKey.currentState?.refreshProfileData();
                 }
               },
             ),

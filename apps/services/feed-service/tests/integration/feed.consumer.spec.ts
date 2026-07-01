@@ -158,11 +158,52 @@ describe('feed-service — Kafka Consumers', () => {
 
       expect(mockExecute).toHaveBeenCalled();
     });
+
+    it('migra eventos recentes do autor para o feed do seguidor', async () => {
+      const recentEventRow = {
+        event_id: EVENT_ID,
+        created_at: new Date(ISO_DATE),
+        author_id: AUTHOR_ID,
+        author_username: 'organizer',
+        author_verified: false,
+        event_title: 'Festival de Verão',
+        event_date: new Date(ISO_DATE),
+      };
+      mockExecute.mockResolvedValue({ rows: [recentEventRow] });
+
+      await feedService.handleUserFollowed({
+        followerId: FOLLOWER_ID,
+        followedId: AUTHOR_ID,
+      });
+
+      expect(mockExecute).toHaveBeenCalled();
+    });
   });
 
   describe('handleUserUnfollowed', () => {
     it('remove relacionamento e limpa posts do feed', async () => {
       mockExecute.mockResolvedValue({ rows: [] }); // no recent posts/events to remove
+
+      await feedService.handleUserUnfollowed({
+        followerId: FOLLOWER_ID,
+        followedId: AUTHOR_ID,
+      });
+
+      expect(mockExecute).toHaveBeenCalled();
+    });
+
+    it('remove eventos recentes do autor do feed do seguidor quando há entries', async () => {
+      const recentEventRow = { event_id: EVENT_ID, created_at: new Date(ISO_DATE) };
+      const feedEntryRow = { item_id: EVENT_ID, user_id: FOLLOWER_ID, created_at: new Date(ISO_DATE) };
+      mockExecute.mockImplementation(async (query: string) => {
+        if (typeof query === 'string' && query.includes('events_by_user')) {
+          return { rows: [recentEventRow] };
+        }
+        if (typeof query === 'string' && query.includes('feed_entries')) {
+          return { rows: [feedEntryRow] };
+        }
+        return { rows: [] };
+      });
 
       await feedService.handleUserUnfollowed({
         followerId: FOLLOWER_ID,

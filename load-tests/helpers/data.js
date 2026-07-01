@@ -14,14 +14,6 @@ export function generateUser() {
   };
 }
 
-export function generatePost(userId) {
-  return {
-    userId,
-    imageUrls: [`https://picsum.photos/seed/${uid()}/800/600`],
-    caption:   `Load test post VU${__VU} iter${__ITER}`,
-  };
-}
-
 // SEED_ESTABLISHMENT_ID must exist in the database before running load tests
 const SEED_ESTABLISHMENT_ID = __ENV.SEED_ESTABLISHMENT_ID || '00000000-0000-0000-0000-000000000001';
 

@@ -1,11 +1,10 @@
 // URLs de cada serviço — sobrescreva via variáveis de ambiente
+// post-service e feed-service (Cassandra) e establishment-service (bucket R2)
+// ficam de fora: dependem de bancos/storages externos não isoláveis localmente.
 export const SERVICES = {
-  auth:          __ENV.AUTH_URL          || 'http://localhost:3001',
-  user:          __ENV.USER_URL          || 'http://localhost:3003',
-  post:          __ENV.POST_URL          || 'http://localhost:3000',
-  feed:          __ENV.FEED_URL          || 'http://localhost:3006',
-  event:         __ENV.EVENT_URL         || 'http://localhost:3334',
-  establishment: __ENV.ESTABLISHMENT_URL || 'http://localhost:3002',
+  auth:  __ENV.AUTH_URL  || 'http://localhost:3001',
+  user:  __ENV.USER_URL  || 'http://localhost:3003',
+  event: __ENV.EVENT_URL || 'http://localhost:3334',
 };
 
 // Alvos de VUs por tipo de cenário

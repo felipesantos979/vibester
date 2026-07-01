@@ -7,7 +7,11 @@ import 'package:mobile/widgets/cards/event/event_card.dart';
 import 'package:provider/provider.dart';
 
 class FavoritesEventsScreen extends StatefulWidget {
-  const FavoritesEventsScreen({super.key});
+  // Quando embutida nas sub-abas do perfil, o refresh já é feito pelo
+  // RefreshIndicator externo (UserProfileScreen), evitando indicators aninhados.
+  final bool showRefreshIndicator;
+
+  const FavoritesEventsScreen({super.key, this.showRefreshIndicator = true});
 
   @override
   State<FavoritesEventsScreen> createState() => _FavoritesEventsScreenState();
@@ -33,57 +37,62 @@ class _FavoritesEventsScreenState extends State<FavoritesEventsScreen>
     final List<EventModel> favorites = context
         .watch<EventsListProvider>()
         .favorites;
-    return Scaffold(
-      backgroundColor: Color(colorNoturno),
-      body: RefreshIndicator(
-        color: Color(colorAmbar),
-        onRefresh: () =>
-            context.read<EventsListProvider>().fetchEvents(force: true),
-        child: favorites.isEmpty
-            ? ListView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                children: [
-                  const SizedBox(height: 90),
-                  Center(
-                    child: SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: Opacity(
-                        opacity: 0.8,
-                        child: Image.asset('assets/img/mascote/lupa.png'),
-                      ),
-                    ),
+
+    final list = favorites.isEmpty
+        ? ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            children: [
+              const SizedBox(height: 90),
+              Center(
+                child: SizedBox(
+                  height: 200,
+                  width: 200,
+                  child: Opacity(
+                    opacity: 0.8,
+                    child: Image.asset('assets/img/mascote/lupa.png'),
                   ),
-                  const SizedBox(height: 12),
-                  Center(
-                    child: Text(
-                      'Nenhum evento confirmado',
-                      style: TextStyle(
-                        color: Colors.white38,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Center(
+                child: Text(
+                  'Nenhum evento confirmado',
+                  style: TextStyle(
+                    color: Colors.white38,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              )
-            : ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                itemCount: favorites.length,
-                itemBuilder: (context, index) {
-                  return EventCard(
-                    event: favorites[index],
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        AppRoutes.eventDetail,
-                        arguments: favorites[index],
-                      );
-                    },
+                ),
+              ),
+            ],
+          )
+        : ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            itemCount: favorites.length,
+            itemBuilder: (context, index) {
+              return EventCard(
+                event: favorites[index],
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.eventDetail,
+                    arguments: favorites[index],
                   );
                 },
-              ),
-      ),
+              );
+            },
+          );
+
+    return Scaffold(
+      backgroundColor: Color(colorNoturno),
+      body: widget.showRefreshIndicator
+          ? RefreshIndicator(
+              color: Color(colorAmbar),
+              onRefresh: () =>
+                  context.read<EventsListProvider>().fetchEvents(force: true),
+              child: list,
+            )
+          : list,
     );
   }
 }

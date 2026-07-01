@@ -16,6 +16,12 @@ class EventsListProvider extends ChangeNotifier {
   List<EventModel> get favorites =>
       _events.where((e) => e.isFavorite == true).toList();
 
+  List<EventModel> _checkIns = [];
+  bool isLoadingCheckIns = false;
+  String? checkInsError;
+
+  List<EventModel> get checkIns => _checkIns;
+
   /// Ver [PlaceListProvider.fetchPlaces] para a lógica de staleness: reusa os
   /// dados em memória enquanto estiverem dentro da janela de validade, e
   /// refaz a busca automaticamente após esse período ou quando [force].
@@ -35,6 +41,25 @@ class EventsListProvider extends ChangeNotifier {
       error = 'Não foi possível carregar os eventos';
     } finally {
       isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchCheckIns({required String userId, bool force = false}) async {
+    if (_checkIns.isNotEmpty && !force) {
+      return;
+    }
+
+    isLoadingCheckIns = true;
+    checkInsError = null;
+    notifyListeners();
+
+    try {
+      _checkIns = await _service.getUserCheckIns(userId);
+    } catch (e) {
+      checkInsError = 'Não foi possível carregar os eventos confirmados';
+    } finally {
+      isLoadingCheckIns = false;
       notifyListeners();
     }
   }

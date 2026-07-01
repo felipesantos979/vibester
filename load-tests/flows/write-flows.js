@@ -2,7 +2,7 @@ import { sleep } from 'k6';
 import { SERVICES } from '../config/base.js';
 import { post, ok } from '../helpers/http.js';
 import { initVU, bearerHeaders } from '../helpers/auth.js';
-import { generatePost, generateEvent, SEED_ACCOUNT_ID } from '../helpers/data.js';
+import { generateEvent, SEED_ACCOUNT_ID } from '../helpers/data.js';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -11,32 +11,8 @@ export function authWriteFlow() {
   return initVU();
 }
 
-// ── Posts ─────────────────────────────────────────────────────────────────────
-
-export function createPostFlow() {
-  const vu = initVU();
-  if (!vu) return;
-
-  const createRes = post(
-    `${SERVICES.post}/posts`,
-    generatePost(vu.accountId),
-    { headers: bearerHeaders(vu.token), tags: { endpoint: 'create-post', service: 'post' } },
-  );
-  ok(createRes, 'create-post');
-
-  if (createRes.status === 201) {
-    try {
-      const { postId } = JSON.parse(createRes.body);
-      sleep(0.05);
-      const likeRes = post(
-        `${SERVICES.post}/posts/${postId}/likes`,
-        {},
-        { headers: bearerHeaders(vu.token), tags: { endpoint: 'like-post', service: 'post' } },
-      );
-      ok(likeRes, 'like-post');
-    } catch {}
-  }
-}
+// Posts ficam fora deste flow: post-service depende de Cassandra, um banco
+// externo não isolável localmente.
 
 // ── Social ────────────────────────────────────────────────────────────────────
 
@@ -68,11 +44,9 @@ export function createEventFlow() {
 }
 
 // ── Flow misto de escrita (usado em cenários de carga) ────────────────────────
-// Simula uma sessão típica de escrita: criar post → criar evento → seguir usuário
+// Simula uma sessão típica de escrita: criar evento → seguir usuário
 
 export function mixedWriteFlow() {
-  createPostFlow();
-  sleep(0.3);
   createEventFlow();
   sleep(0.3);
   followFlow(SEED_ACCOUNT_ID);
