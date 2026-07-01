@@ -33,7 +33,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  //Mensagem de erro vinda da API (campo 'message'), só pra debug no terminal.
   String? _erroApi;
 
   String _formatarBornAt(DateTime data) {
@@ -55,7 +54,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final bornAtFormatado = _formatarBornAt(_dataNascimento!);
 
     try {
-      // Cria a conta. Se der erro, cai no catch e não chama o login.
       await _userService.register(
         name: nomeDigitado,
         username: usernameFormatado,
@@ -142,7 +140,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       style: const TextStyle(color: Colors.white),
                       cursorColor: Color(colorAmbar),
 
-                      inputFormatters: [LengthLimitingTextInputFormatter(50)],
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(50),
+                        FilteringTextInputFormatter.deny(RegExp('@')),
+                      ],
 
                       decoration: InputDecoration(
                         filled: true,
@@ -189,6 +190,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         if (value == null || value.isEmpty) {
                           return 'Informe seu nome de usuário!';
                         }
+                        if (value.contains('@')) {
+                          return 'O nome de usuario não pode conter "@"!';
+                        }
+
                         return null;
                       },
                     ),
