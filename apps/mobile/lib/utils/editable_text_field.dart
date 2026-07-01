@@ -4,20 +4,23 @@ import 'package:mobile/utils/colors.dart';
 class EditableTextField extends StatelessWidget {
   final String label;
   final double height;
-  final double width;
+  final double? width;
+  final EdgeInsets padding;
 
   const EditableTextField({
     super.key,
     required this.label,
     required this.height,
-    required this.width,
+    this.width,
+    this.padding = const EdgeInsets.symmetric(horizontal: 6),
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
+      constraints: const BoxConstraints(minWidth: 150, maxWidth: 280),
       height: height,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(50)),
         color: Color(colorNoturno),
@@ -30,6 +33,8 @@ class EditableTextField extends StatelessWidget {
             color: Color(colorBrasa),
             fontWeight: FontWeight.bold,
           ),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
       ),
     );

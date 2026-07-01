@@ -143,10 +143,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
 
                   SizedBox(height: 12),
 
-                  EditableTextField(
-                    label: user.nomeUsuario,
-                    height: 30,
-                    width: 150,
+                  IntrinsicWidth(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        minWidth: 150,
+                        maxWidth: 280,
+                      ),
+                      child: EditableTextField(
+                        label: user.nomeUsuario,
+                        height: 30,
+                        width: double.infinity,
+                      ),
+                    ),
                   ),
 
                   SizedBox(height: 20),
