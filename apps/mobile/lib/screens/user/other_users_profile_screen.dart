@@ -218,21 +218,35 @@ class _OtherUsersProfileScreenState extends State<OtherUsersProfileScreen>
 
                   SizedBox(height: 12),
 
-                  Text(
-                    otherUser.nome,
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        otherUser.nome,
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontSize: 35,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
 
                   SizedBox(height: 12),
 
-                  EditableTextField(
-                    label: otherUser.nomeUsuario,
-                    height: 30,
-                    width: 150,
+                  IntrinsicWidth(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        minWidth: 150,
+                        maxWidth: 280,
+                      ),
+                      child: EditableTextField(
+                        label: otherUser.nomeUsuario,
+                        height: 30,
+                        width: double.infinity,
+                      ),
+                    ),
                   ),
 
                   SizedBox(height: 20),

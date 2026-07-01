@@ -55,6 +55,28 @@ class _DatePickerFieldView extends StatelessWidget {
             colorScheme: ColorScheme.dark(
               primary: Color(colorAmbar),
               surface: Color(0xFF141414),
+              onSurface: Colors.white,
+            ),
+            textTheme: Theme.of(
+              context,
+            ).textTheme.apply(bodyColor: Colors.white38, displayColor: Colors.white),
+            textSelectionTheme: TextSelectionThemeData(
+              cursorColor: Color(colorAmbar),
+              selectionColor: Color(colorAmbar).withOpacity(0.4),
+              selectionHandleColor: Color(colorAmbar),
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              labelStyle: TextStyle(
+                color: Color(colorAmbar),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.white10),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Color(colorAmbar)),
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
           ),
           child: child!,
