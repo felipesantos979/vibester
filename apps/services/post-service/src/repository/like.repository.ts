@@ -53,6 +53,24 @@ export class LikeRepository extends BaseRepository {
         };
     }
 
+    // Usado pra marcar isLiked em uma lista de posts sem N+1: uma query só,
+    // usando IN na partition key (post_id) do lado do usuário que está vendo.
+    async findLikedPostIds(postIds: string[], userId: string): Promise<Set<string>> {
+        if (postIds.length === 0) { return new Set(); }
+
+        const result = await this.execute(
+            `
+                SELECT post_id
+                FROM likes_by_post
+                WHERE post_id IN ?
+                AND user_id = ?;
+            `,
+            [postIds, userId]
+        );
+
+        return new Set(result.rows.map((row) => row.post_id));
+    }
+
     async findLikesByPost(postId: string, limit = 50): Promise<PostLike[]> {
         const result = await this.execute(
             `

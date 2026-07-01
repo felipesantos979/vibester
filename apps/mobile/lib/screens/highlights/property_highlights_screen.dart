@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/highlights/highlight_model.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/service/highlights/highlights_service.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/highlights/highlights_card.dart';
+import 'package:provider/provider.dart';
 
 class PropertyHighlightsScreen extends StatefulWidget {
   final String? accountId;
@@ -59,16 +61,19 @@ class PropertyHighlightsScreenState extends State<PropertyHighlightsScreen>
 
     try {
       List<HighlightModel> highlights;
+      final viewerId = context.read<UserProvider>().user?.accountId;
 
       if (_accountId != null && _accountId!.isNotEmpty) {
         // Chamado a partir do perfil de usuário.
         highlights = await _highlightsService.getHighlightsByAccountId(
           _accountId!,
+          viewerId: viewerId,
         );
       } else if (_placeId != null && _placeId!.isNotEmpty) {
         // Chamado a partir do detalhe de um estabelecimento
         highlights = await _highlightsService.getHighlightsByEstablishmentId(
           _placeId!,
+          viewerId: viewerId,
         );
       } else {
         highlights = [];

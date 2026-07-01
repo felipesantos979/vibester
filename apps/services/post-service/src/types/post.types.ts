@@ -16,6 +16,8 @@ export interface Post {
     isDeleted: boolean;
     createdAt: Date;
     updatedAt?: Date;
+    // Calculado em tempo de leitura para o viewerId da requisição, nunca persistido.
+    isLiked?: boolean;
 }
 
 export interface CreatePostInput {

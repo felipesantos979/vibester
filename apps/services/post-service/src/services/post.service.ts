@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { PostRepository } from "../repository/post.repository";
+import { LikeRepository } from "../repository/like.repository";
 import {
     CreatePostInput,
     Post,
@@ -25,6 +26,7 @@ export class PostService {
 
     constructor(
         private readonly postRepository: PostRepository,
+        private readonly likeRepository: LikeRepository,
     ) {}
 
     async create(input: CreatePostInput): Promise<Post> {
@@ -97,20 +99,40 @@ export class PostService {
         );
     }
 
-    async findByUser(userId: string, limit = 50, rawCursor?: string) {
+    async findByUser(userId: string, limit = 50, rawCursor?: string, viewerId?: string) {
         const cursor = decodeCursor(rawCursor);
         const cacheKey = `post:user:${userId}:${limit}` + (rawCursor ? `:${rawCursor}` : "");
-        return cacheAside(cacheKey, 120, () =>
+        const result = await cacheAside(cacheKey, 120, () =>
             this.postRepository.findByUser(userId, limit, cursor)
         );
+
+        return { ...result, posts: await this.attachIsLiked(result.posts, viewerId) };
     }
 
-    async findByEstablishment(establishmentId: string, limit = 50, rawCursor?: string) {
+    async findByEstablishment(establishmentId: string, limit = 50, rawCursor?: string, viewerId?: string) {
         const cursor = decodeCursor(rawCursor);
         const cacheKey = `post:establishment:${establishmentId}:${limit}` + (rawCursor ? `:${rawCursor}` : "");
-        return cacheAside(cacheKey, 120, () =>
+        const result = await cacheAside(cacheKey, 120, () =>
             this.postRepository.findByEstablishment(establishmentId, limit, cursor)
         );
+
+        return { ...result, posts: await this.attachIsLiked(result.posts, viewerId) };
+    }
+
+    // Feito fora do cacheAside de propósito: o cache de posts é por autor
+    // (compartilhado entre todos os viewers), então isLiked precisa ser
+    // calculado a cada request pro viewerId específico, nunca cacheado junto.
+    private async attachIsLiked(posts: Post[], viewerId?: string): Promise<Post[]> {
+        if (!viewerId || posts.length === 0) {
+            return posts.map((post) => ({ ...post, isLiked: false }));
+        }
+
+        const likedPostIds = await this.likeRepository.findLikedPostIds(
+            posts.map((post) => post.postId),
+            viewerId
+        );
+
+        return posts.map((post) => ({ ...post, isLiked: likedPostIds.has(post.postId) }));
     }
 
     async updateCaption(input: UpdatePostInput): Promise<Post> {
