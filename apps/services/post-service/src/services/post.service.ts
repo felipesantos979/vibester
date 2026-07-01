@@ -99,14 +99,16 @@ export class PostService {
 
     async findByUser(userId: string, limit = 50, rawCursor?: string) {
         const cursor = decodeCursor(rawCursor);
-        return cacheAside(`post:user:${userId}:${limit}:${rawCursor ?? ""}`, 120, () =>
+        const cacheKey = `post:user:${userId}:${limit}` + (rawCursor ? `:${rawCursor}` : "");
+        return cacheAside(cacheKey, 120, () =>
             this.postRepository.findByUser(userId, limit, cursor)
         );
     }
 
     async findByEstablishment(establishmentId: string, limit = 50, rawCursor?: string) {
         const cursor = decodeCursor(rawCursor);
-        return cacheAside(`post:establishment:${establishmentId}:${limit}:${rawCursor ?? ""}`, 120, () =>
+        const cacheKey = `post:establishment:${establishmentId}:${limit}` + (rawCursor ? `:${rawCursor}` : "");
+        return cacheAside(cacheKey, 120, () =>
             this.postRepository.findByEstablishment(establishmentId, limit, cursor)
         );
     }

@@ -178,7 +178,7 @@ describe('post-service — HTTP Integration', () => {
         createdAt: row.created_at,
         updatedAt: row.updated_at,
       };
-      await redis.set(`post:user:${USER_ID}:50`, JSON.stringify([mappedPost]), 'EX', 120);
+      await redis.set(`post:user:${USER_ID}:50`, JSON.stringify({ posts: [mappedPost], nextCursor: null }), 'EX', 120);
 
       const callsBefore = mockExecute.mock.calls.length;
       const res = await app.inject({ method: 'GET', url: `/users/${USER_ID}/posts` });
