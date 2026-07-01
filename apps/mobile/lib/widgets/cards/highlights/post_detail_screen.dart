@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -88,10 +89,12 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                         onPageChanged: (index) =>
                             setState(() => _paginaAtual = index),
                         itemBuilder: (context, index) {
-                          return Image.network(
-                            imagens[index],
+                          return CachedNetworkImage(
+                            imageUrl: imagens[index],
                             fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
+                            fadeInDuration: Duration.zero,
+                            fadeOutDuration: Duration.zero,
+                            errorWidget: (context, url, error) {
                               return Container(
                                 color: Colors.white12,
                                 child: const Icon(
@@ -183,10 +186,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                   const SizedBox(height: 12),
                   Text(
                     dataFormatada,
-                    style: const TextStyle(
-                      color: Colors.white38,
-                      fontSize: 13,
-                    ),
+                    style: const TextStyle(color: Colors.white38, fontSize: 13),
                   ),
                 ],
               ],

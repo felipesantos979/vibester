@@ -39,6 +39,8 @@ class IWillGoEventCard extends StatelessWidget {
                             CachedNetworkImage(
                               imageUrl: event.imageUrl,
                               fit: BoxFit.cover,
+                              fadeInDuration: Duration.zero,
+                              fadeOutDuration: Duration.zero,
                               placeholder: (_, _) =>
                                   const Center(child: AppProgressIndicator()),
                               errorWidget: (_, _, _) => const Icon(Icons.error),
@@ -112,7 +114,10 @@ class IWillGoEventCard extends StatelessWidget {
                                     width: 1,
                                   ),
                                 ),
-                                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [

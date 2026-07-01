@@ -20,11 +20,7 @@ class HighlightsSectionScreen extends StatefulWidget {
   final TabController? tabController;
   final int? tabIndex;
 
-  const HighlightsSectionScreen({
-    super.key,
-    this.tabController,
-    this.tabIndex,
-  });
+  const HighlightsSectionScreen({super.key, this.tabController, this.tabIndex});
 
   @override
   State<HighlightsSectionScreen> createState() =>
@@ -160,241 +156,248 @@ class _HighlightsSectionScreenState extends State<HighlightsSectionScreen> {
 
     return Scaffold(
       backgroundColor: Color(colorNoturno),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: SizedBox(
-              height: 270,
-              child: eventsProvider.isLoadingFeatured &&
-                      eventsProvider.featuredEvents.isEmpty
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: Color(colorAmbar),
-                      ),
-                    )
-                  : eventsProvider.featuredEvents.isEmpty
-                      ? const Center(
-                          child: Text(
-                            'Nenhum evento em destaque',
-                            style: TextStyle(
-                              color: Colors.white38,
-                              fontSize: 14,
-                            ),
-                          ),
-                        )
-                      : PageView.builder(
-                          padEnds: false,
-                          controller: PageController(viewportFraction: 0.95),
-                          itemCount: eventsProvider.featuredEvents.length,
-                          itemBuilder: (context, index) {
-                            return FeaturedEvents(
-                              event: eventsProvider.featuredEvents[index],
-                            );
-                          },
+      body: RefreshIndicator(
+        color: Color(colorAmbar),
+        onRefresh: () => Future.wait([
+          context.read<EventsListProvider>().fetchFeaturedEvents(force: true),
+          context.read<EventsListProvider>().fetchWeekEvents(force: true),
+          context.read<PlaceListProvider>().fetchPlaces(force: true),
+        ]),
+        child: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: SizedBox(
+                height: 270,
+                child:
+                    eventsProvider.isLoadingFeatured &&
+                        eventsProvider.featuredEvents.isEmpty
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: Color(colorAmbar),
                         ),
+                      )
+                    : eventsProvider.featuredEvents.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'Nenhum evento em destaque',
+                          style: TextStyle(color: Colors.white38, fontSize: 14),
+                        ),
+                      )
+                    : PageView.builder(
+                        padEnds: false,
+                        controller: PageController(viewportFraction: 0.95),
+                        itemCount: eventsProvider.featuredEvents.length,
+                        itemBuilder: (context, index) {
+                          return FeaturedEvents(
+                            event: eventsProvider.featuredEvents[index],
+                          );
+                        },
+                      ),
+              ),
             ),
-          ),
 
-          const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Categorias",
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                CategoryHighlightsSection(),
-                const SizedBox(height: 30),
-
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Descubra",
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 30),
-                LineupPlaceIndicator(),
-                const SizedBox(height: 10),
-
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Eventos da Semana",
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                    ),
-                  ),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: SizedBox(
-                    height: 270,
-                    child: eventsProvider.isLoadingWeek &&
-                            eventsProvider.weekEvents.isEmpty
-                        ? const Center(
-                            child: CircularProgressIndicator(
-                              color: Color(colorAmbar),
-                            ),
-                          )
-                        : eventsProvider.weekEvents.isEmpty
-                            ? const Center(
-                                child: Text(
-                                  'Nenhum evento esta semana',
-                                  style: TextStyle(
-                                    color: Colors.white38,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              )
-                            : PageView.builder(
-                                padEnds: false,
-                                controller: _pageController,
-                                onPageChanged: (index) =>
-                                    setState(() => _currentPage = index),
-                                itemCount: eventsProvider.weekEvents.length,
-                                itemBuilder: (context, index) {
-                                  return WeeklyEvents(
-                                    evento: eventsProvider.weekEvents[index],
-                                  );
-                                },
-                              ),
-                  ),
-                ),
-
-                const SizedBox(height: 40),
-
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    "Ofertas Exclusivas",
-                    style: GoogleFonts.inter(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 150,
-                  child: PageView.builder(
-                    padEnds: false,
-                    controller: _offersController,
-                    itemCount: 9999,
-                    itemBuilder: (context, index) {
-                      final offer = offers[index % offers.length];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: ExclusiveOffers(offer: offer),
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 30),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Perto de Você",
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Categorias",
                       style: GoogleFonts.inter(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 22,
                       ),
                     ),
-                    _atualizandoLocalizacao
-                        ? const Padding(
-                            padding: EdgeInsets.all(12),
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
+                  ),
+                  const SizedBox(height: 20),
+                  CategoryHighlightsSection(),
+                  const SizedBox(height: 30),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Descubra",
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  LineupPlaceIndicator(),
+                  const SizedBox(height: 10),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Eventos da Semana",
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: SizedBox(
+                      height: 270,
+                      child:
+                          eventsProvider.isLoadingWeek &&
+                              eventsProvider.weekEvents.isEmpty
+                          ? const Center(
                               child: CircularProgressIndicator(
+                                color: Color(colorAmbar),
+                              ),
+                            )
+                          : eventsProvider.weekEvents.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'Nenhum evento esta semana',
+                                style: TextStyle(
+                                  color: Colors.white38,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            )
+                          : PageView.builder(
+                              padEnds: false,
+                              controller: _pageController,
+                              onPageChanged: (index) =>
+                                  setState(() => _currentPage = index),
+                              itemCount: eventsProvider.weekEvents.length,
+                              itemBuilder: (context, index) {
+                                return WeeklyEvents(
+                                  evento: eventsProvider.weekEvents[index],
+                                );
+                              },
+                            ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 40),
+
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Ofertas Exclusivas",
+                      style: GoogleFonts.inter(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    height: 150,
+                    child: PageView.builder(
+                      padEnds: false,
+                      controller: _offersController,
+                      itemCount: 9999,
+                      itemBuilder: (context, index) {
+                        final offer = offers[index % offers.length];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: ExclusiveOffers(offer: offer),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Perto de Você",
+                        style: GoogleFonts.inter(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 22,
+                        ),
+                      ),
+                      _atualizandoLocalizacao
+                          ? const Padding(
+                              padding: EdgeInsets.all(12),
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              ),
+                            )
+                          : IconButton(
+                              icon: const Icon(
+                                Icons.sync,
                                 color: Colors.white,
-                                strokeWidth: 2.5,
+                                size: 27,
+                              ),
+                              onPressed: _atualizarLocalizacaoManualmente,
+                            ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+                  FutureBuilder<void>(
+                    // Aguarda a mesma Future que o home_tab.dart guardou ao capturar a localização
+                    future: localizacaoFuture,
+                    builder: (context, snapshot) {
+                      if (localizacaoFuture != null &&
+                          snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24),
+                            child: CircularProgressIndicator(
+                              color: Color(colorAmbar),
+                            ),
+                          ),
+                        );
+                      }
+
+                      if (latitudeAtual == null || longitudeAtual == null) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.location_off,
+                              color: Colors.white38,
+                              size: 40,
+                            ),
+                            const SizedBox(height: 12),
+                            const Text(
+                              'Não foi possível acessar sua localização. '
+                              'Verifique se o GPS está ativado e se o app '
+                              'tem permissão de localização.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white38,
+                                fontSize: 14,
                               ),
                             ),
-                          )
-                        : IconButton(
-                            icon: const Icon(
-                              Icons.sync,
-                              color: Colors.white,
-                              size: 27,
-                            ),
-                            onPressed: _atualizarLocalizacaoManualmente,
-                          ),
-                  ],
-                ),
+                          ],
+                        );
+                      }
 
-                const SizedBox(height: 20),
-                FutureBuilder<void>(
-                  // Aguarda a mesma Future que o home_tab.dart guardou ao capturar a localização
-                  future: localizacaoFuture,
-                  builder: (context, snapshot) {
-                    if (localizacaoFuture != null &&
-                        snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 24),
-                          child: CircularProgressIndicator(
-                            color: Color(colorAmbar),
-                          ),
-                        ),
-                      );
-                    }
-
-                    if (latitudeAtual == null || longitudeAtual == null) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.location_off,
-                            color: Colors.white38,
-                            size: 40,
-                          ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            'Não foi possível acessar sua localização. '
-                            'Verifique se o GPS está ativado e se o app '
-                            'tem permissão de localização.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white38,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      );
-                    }
-
-                    return CloseToYou();
-                  },
-                ),
-                const SizedBox(height: 10),
-              ],
+                      return CloseToYou();
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

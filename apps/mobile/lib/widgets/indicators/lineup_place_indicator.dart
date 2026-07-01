@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/providers/place/place_list_provider.dart';
@@ -76,10 +77,12 @@ class LineupPlaceIndicator extends StatelessWidget {
                                     color: Colors.white38,
                                   ),
                                 )
-                              : Image.network(
-                                  place.profileImage,
+                              : CachedNetworkImage(
+                                  imageUrl: place.profileImage,
                                   fit: BoxFit.cover,
-                                  errorBuilder: (_, _, _) => Container(
+                                  fadeInDuration: Duration.zero,
+                                  fadeOutDuration: Duration.zero,
+                                  errorWidget: (_, _, _) => Container(
                                     color: Colors.white12,
                                     child: const Icon(
                                       Icons.storefront,

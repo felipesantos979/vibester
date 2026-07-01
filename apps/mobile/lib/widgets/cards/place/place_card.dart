@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/utils/colors.dart';
@@ -46,9 +47,14 @@ class PlaceCard extends StatelessWidget {
                       child: SizedBox(
                         height: 80,
                         width: 80,
-                        child: Image.network(
-                          place.profileImage,
+                        child: CachedNetworkImage(
+                          imageUrl: place.profileImage,
                           fit: BoxFit.cover,
+                          fadeInDuration: Duration.zero,
+                          fadeOutDuration: Duration.zero,
+                          placeholder: (_, _) =>
+                              const Center(child: CircularProgressIndicator()),
+                          errorWidget: (_, _, _) => const Icon(Icons.error),
                         ),
                       ),
                     ),

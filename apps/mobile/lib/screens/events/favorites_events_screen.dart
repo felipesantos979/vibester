@@ -29,47 +29,55 @@ class _FavoritesEventsScreenState extends State<FavoritesEventsScreen> {
         .favorites;
     return Scaffold(
       backgroundColor: Color(colorNoturno),
-      body: favorites.isEmpty
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: SizedBox(
-                    height: 200,
-                    width: 200,
-                    child: Opacity(
-                      opacity: 0.8,
-                      child: Image.asset('assets/img/mascote/lupa.png'),
+      body: RefreshIndicator(
+        color: Color(colorAmbar),
+        onRefresh: () =>
+            context.read<EventsListProvider>().fetchEvents(force: true),
+        child: favorites.isEmpty
+            ? ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  const SizedBox(height: 90),
+                  Center(
+                    child: SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: Opacity(
+                        opacity: 0.8,
+                        child: Image.asset('assets/img/mascote/lupa.png'),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Nenhum evento confirmado',
-                  style: TextStyle(
-                    color: Colors.white38,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 12),
+                  Center(
+                    child: Text(
+                      'Nenhum evento confirmado',
+                      style: TextStyle(
+                        color: Colors.white38,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              itemCount: favorites.length,
-              itemBuilder: (context, index) {
-                return EventCard(
-                  event: favorites[index],
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.eventDetail,
-                      arguments: favorites[index],
-                    );
-                  },
-                );
-              },
-            ),
+                ],
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                itemCount: favorites.length,
+                itemBuilder: (context, index) {
+                  return EventCard(
+                    event: favorites[index],
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.eventDetail,
+                        arguments: favorites[index],
+                      );
+                    },
+                  );
+                },
+              ),
+      ),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:mobile/models/feed/feed_item_model.dart';
 import 'package:mobile/models/feed/publication_model.dart';
 import 'package:mobile/service/feed/feed_service.dart';
 import 'package:mobile/service/posts/post_service.dart';
+import 'package:mobile/utils/data_freshness.dart';
 
 class PublicationListProvider extends ChangeNotifier {
   final FeedService _feedService = FeedService();
@@ -13,6 +14,7 @@ class PublicationListProvider extends ChangeNotifier {
   final List<PublicationModel> _publications = [];
   String? _nextCursor;
   String? _userId;
+  DateTime? _lastFetchedAt;
   bool _isLoading = false;
   bool _isLoadingMore = false;
   bool _hasMore = true;
@@ -24,7 +26,17 @@ class PublicationListProvider extends ChangeNotifier {
   bool get hasMore => _hasMore;
   String? get erro => _erro;
 
-  Future<void> fetchPublications(String userId) async {
+  /// Ver [PlaceListProvider.fetchPlaces] para a lógica de staleness. Aqui
+  /// também considera troca de usuário como motivo para refazer a busca.
+  Future<void> fetchPublications(String userId, {bool force = false}) async {
+    final sameUser = _userId == userId;
+    if (sameUser &&
+        _publications.isNotEmpty &&
+        !force &&
+        !isDataStale(_lastFetchedAt)) {
+      return;
+    }
+
     _userId = userId;
     _isLoading = true;
     _erro = null;
@@ -36,6 +48,7 @@ class PublicationListProvider extends ChangeNotifier {
     try {
       final page = await _feedService.getFeed(userId: userId);
       _aplicarPagina(page);
+      _lastFetchedAt = DateTime.now();
     } catch (e) {
       _erro = 'Não foi possível carregar o feed';
     } finally {

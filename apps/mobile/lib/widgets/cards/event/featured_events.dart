@@ -39,6 +39,8 @@ class _FeaturedEventsState extends State<FeaturedEvents> {
               CachedNetworkImage(
                 imageUrl: widget.event.imageUrl,
                 fit: BoxFit.cover,
+                fadeInDuration: Duration.zero,
+                fadeOutDuration: Duration.zero,
                 placeholder: (_, _) =>
                     const Center(child: AppProgressIndicator()),
                 errorWidget: (_, _, _) => const Icon(Icons.error),

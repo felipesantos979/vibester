@@ -75,7 +75,9 @@ class _FeedScreenState extends State<FeedScreen> {
                     const SizedBox(height: 12),
                     TextButton(
                       onPressed: () {
-                        if (userId != null) provider.fetchPublications(userId);
+                        if (userId != null) {
+                          provider.fetchPublications(userId, force: true);
+                        }
                       },
                       child: const Text(
                         'Tentar novamente',
@@ -91,7 +93,7 @@ class _FeedScreenState extends State<FeedScreen> {
               color: Color(colorAmbar),
               onRefresh: () async {
                 if (userId != null) {
-                  await provider.fetchPublications(userId);
+                  await provider.fetchPublications(userId, force: true);
                 }
               },
               child: ListView.builder(
@@ -142,6 +144,7 @@ class _FeedScreenState extends State<FeedScreen> {
                   if (userId != null && context.mounted) {
                     context.read<PublicationListProvider>().fetchPublications(
                       userId,
+                      force: true,
                     );
                   }
                 },

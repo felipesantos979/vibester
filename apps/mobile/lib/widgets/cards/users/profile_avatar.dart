@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/utils/colors.dart';
 
@@ -17,7 +18,9 @@ class ProfileAvatar extends StatelessWidget {
   ImageProvider? get _imageProvider {
     if (imageUrl == null) return null;
 
-    if (imageUrl!.startsWith('http')) return NetworkImage(imageUrl!);
+    if (imageUrl!.startsWith('http')) {
+      return CachedNetworkImageProvider(imageUrl!);
+    }
 
     return FileImage(File(imageUrl!));
   }

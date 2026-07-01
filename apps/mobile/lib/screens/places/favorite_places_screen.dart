@@ -21,48 +21,56 @@ class _FavoritePlacesScreenState extends State<FavoritePlacesScreen> {
         .favorites;
     return Scaffold(
       backgroundColor: Color(colorNoturno),
-      body: favorites.isEmpty
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Center(
-                  child: SizedBox(
-                    height: 200,
-                    width: 200,
-                    child: Opacity(
-                      opacity: 0.8,
-                      child: Image.asset('assets/img/mascote/lupa.png'),
+      body: RefreshIndicator(
+        color: Color(colorAmbar),
+        onRefresh: () =>
+            context.read<PlaceListProvider>().fetchPlaces(force: true),
+        child: favorites.isEmpty
+            ? ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  const SizedBox(height: 90),
+                  Center(
+                    child: SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: Opacity(
+                        opacity: 0.8,
+                        child: Image.asset('assets/img/mascote/lupa.png'),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Nenhum lugar marcado como favorito',
-                  style: TextStyle(
-                    color: Colors.white38,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 12),
+                  Center(
+                    child: Text(
+                      'Nenhum lugar marcado como favorito',
+                      style: TextStyle(
+                        color: Colors.white38,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              itemCount: favorites.length + 1,
-              itemBuilder: (context, index) {
-                if (index == favorites.length) return SizedBox(height: 80);
-                return PlaceCard(
-                  place: favorites[index],
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.placeDetail,
-                      arguments: favorites[index].id,
-                    );
-                  },
-                );
-              },
-            ),
+                ],
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                itemCount: favorites.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == favorites.length) return SizedBox(height: 80);
+                  return PlaceCard(
+                    place: favorites[index],
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.placeDetail,
+                        arguments: favorites[index].id,
+                      );
+                    },
+                  );
+                },
+              ),
+      ),
     );
   }
 }

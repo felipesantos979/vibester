@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile/utils/colors.dart';
@@ -72,7 +73,9 @@ class _EditableAvatarState extends State<EditableAvatar> {
 
   ImageProvider? get _provider {
     if (_image != null) return FileImage(_image!);
-    if (widget.imageUrl != null) return NetworkImage(widget.imageUrl!);
+    if (widget.imageUrl != null) {
+      return CachedNetworkImageProvider(widget.imageUrl!);
+    }
     return null;
   }
 

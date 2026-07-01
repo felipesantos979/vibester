@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/service/event/event_service.dart';
+import 'package:mobile/utils/data_freshness.dart';
 
 class EventsListProvider extends ChangeNotifier {
   final EventService _service = EventService();
@@ -8,14 +9,20 @@ class EventsListProvider extends ChangeNotifier {
   List<EventModel> _events = [];
   bool isLoading = false;
   String? error;
+  DateTime? _eventsLastFetchedAt;
 
   List<EventModel> get events => _events;
 
   List<EventModel> get favorites =>
       _events.where((e) => e.isFavorite == true).toList();
 
+  /// Ver [PlaceListProvider.fetchPlaces] para a lógica de staleness: reusa os
+  /// dados em memória enquanto estiverem dentro da janela de validade, e
+  /// refaz a busca automaticamente após esse período ou quando [force].
   Future<void> fetchEvents({bool force = false}) async {
-    if (_events.isNotEmpty && !force) return;
+    if (_events.isNotEmpty && !force && !isDataStale(_eventsLastFetchedAt)) {
+      return;
+    }
 
     isLoading = true;
     error = null;
@@ -23,6 +30,7 @@ class EventsListProvider extends ChangeNotifier {
 
     try {
       _events = await _service.getEvents();
+      _eventsLastFetchedAt = DateTime.now();
     } catch (e) {
       error = 'Não foi possível carregar os eventos';
     } finally {
@@ -35,10 +43,17 @@ class EventsListProvider extends ChangeNotifier {
   List<EventModel> _featuredEvents = [];
   bool isLoadingFeatured = false;
   String? featuredError;
+  DateTime? _featuredLastFetchedAt;
 
   List<EventModel> get featuredEvents => _featuredEvents;
 
-  Future<void> fetchFeaturedEvents() async {
+  Future<void> fetchFeaturedEvents({bool force = false}) async {
+    if (_featuredEvents.isNotEmpty &&
+        !force &&
+        !isDataStale(_featuredLastFetchedAt)) {
+      return;
+    }
+
     isLoadingFeatured = true;
     notifyListeners();
 
@@ -49,6 +64,7 @@ class EventsListProvider extends ChangeNotifier {
         _featuredEvents = resultado;
         featuredError = null;
       }
+      _featuredLastFetchedAt = DateTime.now();
     } catch (e) {
       featuredError = 'Não foi possível carregar os destaques';
     } finally {
@@ -61,10 +77,20 @@ class EventsListProvider extends ChangeNotifier {
   List<EventModel> _weekEvents = [];
   bool isLoadingWeek = false;
   String? weekError;
+  DateTime? _weekLastFetchedAt;
 
   List<EventModel> get weekEvents => _weekEvents;
 
-  Future<void> fetchWeekEvents({DateTime? date}) async {
+  /// Quando [date] é informado, é sempre uma janela diferente sendo pedida
+  /// explicitamente, então a busca ignora o cache de staleness.
+  Future<void> fetchWeekEvents({DateTime? date, bool force = false}) async {
+    if (date == null &&
+        _weekEvents.isNotEmpty &&
+        !force &&
+        !isDataStale(_weekLastFetchedAt)) {
+      return;
+    }
+
     isLoadingWeek = true;
     notifyListeners();
 
@@ -74,6 +100,7 @@ class EventsListProvider extends ChangeNotifier {
         _weekEvents = resultado;
         weekError = null;
       }
+      _weekLastFetchedAt = DateTime.now();
     } catch (e) {
       weekError = 'Não foi possível carregar os eventos da semana';
     } finally {

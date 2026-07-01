@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
 import 'package:provider/provider.dart';
@@ -78,7 +79,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   offset: _showAppBarAvatar ? Offset(-1.2, 0) : Offset(-1.2, 0),
                   child: CircleAvatar(
                     radius: 16,
-                    backgroundImage: NetworkImage(user.fotoPerfil),
+                    backgroundImage: CachedNetworkImageProvider(
+                      user.fotoPerfil,
+                    ),
                   ),
                 ),
               ),

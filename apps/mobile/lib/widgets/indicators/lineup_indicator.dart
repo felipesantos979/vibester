@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/lineup_model.dart';
@@ -34,10 +35,12 @@ class LineupIndicator extends StatelessWidget {
                   border: Border.all(color: Color(colorAmbar), width: 2),
                 ),
                 child: ClipOval(
-                  child: Image.network(
-                    artista.url,
+                  child: CachedNetworkImage(
+                    imageUrl: artista.url,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const Placeholder(),
+                    fadeInDuration: Duration.zero,
+                    fadeOutDuration: Duration.zero,
+                    errorWidget: (_, __, ___) => const Placeholder(),
                   ),
                 ),
               ),

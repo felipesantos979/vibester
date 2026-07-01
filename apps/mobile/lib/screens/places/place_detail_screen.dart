@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/place/place_model.dart';
@@ -115,9 +116,15 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                     child: Stack(
                       fit: StackFit.expand,
                       children: [
-                        Image.network(
-                          'https://media.gettyimages.com/id/1266107863/pt/foto/dj-playing-and-mixing-music-at-party.jpg?s=2048x2048&w=gi&k=20&c=Tmm9GWCaVF_gTB4becCcYTaNJEZepQG8VoxLAunIDKA=',
+                        CachedNetworkImage(
+                          imageUrl:
+                              'https://media.gettyimages.com/id/1266107863/pt/foto/dj-playing-and-mixing-music-at-party.jpg?s=2048x2048&w=gi&k=20&c=Tmm9GWCaVF_gTB4becCcYTaNJEZepQG8VoxLAunIDKA=',
                           fit: BoxFit.cover,
+                          fadeInDuration: Duration.zero,
+                          fadeOutDuration: Duration.zero,
+                          placeholder: (_, _) =>
+                              const Center(child: CircularProgressIndicator()),
+                          errorWidget: (_, _, _) => const Icon(Icons.error),
                         ),
                         Container(
                           decoration: BoxDecoration(
@@ -159,7 +166,16 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen>
                           child: SizedBox(
                             height: 80,
                             width: 80,
-                            child: Image.network(place.profileImage),
+                            child: CachedNetworkImage(
+                              imageUrl: place.profileImage,
+                              fit: BoxFit.cover,
+                              fadeInDuration: Duration.zero,
+                              fadeOutDuration: Duration.zero,
+                              placeholder: (_, _) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                              errorWidget: (_, _, _) => const Icon(Icons.error),
+                            ),
                           ),
                         ),
                       ),

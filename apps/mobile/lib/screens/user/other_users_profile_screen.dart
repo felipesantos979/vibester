@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:mobile/models/user/user_model.dart';
 import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/service/user/user_service.dart';
@@ -173,7 +174,9 @@ class _OtherUsersProfileScreenState extends State<OtherUsersProfileScreen>
                         padding: const EdgeInsets.only(right: 8),
                         child: CircleAvatar(
                           radius: 16,
-                          backgroundImage: NetworkImage(otherUser.fotoPerfil),
+                          backgroundImage: CachedNetworkImageProvider(
+                            otherUser.fotoPerfil,
+                          ),
                         ),
                       )
                     : const SizedBox.shrink(),

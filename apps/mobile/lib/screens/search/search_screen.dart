@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/models/user/user_model.dart';
@@ -138,92 +139,99 @@ class _SearchScreenState extends State<SearchScreen> {
           fit: BoxFit.contain,
         ),
       ),
-      body: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                top: 20,
-                right: 16,
-                left: 16,
-                bottom: 20,
-              ),
-              child: CustomSearchBar(
-                controller: pesquisaController,
-                onChanged: _onSearchChanged,
-                onSubmitted: () {
-                  final texto = pesquisaController.text.trim();
-                  if (texto.isNotEmpty) {
-                    setState(() {
-                      ultimasPesquisas.insert(0, texto);
-                      if (ultimasPesquisas.length > 5) {
-                        ultimasPesquisas.removeLast();
-                      }
-                    });
-                  }
-                },
+      body: RefreshIndicator(
+        color: Color(colorAmbar),
+        onRefresh: () async {
+          if (_categoriaSelecionada != null) {
+            await context.read<PlaceListProvider>().fetchPlaces(force: true);
+          }
+        },
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 20,
+                  right: 16,
+                  left: 16,
+                  bottom: 20,
+                ),
+                child: CustomSearchBar(
+                  controller: pesquisaController,
+                  onChanged: _onSearchChanged,
+                  onSubmitted: () {
+                    final texto = pesquisaController.text.trim();
+                    if (texto.isNotEmpty) {
+                      setState(() {
+                        ultimasPesquisas.insert(0, texto);
+                        if (ultimasPesquisas.length > 5) {
+                          ultimasPesquisas.removeLast();
+                        }
+                      });
+                    }
+                  },
+                ),
               ),
             ),
-          ),
 
-          // Resultados de busca de usuários
-          if (buscandoUsuarios) ...[
-            if (_isSearchingUsers)
-              const SliverFillRemaining(
-                child: Center(
-                  child: CircularProgressIndicator(color: Color(colorAmbar)),
-                ),
-              )
-            else if (_searchError != null)
-              SliverFillRemaining(
-                child: Center(
-                  child: Text(
-                    _searchError!,
-                    style: const TextStyle(color: Colors.white38),
+            // Resultados de busca de usuários
+            if (buscandoUsuarios) ...[
+              if (_isSearchingUsers)
+                const SliverFillRemaining(
+                  child: Center(
+                    child: CircularProgressIndicator(color: Color(colorAmbar)),
                   ),
-                ),
-              )
-            else if (_userResults.isEmpty)
-              SliverFillRemaining(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 180,
-                      width: 180,
-                      child: Image.asset('assets/img/mascote/lupa.png'),
+                )
+              else if (_searchError != null)
+                SliverFillRemaining(
+                  child: Center(
+                    child: Text(
+                      _searchError!,
+                      style: const TextStyle(color: Colors.white38),
                     ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Nenhum usuário encontrado',
+                  ),
+                )
+              else if (_userResults.isEmpty)
+                SliverFillRemaining(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 180,
+                        width: 180,
+                        child: Image.asset('assets/img/mascote/lupa.png'),
+                      ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Nenhum usuário encontrado',
+                        style: TextStyle(
+                          color: Colors.white38,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else ...[
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16, bottom: 8),
+                    child: Text(
+                      'Usuários',
                       style: TextStyle(
-                        color: Colors.white38,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ],
-                ),
-              )
-            else ...[
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 16, bottom: 8),
-                  child: Text(
-                    'Usuários',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
                   ),
                 ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.only(bottom: 80),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
+                SliverPadding(
+                  padding: const EdgeInsets.only(bottom: 80),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
                       final user = _userResults[index];
                       return _UserSearchTile(
                         user: user,
@@ -233,260 +241,265 @@ class _SearchScreenState extends State<SearchScreen> {
                           arguments: user.accountId,
                         ),
                       );
-                    },
-                    childCount: _userResults.length,
+                    }, childCount: _userResults.length),
                   ),
                 ),
-              ),
-            ],
-          ] else ...[
-            // Vista normal: buscas recentes + categorias
-            if (ultimasPesquisas.isNotEmpty) ...[
-              SliverToBoxAdapter(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 16),
-                      child: const Text(
-                        "Buscas Recentes",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        setState(() {
-                          ultimasPesquisas.clear();
-                        });
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(right: 7),
-                        child: Text(
-                          "Limpar",
+              ],
+            ] else ...[
+              // Vista normal: buscas recentes + categorias
+              if (ultimasPesquisas.isNotEmpty) ...[
+                SliverToBoxAdapter(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(left: 16),
+                        child: const Text(
+                          "Buscas Recentes",
                           style: TextStyle(
-                            color: Color(colorAmbar),
-                            fontSize: 13,
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            ultimasPesquisas.clear();
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 7),
+                          child: Text(
+                            "Limpar",
+                            style: TextStyle(
+                              color: Color(colorAmbar),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SliverToBoxAdapter(
-                child: Container(margin: const EdgeInsets.all(5)),
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final pesquisa = ultimasPesquisas[index];
-                  return Column(
-                    children: [
-                      ListTile(
-                        leading: const Icon(
-                          Icons.history,
-                          color: Colors.white38,
-                        ),
-                        title: Text(
-                          pesquisa,
-                          style: const TextStyle(color: Colors.white38),
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white38),
-                          onPressed: () {
-                            setState(() {
-                              ultimasPesquisas.remove(pesquisa);
-                            });
+                SliverToBoxAdapter(
+                  child: Container(margin: const EdgeInsets.all(5)),
+                ),
+                SliverList(
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final pesquisa = ultimasPesquisas[index];
+                    return Column(
+                      children: [
+                        ListTile(
+                          leading: const Icon(
+                            Icons.history,
+                            color: Colors.white38,
+                          ),
+                          title: Text(
+                            pesquisa,
+                            style: const TextStyle(color: Colors.white38),
+                          ),
+                          trailing: IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.white38,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                ultimasPesquisas.remove(pesquisa);
+                              });
+                            },
+                          ),
+                          onTap: () {
+                            pesquisaController.text = pesquisa;
+                            _onSearchChanged();
                           },
                         ),
-                        onTap: () {
-                          pesquisaController.text = pesquisa;
-                          _onSearchChanged();
-                        },
-                      ),
-                      Divider(
-                        color: Color(colorGrey),
-                        height: 1,
-                        indent: 16,
-                        endIndent: 16,
-                      ),
-                    ],
-                  );
-                }, childCount: ultimasPesquisas.length),
-              ),
-              SliverToBoxAdapter(
-                child: Container(
-                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 45),
-                  color: Color(colorGrey),
-                  height: 1,
-                  width: double.infinity,
-                ),
-              ),
-            ],
-
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(left: 15),
-                      child: Text(
-                        _categoriaSelecionada ?? "Descubra por Categoria",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
+                        Divider(
+                          color: Color(colorGrey),
+                          height: 1,
+                          indent: 16,
+                          endIndent: 16,
                         ),
-                      ),
+                      ],
+                    );
+                  }, childCount: ultimasPesquisas.length),
+                ),
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      bottom: 45,
                     ),
-                    if (_categoriaSelecionada != null)
+                    color: Color(colorGrey),
+                    height: 1,
+                    width: double.infinity,
+                  ),
+                ),
+              ],
+
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Container(
-                        margin: const EdgeInsets.only(right: 7),
-                        child: IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white),
-                          onPressed: _voltarParaInicio,
+                        margin: const EdgeInsets.only(left: 15),
+                        child: Text(
+                          _categoriaSelecionada ?? "Descubra por Categoria",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 25,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                  ],
+                      if (_categoriaSelecionada != null)
+                        Container(
+                          margin: const EdgeInsets.only(right: 7),
+                          child: IconButton(
+                            icon: const Icon(Icons.close, color: Colors.white),
+                            onPressed: _voltarParaInicio,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            if (_categoriaSelecionada == null) ...[
-              SliverToBoxAdapter(
-                child: Container(
-                  margin: const EdgeInsets.all(10),
-                  child: Column(
-                    children: () {
-                      final pares = <List<Map<String, String>>>[];
-                      for (var i = 0; i < _categorias.length; i += 2) {
-                        pares.add(_categorias.sublist(i, i + 2));
-                      }
-                      return pares.map((par) {
-                        return Row(
-                          children: par.map((cat) {
-                            return GestureDetector(
-                              onTap: () => _selecionarCategoria(cat['label']!),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(
-                                    color: Color(colorDarkGrey),
-                                    width: 1,
+              if (_categoriaSelecionada == null) ...[
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.all(10),
+                    child: Column(
+                      children: () {
+                        final pares = <List<Map<String, String>>>[];
+                        for (var i = 0; i < _categorias.length; i += 2) {
+                          pares.add(_categorias.sublist(i, i + 2));
+                        }
+                        return pares.map((par) {
+                          return Row(
+                            children: par.map((cat) {
+                              return GestureDetector(
+                                onTap: () =>
+                                    _selecionarCategoria(cat['label']!),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: Color(colorDarkGrey),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  margin: const EdgeInsets.all(6),
+                                  width: (screenWidth / 2) - 25,
+                                  height: (screenWidth / 2) - 25,
+                                  child: Stack(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(16),
+                                        child: SizedBox(
+                                          width: double.infinity,
+                                          height: double.infinity,
+                                          child: Image.asset(
+                                            cat['image']!,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      Positioned(
+                                        bottom: 10,
+                                        left: 10,
+                                        child: Text(
+                                          cat['label']!,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            shadows: [
+                                              Shadow(
+                                                color: Colors.white38,
+                                                blurRadius: 8,
+                                                offset: Offset(1, 1),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                margin: const EdgeInsets.all(6),
-                                width: (screenWidth / 2) - 25,
-                                height: (screenWidth / 2) - 25,
-                                child: Stack(
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(16),
-                                      child: SizedBox(
-                                        width: double.infinity,
-                                        height: double.infinity,
-                                        child: Image.asset(
-                                          cat['image']!,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    Positioned(
-                                      bottom: 10,
-                                      left: 10,
-                                      child: Text(
-                                        cat['label']!,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                          shadows: [
-                                            Shadow(
-                                              color: Colors.white38,
-                                              blurRadius: 8,
-                                              offset: Offset(1, 1),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        );
-                      }).toList();
-                    }(),
-                  ),
-                ),
-              ),
-            ] else ...[
-              if (provider.isLoading && places.isEmpty)
-                const SliverFillRemaining(
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      color: Color(colorAmbar),
+                              );
+                            }).toList(),
+                          );
+                        }).toList();
+                      }(),
                     ),
                   ),
-                )
-              else if (listaFiltrada.isEmpty)
-                SliverFillRemaining(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 200,
-                        width: 200,
-                        child: Image.asset('assets/img/mascote/lupa.png'),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Nenhum lugar encontrado',
-                        style: TextStyle(
-                          color: Colors.white38,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      const Text(
-                        'Ainda não há estabelecimentos nessa categoria',
-                        style: TextStyle(color: Colors.white24, fontSize: 13),
-                      ),
-                    ],
-                  ),
-                )
-              else
-                SliverPadding(
-                  padding: const EdgeInsets.only(bottom: 80),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      return PlaceCard(
-                        place: listaFiltrada[index],
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            AppRoutes.placeDetail,
-                            arguments: listaFiltrada[index].id,
-                          );
-                        },
-                      );
-                    }, childCount: listaFiltrada.length),
-                  ),
                 ),
-            ],
+              ] else ...[
+                if (provider.isLoading && places.isEmpty)
+                  const SliverFillRemaining(
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Color(colorAmbar),
+                      ),
+                    ),
+                  )
+                else if (listaFiltrada.isEmpty)
+                  SliverFillRemaining(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 200,
+                          width: 200,
+                          child: Image.asset('assets/img/mascote/lupa.png'),
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'Nenhum lugar encontrado',
+                          style: TextStyle(
+                            color: Colors.white38,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Ainda não há estabelecimentos nessa categoria',
+                          style: TextStyle(color: Colors.white24, fontSize: 13),
+                        ),
+                      ],
+                    ),
+                  )
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.only(bottom: 80),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        return PlaceCard(
+                          place: listaFiltrada[index],
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.placeDetail,
+                              arguments: listaFiltrada[index].id,
+                            );
+                          },
+                        );
+                      }, childCount: listaFiltrada.length),
+                    ),
+                  ),
+              ],
 
-            SliverToBoxAdapter(
-              child: const SizedBox(height: 40),
-            ),
+              SliverToBoxAdapter(child: const SizedBox(height: 40)),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -511,8 +524,8 @@ class _UserSearchTile extends StatelessWidget {
               backgroundColor: Color(colorGrey),
               backgroundImage:
                   (user.avatarUrl != null && user.avatarUrl!.isNotEmpty)
-                      ? NetworkImage(user.avatarUrl!)
-                      : null,
+                  ? CachedNetworkImageProvider(user.avatarUrl!)
+                  : null,
               child: (user.avatarUrl == null || user.avatarUrl!.isEmpty)
                   ? const Icon(Icons.person, color: Colors.white54, size: 26)
                   : null,
