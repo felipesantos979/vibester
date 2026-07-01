@@ -7,10 +7,15 @@ import (
 	"notification-service/internal/render"
 	"notification-service/internal/repository"
 	"notification-service/internal/security"
+	"notification-service/internal/service"
 	"notification-service/internal/workers"
+	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
+
+var notificationFeedService = service.NewNotificationFeedService()
 
 // SendEmailHandler godoc
 //
@@ -274,5 +279,108 @@ func ValidateTwoFactorHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"valid": true,
+	})
+}
+
+// ListNotificationsHandler godoc
+//
+//	@Summary		Listar notificações
+//	@Description	Lista as notificações (curtidas, comentários e seguidores) de um usuário, agrupadas e ordenadas da mais recente para a mais antiga.
+//	@Tags			Notifications
+//	@Produce		json
+//	@Param			userId	path		string	true	"ID do usuário destinatário"
+//	@Param			limit	query		int		false	"Quantidade máxima de grupos retornados (padrão 50)"
+//	@Param			before	query		string	false	"Cursor de paginação (RFC3339) — retorna notificações anteriores a essa data"
+//	@Success		200		{object}	models.NotificationListResponse
+//	@Failure		400		{object}	map[string]string	"Parâmetros inválidos"
+//	@Failure		500		{object}	map[string]string	"Erro interno"
+//	@Router			/notifications/{userId} [get]
+func ListNotificationsHandler(c *gin.Context) {
+	userId := c.Param("userId")
+
+	limit := 50
+	if raw := c.Query("limit"); raw != "" {
+		parsed, err := strconv.Atoi(raw)
+		if err != nil || parsed <= 0 {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "parâmetro limit inválido",
+			})
+			return
+		}
+		limit = parsed
+	}
+
+	var before *time.Time
+	if raw := c.Query("before"); raw != "" {
+		parsed, err := time.Parse(time.RFC3339, raw)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "parâmetro before inválido, use RFC3339",
+			})
+			return
+		}
+		before = &parsed
+	}
+
+	feed, err := notificationFeedService.BuildFeed(userId, limit, before)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "erro ao buscar notificações",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, feed)
+}
+
+// UnreadCountHandler godoc
+//
+//	@Summary		Contar notificações não vistas
+//	@Description	Retorna quantos grupos de notificação ainda não foram vistos por um usuário.
+//	@Tags			Notifications
+//	@Produce		json
+//	@Param			userId	path		string	true	"ID do usuário destinatário"
+//	@Success		200		{object}	map[string]int
+//	@Failure		500		{object}	map[string]string	"Erro interno"
+//	@Router			/notifications/{userId}/unread-count [get]
+func UnreadCountHandler(c *gin.Context) {
+	userId := c.Param("userId")
+
+	count, err := notificationFeedService.CountUnreadGroups(userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "erro ao contar notificações",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"count": count,
+	})
+}
+
+// MarkReadHandler godoc
+//
+//	@Summary		Marcar notificações como lidas
+//	@Description	Marca todas as notificações não lidas de um usuário como lidas.
+//	@Tags			Notifications
+//	@Produce		json
+//	@Param			userId	path		string	true	"ID do usuário destinatário"
+//	@Success		200		{object}	map[string]int64
+//	@Failure		500		{object}	map[string]string	"Erro interno"
+//	@Router			/notifications/{userId}/read [patch]
+func MarkReadHandler(c *gin.Context) {
+	userId := c.Param("userId")
+
+	updated, err := repository.MarkAllReadByRecipient(userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "erro ao marcar notificações como lidas",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"updated": updated,
 	})
 }

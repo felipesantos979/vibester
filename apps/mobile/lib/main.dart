@@ -8,6 +8,7 @@ import 'package:mobile/models/highlights/highlight_model.dart';
 import 'package:mobile/models/place/place_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
 import 'package:mobile/providers/feed/publication_list_provider.dart';
+import 'package:mobile/providers/notification/notification_provider.dart';
 import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
@@ -86,6 +87,14 @@ class _NoBounceScrollBehavior extends ScrollBehavior {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Aumenta o cache de imagens em memória do Flutter (padrão é só 100MB /
+  // 1000 imagens). Com o padrão, abrir uma tela com fotos grandes (ex:
+  // detalhe de post) evictava as miniaturas de outras telas (ex: grid do
+  // perfil), fazendo elas "recarregarem" visualmente ao voltar.
+  PaintingBinding.instance.imageCache.maximumSize = 300;
+  PaintingBinding.instance.imageCache.maximumSizeBytes = 200 << 20; // 200MB
+
   await initializeDateFormatting('pt_BR', null);
   final savedUser = await AuthStorageService.loadSession();
   if (savedUser?.token != null) {
@@ -102,8 +111,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider = UserProvider();
+    final notificationProvider = NotificationProvider();
     if (savedUser != null) {
       userProvider.setUser(savedUser!);
+      if (savedUser!.accountId != null) {
+        notificationProvider.fetchUnreadCount(savedUser!.accountId!);
+      }
     }
 
     return MultiProvider(
@@ -112,6 +125,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => EventsListProvider()),
         ChangeNotifierProvider(create: (_) => PublicationListProvider()),
         ChangeNotifierProvider.value(value: userProvider),
+        ChangeNotifierProvider.value(value: notificationProvider),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
@@ -121,7 +135,9 @@ class MyApp extends StatelessWidget {
           textTheme: GoogleFonts.interTextTheme(),
           fontFamily: GoogleFonts.inter().fontFamily,
         ),
-        initialRoute: savedUser != null ? AppRoutes.home : AppRoutes.initialScreen,
+        initialRoute: savedUser != null
+            ? AppRoutes.home
+            : AppRoutes.initialScreen,
         onGenerateRoute: (settings) {
           switch (settings.name) {
             // EVENTS

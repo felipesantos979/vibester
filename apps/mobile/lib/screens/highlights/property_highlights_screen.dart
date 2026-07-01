@@ -12,11 +12,15 @@ class PropertyHighlightsScreen extends StatefulWidget {
 
   @override
   State<PropertyHighlightsScreen> createState() =>
-      _PropertyHighlightsScreenState();
+      PropertyHighlightsScreenState();
 }
 
-class _PropertyHighlightsScreenState extends State<PropertyHighlightsScreen> {
+class PropertyHighlightsScreenState extends State<PropertyHighlightsScreen>
+    with AutomaticKeepAliveClientMixin<PropertyHighlightsScreen> {
   final HighlightsService _highlightsService = HighlightsService();
+
+  @override
+  bool get wantKeepAlive => true;
 
   // Guardam qual id a tela recebeu e de quem
   late String? _accountId;
@@ -44,6 +48,8 @@ class _PropertyHighlightsScreenState extends State<PropertyHighlightsScreen> {
       _buscarHighlights();
     }
   }
+
+  Future<void> refresh() => _buscarHighlights();
 
   Future<void> _buscarHighlights() async {
     setState(() {
@@ -84,6 +90,8 @@ class _PropertyHighlightsScreenState extends State<PropertyHighlightsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     if (_isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: Color(colorAmbar)),

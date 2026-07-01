@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 	"notification-service/internal/database"
 	"notification-service/internal/models"
+	"notification-service/internal/repository"
 	"notification-service/internal/workers"
 	"os"
 	"path/filepath"
@@ -72,6 +73,9 @@ func TestMain(m *testing.M) {
 	testRouter.POST("/notifications/welcome", SendWelcomeHandler)
 	testRouter.POST("/notifications/2fa", SendTwoFactorHandler)
 	testRouter.POST("/notifications/2fa/validate", ValidateTwoFactorHandler)
+	testRouter.GET("/notifications/:userId", ListNotificationsHandler)
+	testRouter.GET("/notifications/:userId/unread-count", UnreadCountHandler)
+	testRouter.PATCH("/notifications/:userId/read", MarkReadHandler)
 	testRouter.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
@@ -94,6 +98,20 @@ func post(path string, body any) *httptest.ResponseRecorder {
 	b, _ := json.Marshal(body)
 	req := httptest.NewRequest(http.MethodPost, path, bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	testRouter.ServeHTTP(w, req)
+	return w
+}
+
+func get(path string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(http.MethodGet, path, nil)
+	w := httptest.NewRecorder()
+	testRouter.ServeHTTP(w, req)
+	return w
+}
+
+func patchRequest(path string) *httptest.ResponseRecorder {
+	req := httptest.NewRequest(http.MethodPatch, path, nil)
 	w := httptest.NewRecorder()
 	testRouter.ServeHTTP(w, req)
 	return w
@@ -279,4 +297,129 @@ var idCounter int64
 func uniqueID() int64 {
 	idCounter++
 	return idCounter
+}
+
+func TestListNotificationsHandler_EmptyState(t *testing.T) {
+	recipient := fmt.Sprintf("recipient-empty-%d", uniqueID())
+
+	w := get("/notifications/" + recipient)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var resp models.NotificationListResponse
+	if err := json.NewDecoder(w.Body).Decode(&resp); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if len(resp.Items) != 0 {
+		t.Errorf("expected no items, got %d", len(resp.Items))
+	}
+	if resp.NextCursor != nil {
+		t.Error("expected nil nextCursor for empty state")
+	}
+}
+
+func TestListNotificationsHandler_GroupsLikesOnSamePost(t *testing.T) {
+	recipient := fmt.Sprintf("recipient-%d", uniqueID())
+	postID := fmt.Sprintf("post-%d", uniqueID())
+
+	t.Cleanup(func() {
+		database.DB.Exec(context.Background(), "DELETE FROM notifications WHERE recipient_id = $1", recipient)
+	})
+
+	if err := repository.CreateNotification("like", recipient, "actor-a", postID, ""); err != nil {
+		t.Fatalf("CreateNotification: %v", err)
+	}
+	if err := repository.CreateNotification("like", recipient, "actor-b", postID, ""); err != nil {
+		t.Fatalf("CreateNotification: %v", err)
+	}
+
+	w := get("/notifications/" + recipient)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var resp models.NotificationListResponse
+	if err := json.NewDecoder(w.Body).Decode(&resp); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if len(resp.Items) != 1 {
+		t.Fatalf("expected 1 grouped item, got %d", len(resp.Items))
+	}
+	item := resp.Items[0]
+	if item.TotalCount != 2 {
+		t.Errorf("expected totalCount 2, got %d", item.TotalCount)
+	}
+	if item.OthersCount != 1 {
+		t.Errorf("expected othersCount 1, got %d", item.OthersCount)
+	}
+	if item.Read {
+		t.Error("expected item to be unread")
+	}
+	// user-service/post-service não estão disponíveis no ambiente de teste:
+	// o enriquecimento deve falhar de forma graciosa (actor/post nulos),
+	// sem derrubar a resposta.
+	if item.Actor != nil {
+		t.Error("expected actor to be nil when user-service is unreachable")
+	}
+	if item.Post != nil {
+		t.Error("expected post to be nil when post-service is unreachable")
+	}
+}
+
+func TestUnreadCountHandler(t *testing.T) {
+	recipient := fmt.Sprintf("recipient-%d", uniqueID())
+
+	t.Cleanup(func() {
+		database.DB.Exec(context.Background(), "DELETE FROM notifications WHERE recipient_id = $1", recipient)
+	})
+
+	repository.CreateNotification("follow", recipient, "actor-a", "", "")
+	repository.CreateNotification("follow", recipient, "actor-b", "", "")
+	repository.CreateNotification("like", recipient, "actor-c", "post-x", "")
+
+	w := get("/notifications/" + recipient + "/unread-count")
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var resp map[string]int
+	if err := json.NewDecoder(w.Body).Decode(&resp); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	// 2 follows não lidos colapsam em 1 grupo + 1 like em outro grupo = 2.
+	if resp["count"] != 2 {
+		t.Errorf("expected unread count 2, got %d", resp["count"])
+	}
+}
+
+func TestMarkReadHandler_ClearsUnreadCount(t *testing.T) {
+	recipient := fmt.Sprintf("recipient-%d", uniqueID())
+
+	t.Cleanup(func() {
+		database.DB.Exec(context.Background(), "DELETE FROM notifications WHERE recipient_id = $1", recipient)
+	})
+
+	repository.CreateNotification("follow", recipient, "actor-a", "", "")
+	repository.CreateNotification("like", recipient, "actor-b", "post-x", "")
+
+	w := patchRequest("/notifications/" + recipient + "/read")
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	var patchResp map[string]int64
+	if err := json.NewDecoder(w.Body).Decode(&patchResp); err != nil {
+		t.Fatalf("decode response: %v", err)
+	}
+	if patchResp["updated"] != 2 {
+		t.Errorf("expected 2 rows updated, got %d", patchResp["updated"])
+	}
+
+	countW := get("/notifications/" + recipient + "/unread-count")
+	var countResp map[string]int
+	json.NewDecoder(countW.Body).Decode(&countResp)
+	if countResp["count"] != 0 {
+		t.Errorf("expected unread count 0 after mark-read, got %d", countResp["count"])
+	}
 }

@@ -28,6 +28,7 @@ class _OtherUsersProfileScreenState extends State<OtherUsersProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final UserService _userService = UserService();
+  final GlobalKey<PropertyHighlightsScreenState> _highlightsKey = GlobalKey();
   late Future<UserModel> _userFuture;
 
   bool _showAppBarAvatar = false;
@@ -39,6 +40,17 @@ class _OtherUsersProfileScreenState extends State<OtherUsersProfileScreen>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     _userFuture = _loadUser();
+  }
+
+  Future<void> _onRefresh() async {
+    setState(() {
+      _userFuture = _loadUser();
+    });
+
+    await Future.wait([
+      _userFuture,
+      _highlightsKey.currentState?.refresh() ?? Future.value(),
+    ]);
   }
 
   Future<UserModel> _loadUser() async {
@@ -148,6 +160,7 @@ class _OtherUsersProfileScreenState extends State<OtherUsersProfileScreen>
       appBar: AppBar(
         actions: const [SizedBox(width: 48)],
         backgroundColor: Color(colorNavy),
+        foregroundColor: Colors.white,
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
         flexibleSpace: Container(
@@ -205,211 +218,217 @@ class _OtherUsersProfileScreenState extends State<OtherUsersProfileScreen>
           }
           return false;
         },
-        child: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) => [
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 30.0),
-                    child: ProfileAvatar(
-                      imageUrl: otherUser.fotoPerfil,
-                      editable: false,
+        child: RefreshIndicator(
+          color: Color(colorAmbar),
+          backgroundColor: Color(colorNavy),
+          onRefresh: _onRefresh,
+          child: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 30.0),
+                      child: ProfileAvatar(
+                        imageUrl: otherUser.fotoPerfil,
+                        editable: false,
+                      ),
                     ),
-                  ),
 
-                  SizedBox(height: 12),
+                    SizedBox(height: 12),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Text(
-                        otherUser.nome,
-                        style: GoogleFonts.inter(
-                          color: Colors.white,
-                          fontSize: 35,
-                          fontWeight: FontWeight.bold,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          otherUser.nome,
+                          style: GoogleFonts.inter(
+                            color: Colors.white,
+                            fontSize: 35,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
-                  ),
 
-                  SizedBox(height: 12),
+                    SizedBox(height: 12),
 
-                  IntrinsicWidth(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(
-                        minWidth: 150,
-                        maxWidth: 280,
-                      ),
-                      child: EditableTextField(
-                        label: otherUser.nomeUsuario,
-                        height: 30,
-                        width: double.infinity,
+                    IntrinsicWidth(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minWidth: 150,
+                          maxWidth: 280,
+                        ),
+                        child: EditableTextField(
+                          label: otherUser.nomeUsuario,
+                          height: 30,
+                          width: double.infinity,
+                        ),
                       ),
                     ),
-                  ),
 
-                  SizedBox(height: 20),
+                    SizedBox(height: 20),
 
-                  Text(
-                    otherUser.bio,
-                    style: GoogleFonts.inter(
-                      color: Colors.white70,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      otherUser.bio,
+                      style: GoogleFonts.inter(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
 
-                  SizedBox(height: 12),
+                    SizedBox(height: 12),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            otherUser.seguidores.toString(),
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Column(
+                          children: [
+                            Text(
+                              otherUser.seguidores.toString(),
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'SEGUIDORES',
-                            style: GoogleFonts.inter(
-                              color: Colors.white70,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
+                            Text(
+                              'SEGUIDORES',
+                              style: GoogleFonts.inter(
+                                color: Colors.white70,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
 
-                      MyDivider(height: 50, width: 1),
+                        MyDivider(height: 50, width: 1),
 
-                      Column(
-                        children: [
-                          Text(
-                            otherUser.seguindo.toString(),
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                        Column(
+                          children: [
+                            Text(
+                              otherUser.seguindo.toString(),
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'SEGUINDO',
-                            style: GoogleFonts.inter(
-                              color: Colors.white70,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
+                            Text(
+                              'SEGUINDO',
+                              style: GoogleFonts.inter(
+                                color: Colors.white70,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
 
-                      MyDivider(height: 50, width: 1),
+                        MyDivider(height: 50, width: 1),
 
-                      Column(
-                        children: [
-                          Text(
-                            otherUser.eventosVisitados.toString(),
-                            style: GoogleFonts.inter(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
+                        Column(
+                          children: [
+                            Text(
+                              otherUser.eventosVisitados.toString(),
+                              style: GoogleFonts.inter(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
                             ),
-                          ),
-                          Text(
-                            'EVENTOS',
-                            style: GoogleFonts.inter(
-                              color: Colors.white70,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 10,
+                            Text(
+                              'EVENTOS',
+                              style: GoogleFonts.inter(
+                                color: Colors.white70,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 10,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                          ],
+                        ),
+                      ],
+                    ),
 
-                  SizedBox(height: 16),
+                    SizedBox(height: 16),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      PrimaryButton(
-                        label: _isFollowing ? "Seguindo" : "Seguir",
-                        state: _isFollowing
-                            ? ButtonState.success
-                            : ButtonState.idle,
-                        onPressed: () {
-                          if (_loadingFollow) return;
-                          _alternarSeguir(otherUser);
-                        },
-                      ),
-                      SizedBox(width: 14),
-                    ],
-                  ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        PrimaryButton(
+                          label: _isFollowing ? "Seguindo" : "Seguir",
+                          state: _isFollowing
+                              ? ButtonState.success
+                              : ButtonState.idle,
+                          onPressed: () {
+                            if (_loadingFollow) return;
+                            _alternarSeguir(otherUser);
+                          },
+                        ),
+                        SizedBox(width: 14),
+                      ],
+                    ),
 
-                  SizedBox(height: 16),
-                ],
-              ),
-            ),
-
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _StickyTabBarDelegate(
-                TabBar(
-                  controller: _tabController,
-                  unselectedLabelColor: Colors.white54,
-                  labelColor: Colors.white,
-                  dividerColor: Colors.transparent,
-                  indicatorColor: Color(colorBrasa),
-                  indicatorPadding: EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  labelPadding: EdgeInsets.all(10),
-                  labelStyle: GoogleFonts.inter(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  tabs: [
-                    Tab(text: 'FOTOS'),
-                    Tab(text: 'FAVORITOS'),
-                    Tab(text: 'CHECK-IN'),
+                    SizedBox(height: 16),
                   ],
                 ),
-                color: Color(colorNoturno),
               ),
-            ),
-          ],
-          body: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 3.0),
-                child: MyDivider(height: 1, width: double.infinity),
-              ),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    Center(
-                      child: PropertyHighlightsScreen(
-                        accountId: otherUser.accountId ?? widget.accountId,
-                      ),
+
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _StickyTabBarDelegate(
+                  TabBar(
+                    controller: _tabController,
+                    unselectedLabelColor: Colors.white54,
+                    labelColor: Colors.white,
+                    dividerColor: Colors.transparent,
+                    indicatorColor: Color(colorBrasa),
+                    indicatorPadding: EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
                     ),
-                    Center(child: FavoritePlacesScreen()),
-                    Center(child: FavoritesEventsScreen()),
-                  ],
+                    labelPadding: EdgeInsets.all(10),
+                    labelStyle: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    tabs: [
+                      Tab(text: 'FOTOS'),
+                      Tab(text: 'FAVORITOS'),
+                      Tab(text: 'CHECK-IN'),
+                    ],
+                  ),
+                  color: Color(colorNoturno),
                 ),
               ),
             ],
+            body: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 3.0),
+                  child: MyDivider(height: 1, width: double.infinity),
+                ),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      Center(
+                        child: PropertyHighlightsScreen(
+                          key: _highlightsKey,
+                          accountId: otherUser.accountId ?? widget.accountId,
+                        ),
+                      ),
+                      Center(child: FavoritePlacesScreen()),
+                      Center(child: FavoritesEventsScreen()),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

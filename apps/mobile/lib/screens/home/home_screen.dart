@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:mobile/providers/notification/notification_provider.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/screens/favorites/user_favorites_screen.dart';
 import 'package:mobile/screens/home/home_tab.dart';
 import 'package:mobile/screens/search/search_screen.dart';
 import 'package:mobile/screens/user/user_profile_screen.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/navbar/custom_navbar.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +22,22 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isTabSwitching = false; // Bloqueia o listener durante a troca de aba
   final _navbarVisibleNotifier = ValueNotifier<bool>(true);
 
+  // Instanciadas uma única vez para manter o estado (e o cache de imagens já
+  // carregadas) de cada aba ao trocar entre elas.
+  late final List<Widget> _screens = [
+    HomeTab(
+      navbarVisibleNotifier: _navbarVisibleNotifier,
+      onTabChanged: () {
+        // Reseta a barra ao trocar de aba pelo TabBar ou swipe
+        setState(() => _navbarVisible = true);
+        _navbarVisibleNotifier.value = true;
+      },
+    ),
+    SearchScreen(),
+    UserFavoritesScreen(),
+    UserProfileScreen(),
+  ];
+
   @override
   void dispose() {
     _navbarVisibleNotifier.dispose();
@@ -27,20 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screens = [
-      HomeTab(
-        navbarVisibleNotifier: _navbarVisibleNotifier,
-        onTabChanged: () {
-          // Reseta a barra ao trocar de aba pelo TabBar ou swipe
-          setState(() => _navbarVisible = true);
-          _navbarVisibleNotifier.value = true;
-        },
-      ),
-      SearchScreen(),
-      UserFavoritesScreen(),
-      UserProfileScreen(),
-    ];
-
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       extendBody: true,
@@ -64,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
           return false;
         },
-        child: screens[_currentIndex],
+        child: IndexedStack(index: _currentIndex, children: _screens),
       ),
       bottomNavigationBar: IgnorePointer(
         ignoring: !_navbarVisible,
@@ -89,6 +94,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 Future.delayed(const Duration(milliseconds: 400), () {
                   if (mounted) setState(() => _isTabSwitching = false);
                 });
+
+                // Refresh leve do badge de notificações a cada troca de aba
+                // (não há infra de push para atualizar em tempo real).
+                final userId = context.read<UserProvider>().user?.accountId;
+                if (userId != null) {
+                  context.read<NotificationProvider>().fetchUnreadCount(userId);
+                }
               },
             ),
           ),

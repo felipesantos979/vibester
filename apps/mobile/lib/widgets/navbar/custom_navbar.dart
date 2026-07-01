@@ -1,11 +1,15 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mobile/providers/notification/notification_provider.dart';
 import 'package:mobile/utils/colors.dart';
+import 'package:provider/provider.dart';
 
 class CustomNavbar extends StatelessWidget {
   final int? currentIndex;
   final ValueChanged<int>? onTap;
+
+  static const _heartIndex = 2;
 
   const CustomNavbar({
     super.key,
@@ -15,6 +19,8 @@ class CustomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final unreadCount = context.watch<NotificationProvider>().unreadCount;
+
     final items = [
       Icons.home_rounded,
       Icons.search_rounded,
@@ -62,18 +68,67 @@ class CustomNavbar extends StatelessWidget {
                         ],
                       )
                     : null,
-                child: Icon(
-                  isActive ? activeItems[index] : items[index],
-                  color: isActive ? Colors.white : Colors.white54,
-                  size: isActive
-                      ? (Platform.isIOS ? 26 : 24)
-                      : (Platform.isIOS ? 26 : 24),
+                child: _buildIcon(
+                  index: index,
+                  isActive: isActive,
+                  items: items,
+                  activeItems: activeItems,
+                  unreadCount: unreadCount,
                 ),
               ),
             );
           }),
         ),
       ),
+    );
+  }
+
+  Widget _buildIcon({
+    required int index,
+    required bool isActive,
+    required List<IconData> items,
+    required List<IconData> activeItems,
+    required int unreadCount,
+  }) {
+    final icon = Icon(
+      isActive ? activeItems[index] : items[index],
+      color: isActive ? Colors.white : Colors.white54,
+      size: Platform.isIOS ? 26 : 24,
+    );
+
+    if (index != _heartIndex || unreadCount <= 0) {
+      return icon;
+    }
+
+    final label = unreadCount > 99 ? '99+' : '$unreadCount';
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        icon,
+        Positioned(
+          top: -4,
+          right: -8,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+            constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+            decoration: BoxDecoration(
+              color: Color(colorBrasa),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Color(colorNavy), width: 1.5),
+            ),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

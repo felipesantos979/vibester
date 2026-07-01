@@ -90,6 +90,17 @@ spec:
       - /feed
 
 ---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: strip-notification-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /notification
+
+---
 # Middleware para redirecionar HTTP → HTTPS
 apiVersion: traefik.io/v1alpha1
 kind: Middleware

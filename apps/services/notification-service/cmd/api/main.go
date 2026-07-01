@@ -77,5 +77,20 @@ func main() {
 		handlers.ValidateTwoFactorHandler,
 	)
 
+	router.GET(
+		"/notifications/:userId",
+		handlers.ListNotificationsHandler,
+	)
+
+	router.GET(
+		"/notifications/:userId/unread-count",
+		handlers.UnreadCountHandler,
+	)
+
+	router.PATCH(
+		"/notifications/:userId/read",
+		handlers.MarkReadHandler,
+	)
+
 	router.Run(":" + config.GetEnv("APP_PORT"))
 }

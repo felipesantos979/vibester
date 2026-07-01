@@ -166,3 +166,110 @@ func TestCreateNotification(t *testing.T) {
 		t.Errorf("expected 1 notification, got %d", count)
 	}
 }
+
+func TestListByRecipient_OrderingAndPagination(t *testing.T) {
+	recipient := fmt.Sprintf("list-recipient-%d", time.Now().UnixNano())
+
+	t.Cleanup(func() {
+		database.DB.Exec(context.Background(), "DELETE FROM notifications WHERE recipient_id = $1", recipient)
+	})
+
+	if err := CreateNotification("like", recipient, "actor-a", "post-1", ""); err != nil {
+		t.Fatalf("CreateNotification: %v", err)
+	}
+	if err := CreateNotification("follow", recipient, "actor-b", "", ""); err != nil {
+		t.Fatalf("CreateNotification: %v", err)
+	}
+
+	rows, err := ListByRecipient(recipient, 50, nil)
+	if err != nil {
+		t.Fatalf("ListByRecipient: %v", err)
+	}
+	if len(rows) != 2 {
+		t.Fatalf("expected 2 rows, got %d", len(rows))
+	}
+	if rows[0].CreatedAt.Before(rows[1].CreatedAt) {
+		t.Error("expected rows ordered by created_at DESC (most recent first)")
+	}
+
+	limited, err := ListByRecipient(recipient, 1, nil)
+	if err != nil {
+		t.Fatalf("ListByRecipient with limit: %v", err)
+	}
+	if len(limited) != 1 {
+		t.Errorf("expected 1 row when limit=1, got %d", len(limited))
+	}
+
+	before := rows[0].CreatedAt
+	afterCursor, err := ListByRecipient(recipient, 50, &before)
+	if err != nil {
+		t.Fatalf("ListByRecipient with before cursor: %v", err)
+	}
+	if len(afterCursor) != 1 {
+		t.Errorf("expected 1 row before the most recent one, got %d", len(afterCursor))
+	}
+}
+
+func TestListUnreadByRecipient_OnlyReturnsUnread(t *testing.T) {
+	recipient := fmt.Sprintf("unread-recipient-%d", time.Now().UnixNano())
+
+	t.Cleanup(func() {
+		database.DB.Exec(context.Background(), "DELETE FROM notifications WHERE recipient_id = $1", recipient)
+	})
+
+	if err := CreateNotification("like", recipient, "actor-a", "post-1", ""); err != nil {
+		t.Fatalf("CreateNotification: %v", err)
+	}
+	if err := CreateNotification("like", recipient, "actor-b", "post-2", ""); err != nil {
+		t.Fatalf("CreateNotification: %v", err)
+	}
+	if _, err := MarkAllReadByRecipient(recipient); err != nil {
+		t.Fatalf("MarkAllReadByRecipient: %v", err)
+	}
+	if err := CreateNotification("like", recipient, "actor-c", "post-3", ""); err != nil {
+		t.Fatalf("CreateNotification: %v", err)
+	}
+
+	unread, err := ListUnreadByRecipient(recipient)
+	if err != nil {
+		t.Fatalf("ListUnreadByRecipient: %v", err)
+	}
+	if len(unread) != 1 {
+		t.Fatalf("expected 1 unread row, got %d", len(unread))
+	}
+	if unread[0].ActorID != "actor-c" {
+		t.Errorf("expected the still-unread row to be from actor-c, got %s", unread[0].ActorID)
+	}
+}
+
+func TestMarkAllReadByRecipient_ReturnsAffectedCount(t *testing.T) {
+	recipient := fmt.Sprintf("markread-recipient-%d", time.Now().UnixNano())
+
+	t.Cleanup(func() {
+		database.DB.Exec(context.Background(), "DELETE FROM notifications WHERE recipient_id = $1", recipient)
+	})
+
+	if err := CreateNotification("like", recipient, "actor-a", "post-1", ""); err != nil {
+		t.Fatalf("CreateNotification: %v", err)
+	}
+	if err := CreateNotification("follow", recipient, "actor-b", "", ""); err != nil {
+		t.Fatalf("CreateNotification: %v", err)
+	}
+
+	updated, err := MarkAllReadByRecipient(recipient)
+	if err != nil {
+		t.Fatalf("MarkAllReadByRecipient: %v", err)
+	}
+	if updated != 2 {
+		t.Errorf("expected 2 rows updated, got %d", updated)
+	}
+
+	// Chamar de novo não deve afetar nenhuma linha (já estão lidas).
+	updatedAgain, err := MarkAllReadByRecipient(recipient)
+	if err != nil {
+		t.Fatalf("MarkAllReadByRecipient (second call): %v", err)
+	}
+	if updatedAgain != 0 {
+		t.Errorf("expected 0 rows updated on second call, got %d", updatedAgain)
+	}
+}

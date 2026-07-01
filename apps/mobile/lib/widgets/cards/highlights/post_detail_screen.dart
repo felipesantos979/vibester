@@ -46,6 +46,15 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     final imagens = highlight.imagensUrls;
     final dataFormatada = _formatarData(highlight.criadoEm);
 
+    // Limita a resolução decodificada ao tamanho real da tela (em pixels
+    // físicos). Sem isso, uma foto de câmera em resolução original consome
+    // memória suficiente para expulsar outras imagens do cache global,
+    // fazendo-as "recarregar" visualmente ao voltar para outras telas.
+    final imagemCacheWidth =
+        (MediaQuery.of(context).size.width *
+                MediaQuery.of(context).devicePixelRatio)
+            .round();
+
     return Scaffold(
       backgroundColor: Color(colorNoturno),
       appBar: AppBar(
@@ -92,6 +101,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                           return CachedNetworkImage(
                             imageUrl: imagens[index],
                             fit: BoxFit.cover,
+                            memCacheWidth: imagemCacheWidth,
                             fadeInDuration: Duration.zero,
                             fadeOutDuration: Duration.zero,
                             errorWidget: (context, url, error) {
