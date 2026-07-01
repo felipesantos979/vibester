@@ -4,57 +4,9 @@ import { get, ok } from '../helpers/http.js';
 import { initVU, bearerHeaders } from '../helpers/auth.js';
 import { NEARBY_QS } from '../helpers/data.js';
 
-// ── Feed ──────────────────────────────────────────────────────────────────────
-
-export function feedReadFlow() {
-  const vu = initVU();
-  if (!vu) return;
-
-  const res = get(
-    `${SERVICES.feed}/feed/${vu.accountId}`,
-    { headers: bearerHeaders(vu.token), tags: { endpoint: 'get-feed', service: 'feed' } },
-  );
-  ok(res, 'get-feed');
-}
-
-// ── Posts ─────────────────────────────────────────────────────────────────────
-
-export function userPostsReadFlow() {
-  const vu = initVU();
-  if (!vu) return;
-
-  const res = get(
-    `${SERVICES.post}/users/${vu.accountId}/posts`,
-    { headers: bearerHeaders(vu.token), tags: { endpoint: 'list-user-posts', service: 'post' } },
-  );
-  ok(res, 'list-user-posts');
-}
-
-// ── Estabelecimentos ──────────────────────────────────────────────────────────
-
-export function establishmentListFlow() {
-  const listRes = get(
-    `${SERVICES.establishment}/establishments`,
-    { tags: { endpoint: 'list-establishments', service: 'establishment' } },
-  );
-  ok(listRes, 'list-establishments');
-
-  sleep(0.1);
-
-  const nearbyRes = get(
-    `${SERVICES.establishment}/establishments/nearby?${NEARBY_QS}`,
-    { tags: { endpoint: 'nearby-establishments', service: 'establishment' } },
-  );
-  ok(nearbyRes, 'nearby-establishments');
-}
-
-export function openEstablishmentsFlow() {
-  const res = get(
-    `${SERVICES.establishment}/establishments/open`,
-    { tags: { endpoint: 'open-establishments', service: 'establishment' } },
-  );
-  ok(res, 'open-establishments');
-}
+// Feed, posts e estabelecimentos ficam fora destes flows: feed-service e
+// post-service dependem de Cassandra, e establishment-service de bucket R2 —
+// bancos/storages externos não isoláveis localmente.
 
 // ── Eventos ───────────────────────────────────────────────────────────────────
 
@@ -97,14 +49,10 @@ export function profileReadFlow() {
 }
 
 // ── Flow misto de leitura (usado em cenários de carga) ────────────────────────
-// Simula uma sessão típica de leitura: feed → eventos → estabelecimentos → perfil
+// Simula uma sessão típica de leitura: eventos → perfil
 
 export function mixedReadFlow() {
-  feedReadFlow();
-  sleep(0.2);
   eventReadFlow();
-  sleep(0.2);
-  establishmentListFlow();
   sleep(0.2);
   profileReadFlow();
 }

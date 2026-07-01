@@ -75,7 +75,7 @@ jobs:
           DB_USER: test
           DB_PASSWORD: test
           DB_NAME: notification_test
-        run: go test -v -tags=integration -timeout=60s ./internal/handlers/... ./internal/repository/...
+        run: go test -v -tags=integration -timeout=60s ./internal/handlers/... ./internal/repository/... ./internal/database/... ./internal/service/...
 
   build-and-push:
     name: Build & Push

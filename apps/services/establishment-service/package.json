@@ -6,7 +6,7 @@
   "scripts": {
     "test": "vitest run --config vitest.config.ts",
     "test:integration": "vitest run --config vitest.integration.config.ts",
-    "test:coverage": "vitest run --config vitest.config.ts --coverage",
+    "test:coverage": "vitest run --config vitest.coverage.config.ts --coverage",
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",

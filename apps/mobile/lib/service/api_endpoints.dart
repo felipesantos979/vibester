@@ -26,6 +26,12 @@ class ApiEndpoints {
   static String eventDetail(String eventId) => '$baseUrl/event/events/$eventId';
   static String eventsWeek(String date) =>
       '$baseUrl/event/events/week?date=$date';
+  static String eventCheckin(String eventId) =>
+      '$baseUrl/event/events/$eventId/checkin';
+  static String eventCheckinStatus(String eventId, String userId) =>
+      '$baseUrl/event/events/$eventId/checkin/$userId';
+  static String eventCheckins(String userId) =>
+      '$baseUrl/event/events/checkins/$userId';
   static String establishmentsNearby({
     required double latitude,
     required double longitude,

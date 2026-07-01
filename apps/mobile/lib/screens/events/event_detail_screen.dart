@@ -2,7 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mobile/models/event/event_model.dart';
-import 'package:mobile/providers/events/events_list_provider.dart';
+import 'package:mobile/providers/user/user_provider.dart';
+import 'package:mobile/service/event/event_service.dart';
 import 'package:mobile/utils/app_progress_indicator.dart';
 import 'package:mobile/widgets/cards/users/map_event.dart';
 import 'package:mobile/widgets/indicators/lineup_indicator.dart';
@@ -22,10 +23,74 @@ class EventDetailScreen extends StatefulWidget {
 }
 
 class _EventDetailScreenState extends State<EventDetailScreen> {
+  final EventService _eventService = EventService();
+  late EventModel _event;
+  bool _isTogglingPresence = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _event = widget.eventModel;
+    _carregarStatusDePresenca();
+  }
+
+  Future<void> _carregarStatusDePresenca() async {
+    final userId = context.read<UserProvider>().user?.accountId;
+    final eventId = _event.id;
+    if (userId == null || eventId == null) return;
+
+    final checkedIn = await _eventService.getCheckInStatus(
+      eventId: eventId,
+      userId: userId,
+    );
+
+    if (mounted) {
+      setState(() => _event = _event.copyWith(isFavorite: checkedIn));
+    }
+  }
+
+  Future<void> _alternarPresenca() async {
+    final userId = context.read<UserProvider>().user?.accountId;
+    final eventId = _event.id;
+    if (userId == null || eventId == null || _isTogglingPresence) return;
+
+    final confirmadoAntes = _event.isFavorite;
+    setState(() {
+      _isTogglingPresence = true;
+      _event = _event.copyWith(
+        isFavorite: !confirmadoAntes,
+        totalConfirmed: confirmadoAntes
+            ? _event.totalConfirmed - 1
+            : _event.totalConfirmed + 1,
+      );
+    });
+
+    try {
+      if (confirmadoAntes) {
+        await _eventService.checkOut(eventId: eventId, userId: userId);
+      } else {
+        await _eventService.checkIn(eventId: eventId, userId: userId);
+      }
+    } catch (e) {
+      final is409 = e.toString().contains('409');
+      // 409 significa que o backend já está no estado pra onde tentamos ir
+      // (corrida com outra tela) — mantém a UI como está.
+      if (!is409 && mounted) {
+        setState(() {
+          _event = _event.copyWith(
+            isFavorite: confirmadoAntes,
+            totalConfirmed: _event.totalConfirmed + (confirmadoAntes ? 1 : -1),
+          );
+        });
+      }
+    } finally {
+      if (mounted) setState(() => _isTogglingPresence = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final provider = Provider.of<EventsListProvider>(context);
     return Scaffold(
       backgroundColor: Color(colorNoturno),
 
@@ -54,7 +119,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                     //lugar da imagem
                     child: CachedNetworkImage(
-                      imageUrl: widget.eventModel.imageUrl,
+                      imageUrl: _event.imageUrl,
                       fit: BoxFit.cover,
                       fadeInDuration: Duration.zero,
                       fadeOutDuration: Duration.zero,
@@ -124,7 +189,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           ),
 
                           child: Text(
-                            widget.eventModel.categoria,
+                            _event.categoria,
                             style: GoogleFonts.inter(
                               color: const Color(colorAmbar),
                               fontWeight: FontWeight.bold,
@@ -146,7 +211,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           fit: BoxFit.scaleDown,
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            widget.eventModel.titulo,
+                            _event.titulo,
                             style: GoogleFonts.inter(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -211,7 +276,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                               DateFormat(
                                 "EEE dd MMM  HH:mm",
                                 "pt_BR",
-                              ).format(widget.eventModel.dataDoEvento),
+                              ).format(_event.dataDoEvento),
                               style: GoogleFonts.inter(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -240,7 +305,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                widget.eventModel.localizacao,
+                                _event.localizacao,
                                 style: GoogleFonts.inter(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -269,12 +334,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 //Botão de "VOU IR" (add função posteriormente)
                 TertiaryButton(
                   label: "VOU IR",
-                  state: widget.eventModel.isFavorite
+                  state: _event.isFavorite
                       ? ButtonState.success
                       : ButtonState.idle,
-                  onPressed: () {
-                    provider.toggleFavorite(widget.eventModel.titulo);
-                  },
+                  onPressed: _alternarPresenca,
                 ),
 
                 //Espaçamento entre itens
@@ -313,7 +376,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                 //Lista de line-ups
                 const SizedBox(height: 10),
-                LineupIndicator(lineup: widget.eventModel.lineUp),
+                LineupIndicator(lineup: _event.lineUp),
                 const SizedBox(height: 10),
 
                 Align(
@@ -351,7 +414,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              widget.eventModel.informacoes,
+              _event.informacoes,
               textAlign: TextAlign.left,
               style: GoogleFonts.inter(
                 color: Colors.white,
@@ -384,14 +447,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                 const SizedBox(height: 10),
 
-                MapEvent(endereco: widget.eventModel.localizacao),
+                MapEvent(endereco: _event.localizacao),
 
                 const SizedBox(height: 8),
 
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    widget.eventModel.localizacao,
+                    _event.localizacao,
                     style: GoogleFonts.inter(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

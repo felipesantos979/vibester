@@ -149,6 +149,20 @@ describe('feed-service — HTTP Integration', () => {
       const body = JSON.parse(res.payload);
       expect(body.nextCursor).not.toBeNull();
     });
+
+    it('retorna 500 quando o banco falha', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+      mockExecute.mockRejectedValueOnce(new Error('cassandra down'));
+
+      const res = await app.inject({
+        method: 'GET',
+        url: `/feed/${USER_ID}`,
+        headers: { authorization: authHeader },
+      });
+
+      expect(res.statusCode).toBe(500);
+      consoleError.mockRestore();
+    });
   });
 
   describe('GET /health', () => {

@@ -1,9 +1,12 @@
 /**
  * Smoke Test — Verificação rápida de sanidade
  *
- * 2 VUs, 1 minuto. Percorre health checks de todos os serviços + um ciclo
+ * 2 VUs, 1 minuto. Percorre health checks de auth, user e event + um ciclo
  * mínimo de escrita e leitura. Objetivo: confirmar que tudo está de pé antes
  * de rodar cenários mais pesados.
+ *
+ * post-service e feed-service (Cassandra) e establishment-service (bucket R2)
+ * ficam de fora por dependerem de bancos/storages externos.
  *
  * Uso:
  *   k6 run load-tests/scenarios/01-smoke.js \
@@ -14,7 +17,7 @@ import { SERVICES, SLA } from '../config/base.js';
 import { TREND_STATS } from '../config/thresholds.js';
 import { get, ok } from '../helpers/http.js';
 import { authWriteFlow } from '../flows/write-flows.js';
-import { establishmentListFlow, eventReadFlow } from '../flows/read-flows.js';
+import { eventReadFlow, profileReadFlow } from '../flows/read-flows.js';
 import { handleSummary as makeSummary } from '../summary/index.js';
 
 export const options = {
@@ -35,12 +38,9 @@ export const options = {
 };
 
 const HEALTH_CHECKS = [
-  { url: `${SERVICES.auth}/health`,          service: 'auth'          },
-  { url: `${SERVICES.user}/health`,          service: 'user'          },
-  { url: `${SERVICES.post}/health`,          service: 'post'          },
-  { url: `${SERVICES.feed}/health`,          service: 'feed'          },
-  { url: `${SERVICES.event}/health`,         service: 'event'         },
-  { url: `${SERVICES.establishment}/health`, service: 'establishment' },
+  { url: `${SERVICES.auth}/health`,  service: 'auth'  },
+  { url: `${SERVICES.user}/health`,  service: 'user'  },
+  { url: `${SERVICES.event}/health`, service: 'event' },
 ];
 
 export default function () {
@@ -55,10 +55,10 @@ export default function () {
   authWriteFlow();
   sleep(0.2);
 
-  // Leituras básicas sem autenticação
+  // Leituras básicas
   eventReadFlow();
   sleep(0.2);
-  establishmentListFlow();
+  profileReadFlow();
   sleep(1);
 }
 

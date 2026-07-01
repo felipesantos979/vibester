@@ -22,3 +22,4 @@ apps/.DS_Store
 .DS_Store
 secrets/
 apps/services/monitoring/secrets/
+coverage/

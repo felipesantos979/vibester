@@ -72,6 +72,30 @@ class EventModel {
     );
   }
 
+  EventModel copyWith({bool? isFavorite, int? totalConfirmed}) {
+    return EventModel(
+      id: id,
+      placeId: placeId,
+      dataDoEvento: dataDoEvento,
+      titulo: titulo,
+      lineUp: lineUp,
+      categoria: categoria,
+      localizacao: localizacao,
+      informacoes: informacoes,
+      artistas: artistas,
+      imageUrl: imageUrl,
+      isFavorite: isFavorite ?? this.isFavorite,
+      totalConfirmed: totalConfirmed ?? this.totalConfirmed,
+      latitude: latitude,
+      longitude: longitude,
+      distanceKm: distanceKm,
+      organizador: organizador,
+      dataFimEvento: dataFimEvento,
+      ticketLink: ticketLink,
+      emDestaque: emDestaque,
+    );
+  }
+
 //Dart pra json, é o contrario do de cima, pra quando for mandar pra API
   Map<String, dynamic> toJson() {
     return {

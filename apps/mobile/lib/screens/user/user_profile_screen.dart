@@ -6,6 +6,8 @@ import 'package:mobile/service/user/user_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mobile/providers/events/events_list_provider.dart';
+import 'package:mobile/providers/place/place_list_provider.dart';
 import 'package:mobile/screens/events/favorites_events_screen.dart';
 import 'package:mobile/screens/highlights/property_highlights_screen.dart';
 import 'package:mobile/screens/places/favorite_places_screen.dart';
@@ -18,10 +20,10 @@ class UserProfileScreen extends StatefulWidget {
   const UserProfileScreen({super.key});
 
   @override
-  State<UserProfileScreen> createState() => _UserProfileScreenState();
+  State<UserProfileScreen> createState() => UserProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen>
+class UserProfileScreenState extends State<UserProfileScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final UserService _userService = UserService();
@@ -41,28 +43,45 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     super.dispose();
   }
 
-  Future<void> _onRefresh() async {
+  // Chamado ao entrar na aba de perfil pelo navbar, pra manter os dados em
+  // dia mesmo com as telas do IndexedStack sendo montadas só uma vez.
+  Future<void> refreshProfileData() => _fetchProfile();
+
+  Future<void> _fetchProfile() async {
     final user = context.read<UserProvider>().user;
     final accountId = user?.accountId;
+    if (accountId == null) return;
 
-    if (accountId != null) {
-      try {
-        final profileData = await _userService.getProfile(accountId);
-        final usuarioAtualizado = UserModel.fromProfileJson(
-          profileData,
-          accountId: accountId,
-          token: user?.token,
-        );
+    try {
+      final profileData = await _userService.getProfile(accountId);
+      final usuarioAtualizado = UserModel.fromProfileJson(
+        profileData,
+        accountId: accountId,
+        token: user?.token,
+      );
 
-        if (mounted) {
-          context.read<UserProvider>().setUser(usuarioAtualizado);
-        }
-      } catch (_) {
-        // Mantém os dados atuais em tela caso a atualização falhe
+      if (mounted) {
+        context.read<UserProvider>().setUser(usuarioAtualizado);
       }
+    } catch (_) {
+      // Mantém os dados atuais em tela caso a atualização falhe
     }
+  }
 
-    await _highlightsKey.currentState?.refresh();
+  Future<void> _onRefresh() async {
+    await _fetchProfile();
+
+    switch (_tabController.index) {
+      case 0:
+        await _highlightsKey.currentState?.refresh();
+        break;
+      case 1:
+        await context.read<PlaceListProvider>().fetchPlaces(force: true);
+        break;
+      case 2:
+        await context.read<EventsListProvider>().fetchEvents(force: true);
+        break;
+    }
   }
 
   @override
@@ -382,8 +401,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           accountId: user?.accountId ?? '',
                         ),
                       ),
-                      Center(child: FavoritePlacesScreen()),
-                      Center(child: FavoritesEventsScreen()),
+                      Center(
+                        child: FavoritePlacesScreen(showRefreshIndicator: false),
+                      ),
+                      Center(
+                        child: FavoritesEventsScreen(showRefreshIndicator: false),
+                      ),
                     ],
                   ),
                 ),

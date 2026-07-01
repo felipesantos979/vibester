@@ -2,14 +2,14 @@
  * Smoke Test — Ambiente de teste isolado (namespace loadtest)
  *
  * Versão do smoke test restrita aos serviços isoláveis via Postgres próprio:
- * auth, user, establishment, event. post-service e feed-service ficam de fora
- * porque dependem do Astra/Cassandra externo, não isolável via k8s puro.
+ * auth, user, event. post-service e feed-service ficam de fora porque
+ * dependem do Astra/Cassandra externo, e establishment-service porque
+ * depende de bucket R2 — nenhum isolável via k8s puro.
  *
  * Uso:
  *   k6 run load-tests/scenarios/00-smoke-isolated.js \
  *     -e AUTH_URL=http://localhost:13001 \
  *     -e USER_URL=http://localhost:13003 \
- *     -e ESTABLISHMENT_URL=http://localhost:13002 \
  *     -e EVENT_URL=http://localhost:13334
  */
 import { sleep } from 'k6';
@@ -17,7 +17,7 @@ import { SERVICES, SLA } from '../config/base.js';
 import { TREND_STATS } from '../config/thresholds.js';
 import { get, ok } from '../helpers/http.js';
 import { authWriteFlow } from '../flows/write-flows.js';
-import { establishmentListFlow, eventReadFlow, profileReadFlow } from '../flows/read-flows.js';
+import { eventReadFlow, profileReadFlow } from '../flows/read-flows.js';
 import { handleSummary as makeSummary } from '../summary/index.js';
 
 export const options = {
@@ -38,10 +38,9 @@ export const options = {
 };
 
 const HEALTH_CHECKS = [
-  { url: `${SERVICES.auth}/health`,          service: 'auth'          },
-  { url: `${SERVICES.user}/health`,          service: 'user'          },
-  { url: `${SERVICES.event}/health`,         service: 'event'         },
-  { url: `${SERVICES.establishment}/health`, service: 'establishment' },
+  { url: `${SERVICES.auth}/health`,  service: 'auth'  },
+  { url: `${SERVICES.user}/health`,  service: 'user'  },
+  { url: `${SERVICES.event}/health`, service: 'event' },
 ];
 
 export default function () {
@@ -55,8 +54,6 @@ export default function () {
   sleep(0.2);
 
   eventReadFlow();
-  sleep(0.2);
-  establishmentListFlow();
   sleep(0.2);
   profileReadFlow();
   sleep(1);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile/models/event/event_model.dart';
 import 'package:mobile/providers/events/events_list_provider.dart';
+import 'package:mobile/providers/user/user_provider.dart';
 import 'package:mobile/routes/app_routes.dart';
 import 'package:mobile/utils/colors.dart';
 import 'package:mobile/widgets/cards/event/i_will_go_event_card.dart';
@@ -18,7 +19,13 @@ class _IWillGoScreenState extends State<IWillGoScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<EventsListProvider>().fetchEvents();
+      final userId = context.read<UserProvider>().user?.accountId;
+      if (userId != null) {
+        context.read<EventsListProvider>().fetchCheckIns(
+              userId: userId,
+              force: true,
+            );
+      }
     });
   }
 
@@ -26,7 +33,7 @@ class _IWillGoScreenState extends State<IWillGoScreen> {
   Widget build(BuildContext context) {
     final List<EventModel> favorites = context
         .watch<EventsListProvider>()
-        .favorites;
+        .checkIns;
     return ColoredBox(
       color: Color(colorNoturno),
       child: ListView.builder(

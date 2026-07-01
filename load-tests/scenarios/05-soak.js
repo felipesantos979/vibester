@@ -23,7 +23,7 @@ import { sleep } from 'k6';
 import { VUS } from '../config/base.js';
 import { THRESHOLDS, TREND_STATS } from '../config/thresholds.js';
 import { mixedReadFlow } from '../flows/read-flows.js';
-import { mixedWriteFlow, createPostFlow } from '../flows/write-flows.js';
+import { mixedWriteFlow, createEventFlow } from '../flows/write-flows.js';
 import { handleSummary as makeSummary } from '../summary/index.js';
 
 const TARGET   = VUS.soak;
@@ -66,7 +66,7 @@ export function runWrite() {
   if (__ITER % 3 === 0) {
     mixedWriteFlow();
   } else {
-    createPostFlow();
+    createEventFlow();
   }
   sleep(2);
 }

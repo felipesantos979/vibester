@@ -103,12 +103,13 @@ class CustomNavbar extends StatelessWidget {
     final label = unreadCount > 99 ? '99+' : '$unreadCount';
 
     return Stack(
+      alignment: Alignment.center,
       clipBehavior: Clip.none,
       children: [
         icon,
         Positioned(
-          top: -4,
-          right: -8,
+          top: 2,
+          right: -2,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
             constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
