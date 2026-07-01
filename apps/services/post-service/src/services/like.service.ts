@@ -46,7 +46,8 @@ export class LikeService {
                     key: postId,
                     value: JSON.stringify({
                         postId,
-                        userId,
+                        postOwnerId: post.userId,
+                        likedByUserId: userId,
                         createdAt: like.likedAt.toISOString(),
                     }),
                 }],
