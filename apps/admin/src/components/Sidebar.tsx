@@ -1,18 +1,26 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CalendarDays, BarChart3, Users, Settings, LogOut } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, CalendarDays, BarChart3, Users, Settings, LogOut, Camera, Tag } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { handleLogout } from '../lib/auth';
 import VibesterLogo from '../assets/VIBESTER.svg';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
   { icon: CalendarDays, label: 'Eventos & Promos', path: '/events' },
+  { icon: Camera, label: 'Posts & Feed', path: '/posts' },
+  { icon: Tag, label: 'Promoções', path: '/promotions' },
   { icon: BarChart3, label: 'Analytics da Noite', path: '/analytics' },
-  { icon: Users, label: 'VIP List', path: '/vip' },
+  { icon: Users, label: 'Confirmados', path: '/vip' },
   { icon: Settings, label: 'Configurações', path: '/settings' },
 ];
 
 export default function Sidebar() {
+  const navigate = useNavigate();
+
+  const onLogout = () => {
+    handleLogout(navigate);
+  };
+
   return (
     <aside className="w-64 border-r border-border-subtle bg-bg-card flex flex-col glass-panel z-10">
       <div className="h-20 flex items-center px-6 border-b border-border-subtle">
@@ -29,7 +37,7 @@ export default function Sidebar() {
               className={({ isActive }) => cn(
                 "flex items-center px-4 py-3 rounded-xl transition-all duration-300 ease-out group relative overflow-hidden",
                 isActive 
-                  ? "bg-brand-fire/10 text-brand-fire glow-border border border-brand-fire/50 shadow-[0_0_15px_rgba(255,69,0,0.1)]" 
+                  ? "bg-brand-fire/10 text-brand-fire glow-border border border-brand-fire/50 shadow-md" 
                   : "text-gray-400 hover:bg-white/5 hover:text-white"
               )}
             >
@@ -41,13 +49,13 @@ export default function Sidebar() {
       </nav>
 
       <div className="p-4 border-t border-border-subtle">
-        <NavLink
-          to="/login"
-          className="flex items-center px-4 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-all duration-300"
+        <button
+          onClick={onLogout}
+          className="flex items-center px-4 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-all duration-300 w-full"
         >
           <LogOut className="w-5 h-5 mr-3" />
           <span className="font-medium">Sair</span>
-        </NavLink>
+        </button>
       </div>
     </aside>
   );

@@ -1,9 +1,10 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Events from './pages/Events';
+import Posts from './pages/Posts';
+import Promotions from './pages/Promotions';
 import Analytics from './pages/Analytics';
 import VipList from './pages/VipList';
 import Settings from './pages/Settings';
@@ -23,6 +24,12 @@ function App() {
         </Route>
         <Route path="/events" element={<DashboardLayout />}>
           <Route index element={<Events />} />
+        </Route>
+        <Route path="/posts" element={<DashboardLayout />}>
+          <Route index element={<Posts />} />
+        </Route>
+        <Route path="/promotions" element={<DashboardLayout />}>
+          <Route index element={<Promotions />} />
         </Route>
         <Route path="/analytics" element={<DashboardLayout />}>
           <Route index element={<Analytics />} />
